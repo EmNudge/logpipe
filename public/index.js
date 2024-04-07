@@ -27,27 +27,26 @@ function getLogEl(logStr) {
   const logEl = cloneTemplate(".log");
   logEl.innerHTML = highlightText(logStr);
   logEl.style.display = logStr.includes(filterSig.value) ? "" : "none";
-  if (logStr.includes('\n')) logEl.classList.add("preserve-whitespace");
+  if (logStr.includes("\n")) logEl.classList.add("preserve-whitespace");
 
   return logEl;
 }
 /** @param {Element[]} logEls */
 async function appendLog(...logEls) {
-  const shouldScrollDown = logContainer.lastChild
-    ? await isInView(logContainer.lastChild)
-    : false;
+  const lastElement = /** @type {Element} */ (logContainer.lastChild);
+  const shouldScrollDown = lastElement ? await isInView(lastElement) : false;
 
   logContainer.append(...logEls);
   if (shouldScrollDown) {
-    logContainer.lastChild.scrollIntoView();
+    lastElement.scrollIntoView();
   }
 }
 
 {
   // apply filters
-  const filterInput = $(".filter");
+  const filterInput = /** @type {HTMLInputElement} */($(".filter"));
   filterInput.addEventListener("input", (event) => {
-    const filter = event.target.value;
+    const filter = filterInput.value;
     for (const logEl of $$(".container .log")) {
       logEl.style.display = logEl.textContent.includes(filter) ? "" : "none";
     }
@@ -60,6 +59,7 @@ effect(() => {
 });
 
 const cliSource = new EventSource("/cli-input");
+/** @param {Event & { data: string }} event */
 cliSource.onmessage = async (event) => {
   const data = JSON.parse(event.data);
   if (Array.isArray(data)) {
