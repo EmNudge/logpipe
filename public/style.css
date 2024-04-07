@@ -26,6 +26,9 @@ header {
     display: flex;
     gap: 4px;
   }
+  .tags sl-badge {
+    cursor: pointer;
+  }
 }
 
 

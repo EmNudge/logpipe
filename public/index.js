@@ -50,11 +50,14 @@ tagsContainer.addEventListener("click", (e) => {
   if (tagEl.getAttribute("variant") === "neutral") {
     for (const tag of $$(".tags sl-badge")) {
       tag.setAttribute("variant", "neutral");
+      tag.setAttribute("aria-pressed", "false");
     }
     tagEl.setAttribute("variant", "primary");
+    tagEl.setAttribute("aria-pressed", "true");
     filterInput.value = filterSig.value = `[${tagEl.textContent}]`;
   } else {
     tagEl.setAttribute("variant", "neutral");
+    tagEl.setAttribute("aria-pressed", "true");
     filterInput.value = filterSig.value = "";
   }
 });
@@ -67,16 +70,13 @@ function maybeAddTag(text) {
   if (tagsSet.has(tagText)) return;
 
   tagsSet.add(tagText);
-  const tag = document.createElement("sl-badge");
-  tag.setAttribute("variant", "neutral");
-  tag.textContent = tagText;
+  const tag = cloneTemplate(".badge", { textContent: tagText });
   tagsContainer.append(tag);
 }
 
 /** @param {CliInput} cliInput */
 function getLogEl({ input, date }) {
-  const logEl = cloneTemplate(".log");
-  logEl.innerHTML = highlightText(input);
+  const logEl = cloneTemplate(".log", { innerHTML: highlightText(input) });
   maybeAddTag(input);
   logEl.setAttribute(
     "data-date",
