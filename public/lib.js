@@ -14,7 +14,8 @@ export const $ = (s) => document.querySelector(s);
  * Document querySelectorAll alias
  * @type {(selector: string) => HTMLElement[]}
  */
-export const $$ = (s) => /**@type {HTMLElement[]}*/([...document.querySelectorAll(s)]);
+export const $$ = (s) =>
+  /**@type {HTMLElement[]}*/ ([...document.querySelectorAll(s)]);
 
 /**
  * Preact signal alias
@@ -65,8 +66,8 @@ export const cloneTemplate = (selector, properties = {}) => {
 
 /**
  * Uses IntersectionObserver to check if an element
- * is in view of a scroll container. 
- * 
+ * is in view of a scroll container.
+ *
  * @param {Element} logEl
  * @param {Element} root
  * @returns {Promise<boolean>}
@@ -86,7 +87,7 @@ export function isInView(logEl, root) {
       res(false);
     }, 5);
   });
-};
+}
 
 /**
  * Highlights some text based off of various heuristics.
@@ -98,15 +99,78 @@ export function isInView(logEl, root) {
 export function highlightText(text) {
   const map = new Map();
   let ident = 0;
+  const getIdent = () => `$${ident++};`;
+  /** @param {string} text */
+  const getReplacement = (text) => {
+    const placeholder = getIdent();
+    map.set(placeholder, text);
+    return placeholder;
+  };
 
-  const modified = text
+  // parse ANSI escapes
+  let openingTags = 0;
+  const ansiText = text
+    // replace links (yes, these exist)
+    .replace(/\x1B]8;;(.+?)\x1B\\(.+?)\x1B]8;;\x1B\\/g, (_, link, text) => {
+      return getReplacement(`<a href="${link}">${text}</a>`);
+    })
+    .replace(/\x1B\[((?:\d+|;)+?)m/g, (_, /** @type {string} */ num) => {
+      if (num === "0") {
+        const closingTags = "</span>".repeat(openingTags);
+        openingTags = 0;
+        return getReplacement(closingTags);
+      }
+
+      openingTags++;
+
+      if (num.startsWith("38;5")) {
+        const ansiColor = Number(num.split(";").slice(-1)[0]);
+        const colors = [
+          "black",
+          "red",
+          "green",
+          "yellow",
+          "blue",
+          "magenta",
+          "cyan",
+          "white",
+          "gray",
+          "red",
+          "brightgreen",
+          "yellow",
+          "dodgerblue",
+          "pink",
+          "aqua",
+          "white",
+        ];
+        if (colors[ansiColor]) {
+          return getReplacement(`<span style="color: ${colors[ansiColor]}">`);
+        }
+        return getReplacement(
+          `<span class="ansi-256-foreground-${ansiColor}">`
+        );
+      }
+
+      const codes = num.split(";");
+      const styles = codes
+        .map((code) => {
+          if (code === "1") return "bold";
+          if (code === "2") return "dim";
+          if (code === "3") return "italic";
+          if (code === "4") return "underline";
+          if (code === "5") return "blink";
+          return code;
+        })
+        .map((name) => `ansi-${name}`);
+
+      return getReplacement(`<span class="${styles.join(" ")}">`);
+    });
+
+  const modified = ansiText
     .replace(/\n( *)/g, (_, space) => {
-      const placeholder = `$${ident++}`;
-      const html = space
-        ? `<br><span style="white-space: pre">${space}</span>`
-        : "<br>";
-      map.set(placeholder, html);
-      return placeholder;
+      return getReplacement(
+        space ? `<br><span style="white-space: pre">${space}</span>` : "<br>"
+      );
     })
     .replace(/\S+/g, (m) => {
       const dateObj = new Date(m);
@@ -114,32 +178,24 @@ export function highlightText(text) {
         return m;
       }
       if (dateObj.toISOString() === m) {
-        const placeholder = `$${ident++}`;
-        map.set(placeholder, `<span class="date">${m}</span>`);
-        return placeholder;
+        return getReplacement(`<span class="date">${m}</span>`);
       }
 
       return m;
     })
     .replace(/"[^"]+?"/g, (m) => {
-      const placeholder = `$${ident++}`;
-      map.set(placeholder, `<span class="string">${m}</span>`);
-      return placeholder;
+      return getReplacement(`<span class="string">${m}</span>`);
     })
-    .replace(/\$?(-|\+)?\d+(.\d+)?/g, (m) => {
-      if (m.startsWith("$")) return m;
+    .replace(/ \$?(-|\+)?\d+(.\d+)? /g, (m) => {
+      if (m.startsWith(" $")) return m;
 
-      const placeholder = `$${ident++}`;
-      map.set(placeholder, `<span class="number">${m}</span>`);
-      return placeholder;
+      return getReplacement(`<span class="number">${m}</span>`);
     })
     .replace(/\[\w+\]/g, (m) => {
-      const placeholder = `$${ident++}`;
-      map.set(placeholder, `<span class="tag">${m}</span>`);
-      return placeholder;
+      return getReplacement(`<span class="tag">${m}</span>`);
     });
 
-  return modified.replace(/\$\d+/g, (m) => {
+  return modified.replace(/\$\d+;/g, (m) => {
     return map.get(m);
   });
 }

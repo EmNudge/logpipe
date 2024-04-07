@@ -47,7 +47,8 @@ header {
   background: var(--sl-color-neutral-200, #424242);
   font-family: monospace;
   border-radius: var(--sl-border-radius-medium, 4px);
-  
+  white-space: pre-wrap;
+
   &:focus {
     background-color: var(--sl-color-primary-100);
     outline: none;
@@ -74,5 +75,45 @@ header {
   }
   .string {
     color: #f8b652;
+  }
+
+  /* ANSI escape sequences */
+  .ansi-bold {
+    font-weight: bold;
+  }
+  .ansi-dim {
+    opacity: 0.5;
+  }
+  .ansi-underline {
+    text-decoration: underline;
+  }
+  .ansi-italic {
+    font-style: italic;
+  }
+  @keyframes blink {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  .ansi-blink {
+    animation: 1s blink infinite;
+  }
+  .ansi-31 {
+    color: red;
+  }
+  .ansi-32 {
+    color: rgb(44, 254, 44);
+  }
+  .ansi-33 {
+    color: yellow;
+  }
+  .ansi-34 {
+    color: blue;
   }
 }
