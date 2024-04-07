@@ -75,4 +75,9 @@ header {
   .string {
     color: #f8b652;
   }
+
+  /* ANSI escape sequences */
+  .ansi-bold {
+    font-weight: bold;
+  }
 }

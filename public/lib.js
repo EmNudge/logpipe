@@ -14,7 +14,8 @@ export const $ = (s) => document.querySelector(s);
  * Document querySelectorAll alias
  * @type {(selector: string) => HTMLElement[]}
  */
-export const $$ = (s) => /**@type {HTMLElement[]}*/([...document.querySelectorAll(s)]);
+export const $$ = (s) =>
+  /**@type {HTMLElement[]}*/ ([...document.querySelectorAll(s)]);
 
 /**
  * Preact signal alias
@@ -65,8 +66,8 @@ export const cloneTemplate = (selector, properties = {}) => {
 
 /**
  * Uses IntersectionObserver to check if an element
- * is in view of a scroll container. 
- * 
+ * is in view of a scroll container.
+ *
  * @param {Element} logEl
  * @param {Element} root
  * @returns {Promise<boolean>}
@@ -86,7 +87,7 @@ export function isInView(logEl, root) {
       res(false);
     }, 5);
   });
-};
+}
 
 /**
  * Highlights some text based off of various heuristics.
@@ -99,7 +100,51 @@ export function highlightText(text) {
   const map = new Map();
   let ident = 0;
 
-  const modified = text
+  // parse ANSI escapes
+  let openingTags = 0;
+  const ansiText = text.replace(
+    /\x1B\[((?:\d+|;)+)m/g,
+    (_, /** @type {string} */ num) => {
+      const placeholder = `$${ident++}`;
+      if (num === "0") {
+        map.set(placeholder, "</span>".repeat(openingTags));
+        openingTags = 0;
+        return placeholder;
+      }
+
+      openingTags++;
+      
+      if (num.startsWith("38;5")) {
+        const ansiColor = Number(num.split(";").slice(-1)[0]) - 16;
+        const [r, g, b] = [
+          ((ansiColor / 36) % 6) * 51,
+          ((ansiColor / 6) % 6) * 51,
+          (ansiColor % 6) * 51,
+        ].map(n => (n + 255) % 255);
+
+        map.set(placeholder, `<span style="color: rgb(${r}, ${g}, ${b})">`);
+        return placeholder;
+      }
+
+      const codes = num.split(";");
+      const styles = codes
+        .map((code) => {
+          if (code === "0") return "reset";
+          if (code === "1") return "bold";
+          if (code === "2") return "dim";
+          if (code === "3") return "italic";
+          if (code === "4") return "underline";
+          if (code === "5") return "blink";
+          return code;
+        })
+        .map((name) => `ansi-${name}`);
+
+      map.set(placeholder, `<span class="${styles.join(" ")}">`);
+      return placeholder;
+    }
+  );
+
+  const modified = ansiText
     .replace(/\n( *)/g, (_, space) => {
       const placeholder = `$${ident++}`;
       const html = space
@@ -126,8 +171,8 @@ export function highlightText(text) {
       map.set(placeholder, `<span class="string">${m}</span>`);
       return placeholder;
     })
-    .replace(/\$?(-|\+)?\d+(.\d+)?/g, (m) => {
-      if (m.startsWith("$")) return m;
+    .replace(/ \$?(-|\+)?\d+(.\d+)? /g, (m) => {
+      if (m.startsWith(" $")) return m;
 
       const placeholder = `$${ident++}`;
       map.set(placeholder, `<span class="number">${m}</span>`);
