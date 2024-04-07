@@ -22,6 +22,13 @@ Then go to the URL and inspect away!
 
 It takes an optional `--port` parameter if you'd like to specify a port which can be helpful if you're using it together with a command runner like `nodemon`.
 
+> [!CAUTION]
+> `logpipe` is a tool for inspecting development logs for <ins>a tool you trust</ins>. It uses a lot of `.innerHTML` from input taken directly out of your terminal.
+>
+> This is ripe for an **XSS attack or code-injection** with a trivial amount of effort.
+>
+> I will hopefully address this in the future, but it is not an immediate concern due to the context of its use.
+
 ## Motivation
 
 When dealing with various codebases in development, you'll come across perhaps hundreds of logs per minute. Some of these are supposed to be useful. 
