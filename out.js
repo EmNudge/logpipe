@@ -21,4 +21,4 @@ const logRandom = () => {
   }
 };
 
-setInterval(logRandom, 2000);
+setInterval(logRandom, 1000);

@@ -15,14 +15,38 @@ const applyVisibility = (element, filter) => {
   }
 };
 
-
 const logContainer = $(".container");
+const isInView = (logEl) => {
+  return new Promise(res => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        res(true);
+      }
+    }, { root: logContainer });
+    observer.observe(logEl);
+    setTimeout(() => {
+      res(false)
+    }, 5);
+  })
+};
+
+
 /** @param {string} logStr */
-function appendLog(logStr) {
+async function appendLog(logStr) {
   const logEl = cloneTemplate(".log");
   logEl.innerHTML = highlightText(logStr);
   applyVisibility(logEl, filterSig.value);
-  logContainer.prepend(logEl);
+
+  if (logContainer.lastChild) {
+    isInView(logContainer.lastChild).then(inView => {
+      if (inView) {
+        logContainer.append(logEl);
+        logContainer.lastChild.scrollIntoView();
+        return;
+      }
+    });
+  }
+  logContainer.append(logEl);
 }
 
 { // apply filters
@@ -37,12 +61,12 @@ function appendLog(logStr) {
 }
 
 const cliSource = new EventSource("/cli-input");
-cliSource.onmessage = (event) => {
+cliSource.onmessage = async (event) => {
   const data = JSON.parse(event.data);
   if (Array.isArray(data)) {
     logsSig.value = [...logsSig.value, ...data];
     for (const log of data) {
-      appendLog(log);
+      await appendLog(log);
     }
     return;
   }
