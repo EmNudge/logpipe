@@ -27,7 +27,6 @@ function getLogEl(logStr) {
   const logEl = cloneTemplate(".log");
   logEl.innerHTML = highlightText(logStr);
   logEl.style.display = logStr.includes(filterSig.value) ? "" : "none";
-  if (logStr.includes("\n")) logEl.classList.add("preserve-whitespace");
 
   return logEl;
 }
