@@ -30,6 +30,10 @@ It also allows us to live-filter logs while retaining the log state - something 
 
 ## Development
 
+It has been helpful to use something like `nodemon` during development to automatically restart the server when the code changes.
+
+There is a file called `out.js` which is purely used to simulate logs like in a regular application.
+
 ```sh
 nodemon --exec 'node out.js | node index.mjs' -e ts,html,js,mjs
 ```

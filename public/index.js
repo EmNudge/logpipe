@@ -1,35 +1,38 @@
-import { h, render } from "https://esm.sh/preact";
-import htm from "https://esm.sh/htm";
-import { signal, effect } from "https://esm.sh/@preact/signals";
-import { highlightText } from "./lib.js";
+import { $, $$, cloneTemplate, effect, highlightText, signal } from "./lib.js";
 
-const html = htm.bind(h);
+const logsSig = signal(/**@type {string[]}*/ ([]));
+const filterSig = signal("");
 
-const logsSig = signal([]);
-const filterSig = signal('');
-effect(() => console.log('filterSig', filterSig.value));
+/** @param {HTMLElement} element */
+const applyVisibility = (element) => {
+  const filter = filterSig.value;
+  if (element.textContent.includes(filter)) {
+    element.style.display = "";
+  } else {
+    element.style.display = "none";
+  }
+};
 
-function App() {
-  return html`
-    <input
-      type="text"
-      class="filter"
-      placeholder="filter..."
-      onInput=${(e) => (filterSig.value = e.currentTarget.value)}
-    />
-    ${filterSig.value}
-    <div class="container" tab-index="0">
-      ${logsSig.value.map((log) => html`<${LogHolder} text="${log}" />`)}
-    </div>
-  `;
-}
+const logContainer = $(".container");
+effect(() => {
+  const logs = logsSig.value;
+  logContainer.innerHTML = "";
+  for (const log of logs) {
+    const logEl = cloneTemplate(".log");
+    logEl.innerHTML = highlightText(log);
+    applyVisibility(logEl);
+    logContainer.appendChild(logEl);
+  }
+});
 
-function LogHolder({ text }) {
-  console.log(text);
-  return html`<div class="log">${highlightText(text)}</div> `;
-}
-
-render(html`<${App} />`, document.querySelector("#app"));
+$("input.filter").addEventListener("input", (event) => {
+  filterSig.value = event.target.value;
+});
+effect(() => {
+  for (const logEl of $$(".container .log")) {
+    applyVisibility(logEl);
+  }
+});
 
 const cliSource = new EventSource("/cli-input");
 cliSource.onmessage = (event) => {
