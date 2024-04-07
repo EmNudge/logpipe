@@ -1,50 +1,117 @@
-import { $, $$, cloneTemplate, effect, highlightText, signal } from "./lib.js";
+import {
+  $,
+  $$,
+  cloneTemplate,
+  effect,
+  highlightText,
+  isInView,
+  signal,
+} from "./lib.js";
 
-const logsSig = signal(/**@type {string[]}*/ ([]));
+/** @typedef {{ input: string, date: number }} CliInput */
+
+const logsSig = signal(/**@type {CliInput[]}*/ ([]));
 const filterSig = signal("");
+const filterCountSig = signal(0);
+
+{
+  // set log counts
+  effect(() => {
+    $(".log-count .total").textContent = `(${logsSig.value.length})`;
+  });
+  effect(() => {
+    $(".log-count .filtered").textContent = filterSig.value.length
+      ? `filtered: (${filterCountSig.value})`
+      : "";
+  });
+}
+// update filtered items
+effect(() => {
+  const filter = filterSig.value;
+  let filterCount = 0;
+  for (const logEl of $$(".container .log")) {
+    const shouldDisplay = logEl.textContent.includes(filter);
+    if (shouldDisplay) filterCount++;
+    logEl.style.display = shouldDisplay ? "" : "none";
+  }
+  filterCountSig.value = filterCount;
+});
 
 const logContainer = $(".container");
-/** @param {Element} logEl @returns {Promise<boolean>} */
-const isInView = (logEl) => {
-  return new Promise((res) => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          res(true);
-        }
-      },
-      { root: logContainer }
-    );
-    observer.observe(logEl);
-    setTimeout(() => {
-      res(false);
-    }, 5);
-  });
-};
 
-/** @param {string} logStr */
-function getLogEl(logStr) {
-  const logEl = cloneTemplate(".log");
-  logEl.innerHTML = highlightText(logStr);
-  logEl.style.display = logStr.includes(filterSig.value) ? "" : "none";
+const tagsContainer = $(".tags");
+
+tagsContainer.addEventListener("click", (e) => {
+  const tagEl = e.target;
+  if (!(tagEl instanceof HTMLElement)) return;
+  if (tagEl.tagName !== "SL-BADGE") return;
+
+  const filterInput = /** @type {HTMLInputElement} */ ($(".filter"));
+  if (tagEl.getAttribute("variant") === "neutral") {
+    for (const tag of $$(".tags sl-badge")) {
+      tag.setAttribute("variant", "neutral");
+      tag.setAttribute("aria-pressed", "false");
+    }
+    tagEl.setAttribute("variant", "primary");
+    tagEl.setAttribute("aria-pressed", "true");
+    filterInput.value = filterSig.value = `[${tagEl.textContent}]`;
+  } else {
+    tagEl.setAttribute("variant", "neutral");
+    tagEl.setAttribute("aria-pressed", "true");
+    filterInput.value = filterSig.value = "";
+  }
+});
+/** @type {Set<string>} */
+const tagsSet = new Set();
+/** @param {string} text */
+function maybeAddTag(text) {
+  const tagText = text.match(/\[(\w+)\]/)?.[1];
+  if (!tagText) return;
+  if (tagsSet.has(tagText)) return;
+
+  tagsSet.add(tagText);
+  const tag = cloneTemplate(".badge", { textContent: tagText });
+  tagsContainer.append(tag);
+}
+
+/** @param {CliInput} cliInput */
+function getLogEl({ input, date }) {
+  const logEl = cloneTemplate(".log", { innerHTML: highlightText(input) });
+  maybeAddTag(input);
+  logEl.setAttribute(
+    "data-date",
+    new Date(date).toLocaleDateString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    })
+  );
+
+  const shouldDisplay = input.includes(filterSig.value);
+  logEl.style.display = shouldDisplay ? "" : "none";
+  if (shouldDisplay) filterCountSig.value++;
 
   return logEl;
 }
 /** @param {Element[]} logEls */
 async function appendLog(...logEls) {
   const lastElement = /** @type {Element} */ (logContainer.lastChild);
-  const shouldScrollDown = lastElement ? await isInView(lastElement) : false;
+  const shouldScrollDown = lastElement
+    ? await isInView(lastElement, logContainer)
+    : false;
 
   logContainer.append(...logEls);
   if (shouldScrollDown) {
     lastElement.scrollIntoView();
+  } else if (!lastElement) {
+    logContainer.lastElementChild.scrollIntoView();
   }
 }
 
 {
   // apply filters
-  const filterInput = /** @type {HTMLInputElement} */($(".filter"));
-  filterInput.addEventListener("input", (event) => {
+  const filterInput = /** @type {HTMLInputElement} */ ($(".filter"));
+  filterInput.addEventListener("input", () => {
     const filter = filterInput.value;
     for (const logEl of $$(".container .log")) {
       logEl.style.display = logEl.textContent.includes(filter) ? "" : "none";
@@ -53,18 +120,18 @@ async function appendLog(...logEls) {
   });
 }
 
-effect(() => {
-  $(".log-count").textContent = `(${logsSig.value.length})`;
-});
-
 const cliSource = new EventSource("/cli-input");
 /** @param {Event & { data: string }} event */
 cliSource.onmessage = async (event) => {
   const data = JSON.parse(event.data);
+
   if (Array.isArray(data)) {
-    logsSig.value = [...logsSig.value, ...data];
-    await appendLog(...data.map((log) => getLogEl(log)));
+    /** @type {CliInput[]} */
+    const logs = data;
+    logsSig.value = [...logsSig.value, ...logs];
+    await appendLog(...logs.map((log) => getLogEl(log)));
     return;
   }
+
   console.log("unknown data received", data);
 };

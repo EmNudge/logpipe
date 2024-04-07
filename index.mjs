@@ -5,22 +5,29 @@ import fs from "fs/promises";
 import { join } from "path";
 import { fileURLToPath } from "url";
 
-/** @type {string[]} */
+/** @typedef {{ input: string, date: number }} CliInput */
+
+/** @type {CliInput[]} */
 const lines = [];
-/** @type {Set<(lines: string[], newLines: string[]) => void>} */
+
+/** @type {Set<(lines: CliInput[], newLines: CliInput[]) => void>} */
 const notifiers = new Set();
+
 process.stdin.on("data", (data) => {
   /** @type {string} */
   const input = data.toString();
+  const date = Date.now();
 
+  /** @type {CliInput[]} */
   const newLines = [];
   let prevWhitespace = 0;
   for (const line of input.trim().split('\n')) {
     const curWhitespace = line.match(/^\s+/)?.[0].length;
     if ((curWhitespace > prevWhitespace || line === '}') && newLines.length) {
-      newLines.push([newLines.pop(), line].join('\n'));
+      const { input } = newLines.pop();
+      newLines.push({ input: [input, line].join('\n'), date });
     } else {
-      newLines.push(line);
+      newLines.push({ input: line, date });
     }
   }
 
@@ -73,8 +80,7 @@ const server = http
       });
 
       res.write(`data: ${JSON.stringify(lines)}\n\n`);
-      notifiers.add((lines, newLines) => {
-        console.log(newLines);
+      notifiers.add((_lines, newLines) => {
         res.write(`data: ${JSON.stringify(newLines)}\n\n`);
       });
       return;

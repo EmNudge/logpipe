@@ -14,7 +14,7 @@ export const $ = (s) => document.querySelector(s);
  * Document querySelectorAll alias
  * @type {(selector: string) => HTMLElement[]}
  */
-export const $$ = (s) => [...document.querySelectorAll(s)];
+export const $$ = (s) => /**@type {HTMLElement[]}*/([...document.querySelectorAll(s)]);
 
 /**
  * Preact signal alias
@@ -40,15 +40,18 @@ const cloneMap = new Map();
  * It will only clone the element if it contains the `template` class.
  *
  * @param {string} selector
+ * @param {Record<string, any> | undefined} properties
  * @returns {HTMLElement}
  */
-export const cloneTemplate = (selector) => {
+export const cloneTemplate = (selector, properties = {}) => {
   if (cloneMap.has(selector)) {
-    return cloneMap.get(selector).cloneNode(true);
+    const node = cloneMap.get(selector).cloneNode(true);
+    Object.assign(node, properties);
+    return node;
   }
 
   const tempEl = document
-    .querySelector(`.template${selector}`)
+    .querySelector(`${selector}.template`)
     ?.cloneNode(true);
   if (!(tempEl instanceof HTMLElement)) {
     throw new Error(`No element found for selector: ${selector}`);
@@ -56,7 +59,33 @@ export const cloneTemplate = (selector) => {
 
   tempEl.classList.remove("template");
   cloneMap.set(selector, tempEl);
-  return /** @type {HTMLElement} */ (tempEl.cloneNode(true));
+  const node = /** @type {HTMLElement} */ (tempEl.cloneNode(true));
+  return Object.assign(node, properties);
+};
+
+/**
+ * Uses IntersectionObserver to check if an element
+ * is in view of a scroll container. 
+ * 
+ * @param {Element} logEl
+ * @param {Element} root
+ * @returns {Promise<boolean>}
+ */
+export function isInView(logEl, root) {
+  return new Promise((res) => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          res(true);
+        }
+      },
+      { root }
+    );
+    observer.observe(logEl);
+    setTimeout(() => {
+      res(false);
+    }, 5);
+  });
 };
 
 /**

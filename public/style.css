@@ -11,12 +11,26 @@ main {
   width: 800px;
   max-width: 100%;
 }
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px;
 
-.log-count {
-  color: grey;
-  font-size: 12px;
-  margin-top: 4px;
+  .log-count {
+    color: grey;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  .tags {
+    display: flex;
+    gap: 4px;
+  }
+  .tags sl-badge {
+    cursor: pointer;
+  }
 }
+
 
 .template {
   display: none;
@@ -34,11 +48,17 @@ main {
   font-family: monospace;
   border-radius: var(--sl-border-radius-medium, 4px);
   
-  &:focus,
-  &:active {
-    background: var(--sl-color-primary-100);
+  &:focus {
+    background-color: var(--sl-color-primary-100);
     outline: none;
+    
+    &:after {
+      content: attr(data-date);
+      float: right;
+      opacity: 0.5;
+    }
   }
+  
   .hide {
     display: none;
   }
