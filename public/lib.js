@@ -12,9 +12,9 @@ export const $ = (s) => document.querySelector(s);
 
 /**
  * Document querySelectorAll alias
- * @type {(selector: string) => Element[]}
+ * @type {(selector: string) => HTMLElement[]}
  */
-export const $$ = (s) => [...document.querySelectorAll(s)];
+export const $$ = (s) => /**@type {HTMLElement[]}*/([...document.querySelectorAll(s)]);
 
 /**
  * Preact signal alias
