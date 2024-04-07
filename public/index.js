@@ -50,7 +50,7 @@ async function appendLog(logStr) {
 }
 
 { // apply filters
-  const filterInput = $("input.filter");
+  const filterInput = $(".filter");
   filterInput.addEventListener("input", (event) => {
     const filter = event.target.value;
     for (const logEl of $$(".container .log")) {
