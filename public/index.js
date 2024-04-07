@@ -60,6 +60,10 @@ async function appendLog(logStr) {
   });
 }
 
+effect(() => {
+  $('.log-count').textContent = `(${logsSig.value.length})`;
+})
+
 const cliSource = new EventSource("/cli-input");
 cliSource.onmessage = async (event) => {
   const data = JSON.parse(event.data);
