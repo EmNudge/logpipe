@@ -79,7 +79,7 @@ export function highlightText(text) {
       map.set(placeholder, `<span class="string">${m}</span>`);
       return placeholder;
     })
-    .replace(/(\$\d+|\b\d+)\b/g, (m) => {
+    .replace(/\$?(-|\+)?\d+(.\d+)?/g, (m) => {
       if (m.startsWith("$")) return m;
 
       const placeholder = `$${ident++}`;

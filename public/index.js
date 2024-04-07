@@ -50,7 +50,7 @@ async function appendLog(logStr) {
 }
 
 { // apply filters
-  const filterInput = $("input.filter");
+  const filterInput = $(".filter");
   filterInput.addEventListener("input", (event) => {
     const filter = event.target.value;
     for (const logEl of $$(".container .log")) {
@@ -59,6 +59,10 @@ async function appendLog(logStr) {
     filterSig.value = filter;
   });
 }
+
+effect(() => {
+  $('.log-count').textContent = `(${logsSig.value.length})`;
+})
 
 const cliSource = new EventSource("/cli-input");
 cliSource.onmessage = async (event) => {
