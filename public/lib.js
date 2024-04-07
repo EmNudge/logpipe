@@ -12,7 +12,7 @@ export const $ = (s) => document.querySelector(s);
 
 /**
  * Document querySelectorAll alias
- * @type {(selector: string) => HTMLElement[]}
+ * @type {(selector: string) => Element[]}
  */
 export const $$ = (s) => [...document.querySelectorAll(s)];
 
