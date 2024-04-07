@@ -1,4 +1,4 @@
-import { $, $$, cloneTemplate, effect, highlightText, signal } from "./lib.js";
+import { $, $$, cloneTemplate, effect, highlightText, isInView, signal } from "./lib.js";
 
 /** @typedef {{ input: string, date: number }} CliInput */
 
@@ -6,23 +6,6 @@ const logsSig = signal(/**@type {CliInput[]}*/ ([]));
 const filterSig = signal("");
 
 const logContainer = $(".container");
-/** @param {Element} logEl @returns {Promise<boolean>} */
-const isInView = (logEl) => {
-  return new Promise((res) => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          res(true);
-        }
-      },
-      { root: logContainer }
-    );
-    observer.observe(logEl);
-    setTimeout(() => {
-      res(false);
-    }, 5);
-  });
-};
 
 /** @param {CliInput} cliInput */
 function getLogEl({ input, date }) {
@@ -43,7 +26,9 @@ function getLogEl({ input, date }) {
 /** @param {Element[]} logEls */
 async function appendLog(...logEls) {
   const lastElement = /** @type {Element} */ (logContainer.lastChild);
-  const shouldScrollDown = lastElement ? await isInView(lastElement) : false;
+  const shouldScrollDown = lastElement
+    ? await isInView(lastElement, logContainer)
+    : false;
 
   logContainer.append(...logEls);
   if (shouldScrollDown) {
@@ -63,20 +48,20 @@ async function appendLog(...logEls) {
   });
 }
 
-effect(() => {
-  $(".log-count").textContent = `(${logsSig.value.length})`;
-});
-
 const cliSource = new EventSource("/cli-input");
 /** @param {Event & { data: string }} event */
 cliSource.onmessage = async (event) => {
   const data = JSON.parse(event.data);
+  
   if (Array.isArray(data)) {
     /** @type {CliInput[]} */
     const logs = data;
     logsSig.value = [...logsSig.value, ...logs];
     await appendLog(...logs.map((log) => getLogEl(log)));
+    $(".log-count").textContent = `(${logsSig.value.length})`;
+
     return;
   }
+  
   console.log("unknown data received", data);
 };
