@@ -62,10 +62,11 @@ export function highlightText(text) {
 
   const modified = text
     .replace(/\S+/g, (m) => {
-      if (!Number.isNaN(Number(m))) {
+      const dateObj = new Date(m);
+      if (Number.isNaN(dateObj.valueOf())) {
         return m;
       }
-      if (!Number.isNaN(new Date(m).valueOf())) {
+      if (dateObj.toISOString() === m) {
         const placeholder = `$${ident++}`;
         map.set(placeholder, `<span class="date">${m}</span>`);
         return placeholder;
