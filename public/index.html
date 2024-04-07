@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CLI Input</title>
+    <style>
+      html {
+        font-family: monospace;
+        background-color: #111111;
+        color: white;
+      }
+      .container {
+        overflow-y: auto;
+        height: 400px;
+      }
+      .log {
+        padding: 4px 8px;
+        margin: 2px 0;
+        background: #424242;
+        color: white;
+        font-family: monospace;
+        border-radius: 4px;
+      }
+      .log:focus, .log:active {
+        background: #222222;
+      }
+      .log.hide {
+        display: none;
+      }
+      .log .tag {
+        color: #aae2aa;
+      }
+      .log .number {
+        color: yellow;
+      }
+      .log .date {
+        color: grey;
+      }
+      .log .string {
+        color: #f8b652;
+      }
+      .filter {
+        width: 100%;
+        box-sizing: border-box;
+        background-color: black;
+        color: white;
+        border: 1px solid #898989;
+        padding: 4px 8px;
+        border-radius: 2px;
+        margin-bottom: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>CLI Input</h1>
+    <main id="app"></main>
+
+
+    <script type="module" src="./index.js"></script>
+  </body>
+</html>
