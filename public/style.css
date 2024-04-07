@@ -34,11 +34,17 @@ main {
   font-family: monospace;
   border-radius: var(--sl-border-radius-medium, 4px);
   
-  &:focus,
-  &:active {
-    background: var(--sl-color-primary-100);
+  &:focus {
+    background-color: var(--sl-color-primary-100);
     outline: none;
+    
+    &:after {
+      content: attr(data-date);
+      float: right;
+      opacity: 0.5;
+    }
   }
+  
   .hide {
     display: none;
   }

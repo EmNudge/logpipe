@@ -1,6 +1,8 @@
 import { $, $$, cloneTemplate, effect, highlightText, signal } from "./lib.js";
 
-const logsSig = signal(/**@type {string[]}*/ ([]));
+/** @typedef {{ input: string, date: number }} CliInput */
+
+const logsSig = signal(/**@type {CliInput[]}*/ ([]));
 const filterSig = signal("");
 
 const logContainer = $(".container");
@@ -22,11 +24,19 @@ const isInView = (logEl) => {
   });
 };
 
-/** @param {string} logStr */
-function getLogEl(logStr) {
+/** @param {CliInput} cliInput */
+function getLogEl({ input, date }) {
   const logEl = cloneTemplate(".log");
-  logEl.innerHTML = highlightText(logStr);
-  logEl.style.display = logStr.includes(filterSig.value) ? "" : "none";
+  logEl.innerHTML = highlightText(input);
+  logEl.setAttribute(
+    "data-date",
+    new Date(date).toLocaleDateString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    })
+  );
+  logEl.style.display = input.includes(filterSig.value) ? "" : "none";
 
   return logEl;
 }
@@ -43,7 +53,7 @@ async function appendLog(...logEls) {
 
 {
   // apply filters
-  const filterInput = /** @type {HTMLInputElement} */($(".filter"));
+  const filterInput = /** @type {HTMLInputElement} */ ($(".filter"));
   filterInput.addEventListener("input", (event) => {
     const filter = filterInput.value;
     for (const logEl of $$(".container .log")) {
@@ -62,8 +72,10 @@ const cliSource = new EventSource("/cli-input");
 cliSource.onmessage = async (event) => {
   const data = JSON.parse(event.data);
   if (Array.isArray(data)) {
-    logsSig.value = [...logsSig.value, ...data];
-    await appendLog(...data.map((log) => getLogEl(log)));
+    /** @type {CliInput[]} */
+    const logs = data;
+    logsSig.value = [...logsSig.value, ...logs];
+    await appendLog(...logs.map((log) => getLogEl(log)));
     return;
   }
   console.log("unknown data received", data);
