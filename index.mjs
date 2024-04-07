@@ -7,14 +7,14 @@ import { fileURLToPath } from "url";
 
 /** @type {string[]} */
 const lines = [];
-/** @type {Set<(lines: string[], newLine: string) => void>} */
+/** @type {Set<(lines: string[], newLines: string[]) => void>} */
 const notifiers = new Set();
 process.stdin.on("data", (data) => {
-  const newLine = data.toString();
-  lines.push(newLine);
+  const newLines = data.toString().trim().split("\n");
+  lines.push(...newLines);
 
   for (const func of notifiers) {
-    func(lines, newLine);
+    func(lines, newLines);
   }
 });
 
@@ -60,8 +60,9 @@ const server = http
       });
 
       res.write(`data: ${JSON.stringify(lines)}\n\n`);
-      notifiers.add((lines, newLine) => {
-        res.write(`data: ${JSON.stringify([newLine])}\n\n`);
+      notifiers.add((lines, newLines) => {
+        console.log(newLines);
+        res.write(`data: ${JSON.stringify(newLines)}\n\n`);
       });
       return;
     }
