@@ -1,3 +1,54 @@
+import {
+  signal as signalPreact,
+  effect as effectPreact,
+  computed as computedPreact,
+} from "https://esm.sh/@preact/signals";
+
+/**
+ * Document query selector alias 
+ * @type {(selector: string) => HTMLElement} 
+ */
+export const $ = (s) => document.querySelector(s);
+
+/**
+ * Document querySelectorAll alias 
+ * @type {(selector: string) => HTMLElement[]} 
+ */
+export const $$ = (s) => [...document.querySelectorAll(s)];
+
+/** 
+ * Preact signal alias
+ * @type {<T>(init: T) => { value: T }} 
+ */
+export const signal = signalPreact;
+
+/** 
+ * Preact effect alias
+ * @type {(func: () => void) => void} 
+ */
+export const effect = effectPreact;
+
+/** 
+ * Preact computed alias
+ * @type {<T>(func: () => T) => T} 
+ */
+export const computed = computedPreact;
+
+const cloneMap = new Map();
+/** 
+ * @param {string} selector @returns {HTMLElement} 
+ */
+export const cloneTemplate = (selector) => {
+  if (cloneMap.has(selector)) {
+    return cloneMap.get(selector).cloneNode(true);
+  }
+
+  const tempEl = document.querySelector(`.template${selector}`).cloneNode(true);
+  tempEl.classList.remove("template");
+  cloneMap.set(selector, tempEl);
+  return tempEl.cloneNode(true);
+};
+
 /**
  * Highlights some text based off of various heuristics.
  * Returns html as a string
@@ -11,10 +62,11 @@ export function highlightText(text) {
 
   const modified = text
     .replace(/\S+/g, (m) => {
-      if (!Number.isNaN(Number(m))) {
+      const dateObj = new Date(m);
+      if (Number.isNaN(dateObj.valueOf())) {
         return m;
       }
-      if (!Number.isNaN(new Date(m).valueOf())) {
+      if (dateObj.toISOString() === m) {
         const placeholder = `$${ident++}`;
         map.set(placeholder, `<span class="date">${m}</span>`);
         return placeholder;

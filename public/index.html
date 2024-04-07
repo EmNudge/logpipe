@@ -10,6 +10,9 @@
         background-color: #111111;
         color: white;
       }
+      .template {
+        display: none;
+      }
       .container {
         overflow-y: auto;
         height: 400px;
@@ -24,6 +27,7 @@
       }
       .log:focus, .log:active {
         background: #222222;
+        outline: none;
       }
       .log.hide {
         display: none;
@@ -54,9 +58,11 @@
   </head>
   <body>
     <h1>CLI Input</h1>
-    <main id="app"></main>
 
-
+    <div class="container"></div>
+    <input type="text" class="filter" placeholder="filter..." />
+    
+    <div class="template log" tabindex="0"></div>
     <script type="module" src="./index.js"></script>
   </body>
 </html>

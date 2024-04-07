@@ -1,46 +1,73 @@
-import { h, render } from "https://esm.sh/preact";
-import htm from "https://esm.sh/htm";
-import { signal, computed } from "https://esm.sh/@preact/signals";
-import { highlightText } from "./lib.js";
+import { $, $$, cloneTemplate, effect, highlightText, signal } from "./lib.js";
 
-const html = htm.bind(h);
+const logsSig = signal(/**@type {string[]}*/ ([]));
+const filterSig = signal("");
 
-const logsSig = signal([]);
-const filterSig = signal('');
-computed(() => console.log(logsSig.value));
-computed(() => console.log(filterSig.value));
+/** 
+ * @param {HTMLElement} element 
+ * @param {string} filter
+ */
+const applyVisibility = (element, filter) => {
+  if (element.textContent.includes(filter)) {
+    element.style.display = "";
+  } else {
+    element.style.display = "none";
+  }
+};
 
-function App() {
-  console.log(logsSig.value);
+const logContainer = $(".container");
+const isInView = (logEl) => {
+  return new Promise(res => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        res(true);
+      }
+    }, { root: logContainer });
+    observer.observe(logEl);
+    setTimeout(() => {
+      res(false)
+    }, 5);
+  })
+};
 
-  return html`
-    <input
-      type="text"
-      class="filter"
-      placeholder="filter..."
-      onClick=${(e) => (filterSig.value = e.currentTarget.value)}
-    />
-    ${filterSig.value}
-    <div class="container" tab-index="0">
-      ${logsSig.value.map((log) => html`<${LogHolder} text="${log}" />`)}
-    </div>
-  `;
+
+/** @param {string} logStr */
+async function appendLog(logStr) {
+  const logEl = cloneTemplate(".log");
+  logEl.innerHTML = highlightText(logStr);
+  applyVisibility(logEl, filterSig.value);
+
+  if (logContainer.lastChild) {
+    isInView(logContainer.lastChild).then(inView => {
+      if (inView) {
+        logContainer.append(logEl);
+        logContainer.lastChild.scrollIntoView();
+        return;
+      }
+    });
+  }
+  logContainer.append(logEl);
 }
 
-function LogHolder({ text }) {
-  console.log(text);
-  return html`<div class="log">${highlightText(text)}</div> `;
+{ // apply filters
+  const filterInput = $("input.filter");
+  filterInput.addEventListener("input", (event) => {
+    const filter = event.target.value;
+    for (const logEl of $$(".container .log")) {
+      applyVisibility(logEl, filter);
+    }
+    filterSig.value = filter;
+  });
 }
-
-render(html`<${App} />`, document.querySelector("#app"));
 
 const cliSource = new EventSource("/cli-input");
-cliSource.onmessage = (event) => {
+cliSource.onmessage = async (event) => {
   const data = JSON.parse(event.data);
-  console.log("data received", data);
   if (Array.isArray(data)) {
-    console.log("array", data);
     logsSig.value = [...logsSig.value, ...data];
+    for (const log of data) {
+      await appendLog(log);
+    }
     return;
   }
   console.log("unknown data received", data);
