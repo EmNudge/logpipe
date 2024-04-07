@@ -1,5 +1,10 @@
 # Logpipe
 
+> Get clarity on development logs
+
+https://github.com/EmNudge/logpipe/assets/24513691/4b5311f9-5f6b-47ac-8ea9-b2ad80441275
+
+
 ## Usage
 
 ```sh
