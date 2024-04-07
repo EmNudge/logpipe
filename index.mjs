@@ -3,6 +3,7 @@
 import http from "http";
 import fs from "fs/promises";
 import { join } from "path";
+import { fileURLToPath } from "url";
 
 /** @type {string[]} */
 const lines = [];
@@ -41,7 +42,7 @@ const getMimeTypeForFile = (path) => {
   return mimeType ?? "text/plain";
 };
 
-const PUBLIC_DIR = join(process.cwd(), "public");
+const PUBLIC_DIR = join(fileURLToPath(import.meta.url), "..", "public");
 
 const server = http
   .createServer(async (req, res) => {
