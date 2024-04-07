@@ -46,5 +46,5 @@ It has been helpful to use something like `nodemon` during development to automa
 There is a file called `out.js` which is purely used to simulate logs like in a regular application.
 
 ```sh
-nodemon --exec 'node out.js | node index.mjs' -e ts,html,js,mjs
+nodemon --exec 'node out.js | node index.mjs -p 7280' -e ts,html,js,mjs,css
 ```

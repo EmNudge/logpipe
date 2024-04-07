@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "lib": ["ESNext", "DOM"],
+    "module": "nodenext",
+    "target": "ESNext",
+    "checkJs": true
+  }
+}

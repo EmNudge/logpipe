@@ -7,14 +7,27 @@ import { fileURLToPath } from "url";
 
 /** @type {string[]} */
 const lines = [];
-/** @type {Set<(lines: string[], newLine: string) => void>} */
+/** @type {Set<(lines: string[], newLines: string[]) => void>} */
 const notifiers = new Set();
 process.stdin.on("data", (data) => {
-  const newLine = data.toString();
-  lines.push(newLine);
+  /** @type {string} */
+  const input = data.toString();
+
+  const newLines = [];
+  let prevWhitespace = 0;
+  for (const line of input.trim().split('\n')) {
+    const curWhitespace = line.match(/^\s+/)?.[0].length;
+    if ((curWhitespace > prevWhitespace || line === '}') && newLines.length) {
+      newLines.push([newLines.pop(), line].join('\n'));
+    } else {
+      newLines.push(line);
+    }
+  }
+
+  lines.push(...newLines);
 
   for (const func of notifiers) {
-    func(lines, newLine);
+    func(lines, newLines);
   }
 });
 
@@ -42,6 +55,12 @@ const getMimeTypeForFile = (path) => {
   return mimeType ?? "text/plain";
 };
 
+const port = (() => {
+  const args = process.argv.slice(2).join(" ")
+  const match = args.match(/--port\s+(\d+)/) ?? args.match(/-p\s*(\d+)/);
+  return match ? Number(match[1]) : 0;
+})();
+
 const PUBLIC_DIR = join(fileURLToPath(import.meta.url), "..", "public");
 
 const server = http
@@ -54,8 +73,9 @@ const server = http
       });
 
       res.write(`data: ${JSON.stringify(lines)}\n\n`);
-      notifiers.add((lines, newLine) => {
-        res.write(`data: ${JSON.stringify([newLine])}\n\n`);
+      notifiers.add((lines, newLines) => {
+        console.log(newLines);
+        res.write(`data: ${JSON.stringify(newLines)}\n\n`);
       });
       return;
     }
@@ -79,7 +99,13 @@ const server = http
     res.write("Resource not found");
     res.end();
   })
-  .listen(0);
+  .listen(port);
+
+if (!server.address() && port) {
+  console.error("\nServer could not bind to port", port);
+  console.log("Specify a different port or allow the server to choose a random port.");
+  process.exit(1);
+}
 
 const address = `http://localhost:${server.address().port}`;
 console.log(`\nLogs are displayed on \x1b[32;1;4m${address}\x1b[0m\n`);

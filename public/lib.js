@@ -5,55 +5,65 @@ import {
 } from "https://esm.sh/@preact/signals";
 
 /**
- * Document query selector alias 
- * @type {(selector: string) => HTMLElement} 
+ * Document query selector alias
+ * @type {(selector: string) => HTMLElement}
  */
 export const $ = (s) => document.querySelector(s);
 
 /**
- * Document querySelectorAll alias 
- * @type {(selector: string) => HTMLElement[]} 
+ * Document querySelectorAll alias
+ * @type {(selector: string) => HTMLElement[]}
  */
 export const $$ = (s) => [...document.querySelectorAll(s)];
 
-/** 
+/**
  * Preact signal alias
- * @type {<T>(init: T) => { value: T }} 
+ * @type {<T>(init: T) => { value: T }}
  */
 export const signal = signalPreact;
 
-/** 
+/**
  * Preact effect alias
- * @type {(func: () => void) => void} 
+ * @type {(func: () => void) => void}
  */
 export const effect = effectPreact;
 
-/** 
+/**
  * Preact computed alias
- * @type {<T>(func: () => T) => T} 
+ * @type {<T>(func: () => T) => T}
  */
 export const computed = computedPreact;
 
 const cloneMap = new Map();
-/** 
- * @param {string} selector @returns {HTMLElement} 
+/**
+ * Clones a "template" element based off of a selector.
+ * It will only clone the element if it contains the `template` class.
+ *
+ * @param {string} selector
+ * @returns {HTMLElement}
  */
 export const cloneTemplate = (selector) => {
   if (cloneMap.has(selector)) {
     return cloneMap.get(selector).cloneNode(true);
   }
 
-  const tempEl = document.querySelector(`.template${selector}`).cloneNode(true);
+  const tempEl = document
+    .querySelector(`.template${selector}`)
+    ?.cloneNode(true);
+  if (!(tempEl instanceof HTMLElement)) {
+    throw new Error(`No element found for selector: ${selector}`);
+  }
+
   tempEl.classList.remove("template");
   cloneMap.set(selector, tempEl);
-  return tempEl.cloneNode(true);
+  return /** @type {HTMLElement} */ (tempEl.cloneNode(true));
 };
 
 /**
  * Highlights some text based off of various heuristics.
  * Returns html as a string
- *  
- * @param {string} text 
+ *
+ * @param {string} text
  * @returns {string} html
  */
 export function highlightText(text) {
@@ -61,6 +71,14 @@ export function highlightText(text) {
   let ident = 0;
 
   const modified = text
+    .replace(/\n( *)/g, (_, space) => {
+      const placeholder = `$${ident++}`;
+      const html = space
+        ? `<br><span style="white-space: pre">${space}</span>`
+        : "<br>";
+      map.set(placeholder, html);
+      return placeholder;
+    })
     .replace(/\S+/g, (m) => {
       const dateObj = new Date(m);
       if (Number.isNaN(dateObj.valueOf())) {
