@@ -6,6 +6,18 @@ html {
   display: flex;
   justify-content: center;
 }
+
+main {
+  width: 800px;
+  max-width: 100%;
+}
+
+.log-count {
+  color: grey;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
 .template {
   display: none;
 }
@@ -14,39 +26,33 @@ html {
   overflow-y: auto;
   height: 400px;
 }
+
 .log {
   padding: 4px 8px;
   margin: 2px 0;
   background: var(--sl-color-neutral-200, #424242);
   font-family: monospace;
   border-radius: var(--sl-border-radius-medium, 4px);
-}
-.log:focus,
-.log:active {
-  background: var(--sl-color-primary-100);
-  outline: none;
-}
-.log.hide {
-  display: none;
-}
-.log .tag {
-  color: #aae2aa;
-}
-.log .number {
-  color: yellow;
-}
-.log .date {
-  color: grey;
-}
-.log .string {
-  color: #f8b652;
-}
-.log-count {
-  color: grey;
-  font-size: 12px;
-  margin-top: 4px;
-}
-main {
-  width: 800px;
-  max-width: 100%;
+  
+  &:focus,
+  &:active {
+    background: var(--sl-color-primary-100);
+    outline: none;
+  }
+  .hide {
+    display: none;
+  }
+
+  .tag {
+    color: #aae2aa;
+  }
+  .number {
+    color: yellow;
+  }
+  .date {
+    color: grey;
+  }
+  .string {
+    color: #f8b652;
+  }
 }
