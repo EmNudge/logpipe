@@ -42,6 +42,9 @@ main {
   .hide {
     display: none;
   }
+  .preserve-whitespace {
+    white-space: pre;
+  }
 
   .tag {
     color: #aae2aa;
