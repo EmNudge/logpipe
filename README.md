@@ -5,6 +5,12 @@
 https://github.com/EmNudge/logpipe/assets/24513691/4b5311f9-5f6b-47ac-8ea9-b2ad80441275
 
 
+## Installation
+
+```sh
+npm i -g https://github.com/EmNudge/logpipe.git
+```
+
 ## Usage
 
 ```sh

@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import http from "http";
 import fs from "fs/promises";
 import { join } from "path";

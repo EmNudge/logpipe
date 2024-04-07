@@ -1,5 +1,9 @@
 {
   "name": "logpipe",
   "version": "0.0.1",
+  "bin": {
+    "logpipe": "./index.mjs"
+  },
+  "author": "EmNudge",
   "license": "MIT"
 }
