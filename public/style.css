@@ -11,12 +11,23 @@ main {
   width: 800px;
   max-width: 100%;
 }
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px;
 
-.log-count {
-  color: grey;
-  font-size: 12px;
-  margin-top: 4px;
+  .log-count {
+    color: grey;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  .tags {
+    display: flex;
+    gap: 4px;
+  }
 }
+
 
 .template {
   display: none;

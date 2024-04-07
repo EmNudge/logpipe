@@ -7,10 +7,27 @@ const filterSig = signal("");
 
 const logContainer = $(".container");
 
+const tagsContainer = $(".tags");
+/** @type {Set<string>} */
+const tagsSet = new Set();
+/** @param {string} text */
+function maybeAddTag(text) {
+  const tagText = text.match(/\[(\w+)\]/)?.[1];
+  if (!tagText) return;
+  if (tagsSet.has(tagText)) return;
+
+  tagsSet.add(tagText);
+  const tag = document.createElement("sl-badge");
+  tag.setAttribute("variant", "neutral");
+  tag.textContent = tagText;
+  tagsContainer.append(tag);
+}
+
 /** @param {CliInput} cliInput */
 function getLogEl({ input, date }) {
   const logEl = cloneTemplate(".log");
   logEl.innerHTML = highlightText(input);
+  maybeAddTag(input);
   logEl.setAttribute(
     "data-date",
     new Date(date).toLocaleDateString("en-US", {
@@ -33,6 +50,8 @@ async function appendLog(...logEls) {
   logContainer.append(...logEls);
   if (shouldScrollDown) {
     lastElement.scrollIntoView();
+  } else if (!lastElement) {
+    logContainer.lastElementChild.scrollIntoView();
   }
 }
 
@@ -62,6 +81,6 @@ cliSource.onmessage = async (event) => {
 
     return;
   }
-  
+
   console.log("unknown data received", data);
 };
