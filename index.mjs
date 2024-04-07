@@ -10,7 +10,20 @@ const lines = [];
 /** @type {Set<(lines: string[], newLines: string[]) => void>} */
 const notifiers = new Set();
 process.stdin.on("data", (data) => {
-  const newLines = data.toString().trim().split("\n");
+  /** @type {string} */
+  const input = data.toString();
+
+  const newLines = [];
+  let prevWhitespace = 0;
+  for (const line of input.trim().split('\n')) {
+    const curWhitespace = line.match(/^\s+/)?.[0].length;
+    if ((curWhitespace > prevWhitespace || line === '}') && newLines.length) {
+      newLines.push([newLines.pop(), line].join('\n'));
+    } else {
+      newLines.push(line);
+    }
+  }
+
   lines.push(...newLines);
 
   for (const func of notifiers) {

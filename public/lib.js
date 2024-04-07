@@ -53,7 +53,7 @@ export const cloneTemplate = (selector) => {
   if (!(tempEl instanceof HTMLElement)) {
     throw new Error(`No element found for selector: ${selector}`);
   }
-  
+
   tempEl.classList.remove("template");
   cloneMap.set(selector, tempEl);
   return /** @type {HTMLElement} */ (tempEl.cloneNode(true));
@@ -71,6 +71,14 @@ export function highlightText(text) {
   let ident = 0;
 
   const modified = text
+    .replace(/\n( *)/g, (_, space) => {
+      const placeholder = `$${ident++}`;
+      const html = space
+        ? `<br><span style="white-space: pre">${space}</span>`
+        : "<br>";
+      map.set(placeholder, html);
+      return placeholder;
+    })
     .replace(/\S+/g, (m) => {
       const dateObj = new Date(m);
       if (Number.isNaN(dateObj.valueOf())) {
