@@ -17,10 +17,15 @@ process.stdin.on("data", (data) => {
   }
 });
 
+process.stdin.on("close", () => {
+  console.log("\x1b[31mInput has ended.\x1b[0m");
+  console.log("Use Ctrl+C to close the web server.");
+});
+
 /** @param {string} path */
 const getMimeTypeForFile = (path) => {
   const ext = path.split(".").slice(-1)[0];
-  
+
   /** @type {string} */
   const mimeType = {
     js: "text/javascript",
@@ -38,7 +43,7 @@ const getMimeTypeForFile = (path) => {
 
 const PUBLIC_DIR = join(process.cwd(), "public");
 
-http
+const server = http
   .createServer(async (req, res) => {
     if (req.url === "/cli-input") {
       res.writeHead(200, {
@@ -73,6 +78,7 @@ http
     res.write("Resource not found");
     res.end();
   })
-  .listen(8080);
+  .listen(0);
 
-console.log("listening on http://localhost:8080");
+const address = `http://localhost:${server.address().port}`;
+console.log(`\nLogs are displayed on \x1b[32;1;4m${address}\x1b[0m\n`);
