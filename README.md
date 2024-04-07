@@ -2,8 +2,7 @@
 
 > Get clarity on development logs
 
-https://github.com/EmNudge/logpipe/assets/24513691/4b5311f9-5f6b-47ac-8ea9-b2ad80441275
-
+https://github.com/EmNudge/logpipe/assets/24513691/0115d249-0fa3-4e4a-9a38-68a45fd854c6
 
 ## Installation
 
@@ -16,10 +15,12 @@ npm i -g https://github.com/EmNudge/logpipe.git
 ```sh
 $ some-other-program | logpipe
 
-> server running on http://localhost:8080
+> server running on http://localhost:7381
 ```
 
-It runs a web server which you can use to inspect all logs from your program.
+Then go to the URL and inspect away!
+
+It takes an optional `--port` parameter if you'd like to specify a port which can be helpful if you're using it together with a command runner like `nodemon`.
 
 ## Motivation
 
@@ -35,7 +36,7 @@ This is a tool meant primarily for development. Therefore, the intention is to v
 This allows us the following interesting features:
 - **Logpipe** will syntax highlight logs that previously had no syntax highlighting.
 - It will automatically apply tags to logs for you to search over.
-- It will attempt to group logs together that seem related (based on indentation or language grammar)
+- It will attempt to group logs that seem related (based on indentation or language grammar)
 
 It also allows us to live-filter logs while retaining the log state - something already present in most log inspection tools.
 
@@ -44,6 +45,12 @@ It also allows us to live-filter logs while retaining the log state - something 
 It has been helpful to use something like `nodemon` during development to automatically restart the server when the code changes.
 
 There is a file called `out.js` which is purely used to simulate logs like in a regular application.
+
+`out.js` parameters:
+- `--delay <number>`
+  - delay in milliseconds between each log
+- `--iterations <number>`
+  - number of iterations to run (default Infinity)
 
 ```sh
 nodemon --exec 'node out.js | node index.mjs -p 7280' -e ts,html,js,mjs,css
