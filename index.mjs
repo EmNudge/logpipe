@@ -42,6 +42,12 @@ const getMimeTypeForFile = (path) => {
   return mimeType ?? "text/plain";
 };
 
+const port = (() => {
+  const args = process.argv.slice(2).join(" ")
+  const match = args.match(/--port\s+(\d+)/) ?? args.match(/-p\s*(\d+)/);
+  return match ? Number(match[1]) : 0;
+})();
+
 const PUBLIC_DIR = join(fileURLToPath(import.meta.url), "..", "public");
 
 const server = http
@@ -79,7 +85,13 @@ const server = http
     res.write("Resource not found");
     res.end();
   })
-  .listen(0);
+  .listen(port);
+
+if (!server.address() && port) {
+  console.error("\nServer could not bind to port", port);
+  console.log("Specify a different port or allow the server to choose a random port.");
+  process.exit(1);
+}
 
 const address = `http://localhost:${server.address().port}`;
 console.log(`\nLogs are displayed on \x1b[32;1;4m${address}\x1b[0m\n`);
