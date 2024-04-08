@@ -76,6 +76,9 @@ header {
   .string {
     color: #f8b652;
   }
+  .value {
+    color: #fff3ae;
+  }
 
   /* ANSI escape sequences */
   .ansi-bold {
@@ -105,15 +108,15 @@ header {
     animation: 1s blink infinite;
   }
   .ansi-31 {
-    color: red;
+    color: #ff6d6d;
   }
   .ansi-32 {
-    color: rgb(44, 254, 44);
+    color: #2cfe2c;
   }
   .ansi-33 {
     color: yellow;
   }
   .ansi-34 {
-    color: blue;
+    color: #a6a6ff;
   }
 }

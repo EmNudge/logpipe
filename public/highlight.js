@@ -91,6 +91,11 @@ export function highlightText(text) {
         space ? `<br><span style="white-space: pre">${space}</span>` : "<br>"
       );
     })
+    // parse weird date format (from golang)
+    .replace(/\d+\/\d+\/\d+ \d+:\d+:\d+[\.,]\d+/g, (m) => {
+      return getReplacement(`<span class="date">${m}</span>`);
+    })
+    // parse ISO date
     .replace(/\S+/g, (m) => {
       const dateObj = new Date(m);
       if (Number.isNaN(dateObj.valueOf())) {
@@ -102,14 +107,20 @@ export function highlightText(text) {
 
       return m;
     })
+    .replace(/(\S+?)=(\S+)/g, (_, key, value) => {
+      return getReplacement(`<span class="key">${key}</span>=<span class="value">${value}</span>`);
+    })
+    // color quoted strings
     .replace(/"[^"]*?"/g, (m) => {
       return getReplacement(`<span class="string">${m}</span>`);
     })
+    // color numbers
     .replace(/ \$?(-|\+)?\d+(.\d+)? /g, (m) => {
       if (m.startsWith(" $")) return m;
 
       return getReplacement(`<span class="number">${m}</span>`);
     })
+    // color [TAG] indicators
     .replace(/\[\w+\]/g, (m) => {
       return getReplacement(`<span class="tag">${m}</span>`);
     });
