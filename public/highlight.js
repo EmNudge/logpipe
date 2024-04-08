@@ -66,6 +66,33 @@ function replaceAnsi(text, getReplacement) {
     });
 }
 
+/**
+ * Highlights some text based off of various heuristics.
+ * Returns html as a string
+ *
+ * @param {string} text text to transform
+ * @param {(text: string) => string} getReplacement function for inserting replacements.
+ * @returns {string} html
+ */
+function replaceDate(text, getReplacement) {
+  return text
+  .replace(/\d+\/\d+\/\d+ \d+:\d+:\d+(?:[\.,]\d+)?/g, (m) => {
+    return getReplacement(`<span class="date">${m}</span>`);
+  })
+  // parse ISO date
+  .replace(/\S+/g, (m) => {
+    const dateObj = new Date(m);
+    if (Number.isNaN(dateObj.valueOf())) {
+      return m;
+    }
+    if (dateObj.toISOString() === m) {
+      return getReplacement(`<span class="date">${m}</span>`);
+    }
+
+    return m;
+  })
+}
+
 
 /**
  * Highlights some text based off of various heuristics.
@@ -85,42 +112,25 @@ export function highlightText(text) {
     return placeholder;
   };
 
-  const modified = replaceAnsi(text, getReplacement)
-    .replace(/\n( *)/g, (_, space) => {
-      return getReplacement(
-        space ? `<br><span style="white-space: pre">${space}</span>` : "<br>"
-      );
-    })
-    // parse weird date format (from golang)
-    .replace(/\d+\/\d+\/\d+ \d+:\d+:\d+[\.,]\d+/g, (m) => {
-      return getReplacement(`<span class="date">${m}</span>`);
-    })
-    // parse ISO date
-    .replace(/\S+/g, (m) => {
-      const dateObj = new Date(m);
-      if (Number.isNaN(dateObj.valueOf())) {
-        return m;
-      }
-      if (dateObj.toISOString() === m) {
-        return getReplacement(`<span class="date">${m}</span>`);
-      }
+  let modified = replaceAnsi(text, getReplacement);
+  modified = replaceDate(modified, getReplacement);
 
-      return m;
-    })
+  modified = modified
+    // parse key=value pairs
     .replace(/(\S+?)=(\S+)/g, (_, key, value) => {
       return getReplacement(`<span class="key">${key}</span>=<span class="value">${value}</span>`);
     })
-    // color quoted strings
+    // parse quoted strings
     .replace(/"[^"]*?"/g, (m) => {
       return getReplacement(`<span class="string">${m}</span>`);
     })
-    // color numbers
-    .replace(/ \$?(-|\+)?\d+(.\d+)? /g, (m) => {
+    // parse numbers
+    .replace(/ \$?(?:-|\+)?\d+(?:\.\d+)?(?: |,|\n|$)/g, (m) => {
       if (m.startsWith(" $")) return m;
 
       return getReplacement(`<span class="number">${m}</span>`);
     })
-    // color [TAG] indicators
+    // parse [TAG] indicators
     .replace(/\[\w+\]/g, (m) => {
       return getReplacement(`<span class="tag">${m}</span>`);
     });
