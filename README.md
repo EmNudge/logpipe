@@ -12,6 +12,14 @@ npm i -g https://github.com/EmNudge/logpipe.git
 
 ## Usage
 
+> [!CAUTION]
+> `logpipe` is a tool for inspecting development logs for <ins>a tool you trust</ins>. It uses a lot of `.innerHTML` from input taken directly out of your terminal.
+>
+> This is ripe for an **XSS attack or code-injection** with a trivial amount of effort.
+>
+> I will hopefully address this in the future, but it is not an immediate concern due to the context of its use.
+
+
 ```sh
 $ some-other-program | logpipe
 
@@ -20,14 +28,22 @@ $ some-other-program | logpipe
 
 Then go to the URL and inspect away!
 
-It takes an optional `--port` parameter if you'd like to specify a port which can be helpful if you're using it together with a command runner like `nodemon`.
+`logpipe` parameters:
+- `--port <number>`
+  - Choose a specific port (instead of random). Useful for command runners like `nodemon`.
+- `--title <some text>`
+  - Title for the page. Useful if you have multiple `logpipe`s open at once.
 
-> [!CAUTION]
-> `logpipe` is a tool for inspecting development logs for <ins>a tool you trust</ins>. It uses a lot of `.innerHTML` from input taken directly out of your terminal.
->
-> This is ripe for an **XSS attack or code-injection** with a trivial amount of effort.
->
-> I will hopefully address this in the future, but it is not an immediate concern due to the context of its use.
+
+### Redirecting Stderr
+
+Many programs will output their logs to stderr instead of stdout. If `logpipe` is not capturing anything and you still see output in your terminal, this is probably what's happening.
+
+You can use bash redirection to fix this.
+
+```sh
+my-program  2>&1 | logpipe # note the "2>&1"
+```
 
 ## Motivation
 
