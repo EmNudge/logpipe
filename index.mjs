@@ -21,11 +21,11 @@ process.stdin.on("data", (data) => {
   /** @type {CliInput[]} */
   const newLines = [];
   let prevWhitespace = 0;
-  for (const line of input.trim().split('\n')) {
+  for (const line of input.trim().split("\n")) {
     const curWhitespace = line.match(/^\s+/)?.[0].length;
-    if ((curWhitespace > prevWhitespace || line === '}') && newLines.length) {
+    if ((curWhitespace > prevWhitespace || line === "}") && newLines.length) {
       const { input } = newLines.pop();
-      newLines.push({ input: [input, line].join('\n'), date });
+      newLines.push({ input: [input, line].join("\n"), date });
     } else {
       newLines.push({ input: line, date });
     }
@@ -63,10 +63,32 @@ const getMimeTypeForFile = (path) => {
 };
 
 const port = (() => {
-  const args = process.argv.slice(2).join(" ")
+  const args = process.argv.slice(2).join(" ");
   const match = args.match(/--port\s+(\d+)/) ?? args.match(/-p\s*(\d+)/);
   return match ? Number(match[1]) : 0;
 })();
+const title = (() => {
+  const args = process.argv.slice(2).join(" ");
+  const match = args.match(/--title\s+([\w ]+)/) ?? args.match(/-t\s*([\w ]+)/);
+  return match ? match[1] : "CLI Input";
+})();
+
+// user asked for CLI help
+if (/--help| -h/.test(process.argv.slice(2).join(" "))) {
+  console.log("Usage: logpipe [--port PORT] [--title TITLE]");
+  console.log("");
+  console.log("Options:");
+  console.log("  --port PORT  The port to run the web server on.");
+  console.log("  --title TITLE  The title of the web page.");
+  console.log("");
+  console.log("Examples:");
+  console.log("  your-program | logpipe --port 8080 --title \"My CLI Input\"");
+  console.log("  your-program | logpipe -p 8080 -t \"My CLI Input\"");
+  console.log("  your-program | logpipe");
+  console.log("");
+  process.exit();
+}
+
 
 const PUBLIC_DIR = join(fileURLToPath(import.meta.url), "..", "public");
 
@@ -89,14 +111,21 @@ const server = http
     // node js read local directory files into an array
     const files = new Set(await fs.readdir(PUBLIC_DIR));
 
-    if (files.has(req.url.slice(1))) {
-      res.writeHead(200, { "Content-Type": getMimeTypeForFile(req.url) });
-      res.write(await fs.readFile(join(PUBLIC_DIR, req.url.slice(1))));
+    if (req.url == "/" || req.url == "/index.html") {
+      res.writeHead(200, {
+        "Content-Type": "text/html",
+        "X-Custom-Title": title,
+      });
+      /** @type {string} */
+      const site = (await fs.readFile(join(PUBLIC_DIR, "index.html"), 'utf8'))
+        .replace(/<title>.+?<\/title>/g, `<title>${title}</title>`)
+        .replace(/<h1>.+?<\/h1>/g, `<h1>${title}</h1>`);
+      res.write(site);
       res.end();
       return;
-    } else if (req.url == "/") {
-      res.writeHead(200, { "Content-Type": "text/html" });
-      res.write(await fs.readFile(join(PUBLIC_DIR, "index.html")));
+    } else if (files.has(req.url.slice(1))) {
+      res.writeHead(200, { "Content-Type": getMimeTypeForFile(req.url) });
+      res.write(await fs.readFile(join(PUBLIC_DIR, req.url.slice(1))));
       res.end();
       return;
     }
@@ -109,7 +138,9 @@ const server = http
 
 if (!server.address() && port) {
   console.error("\nServer could not bind to port", port);
-  console.log("Specify a different port or allow the server to choose a random port.");
+  console.log(
+    "Specify a different port or allow the server to choose a random port."
+  );
   process.exit(1);
 }
 
