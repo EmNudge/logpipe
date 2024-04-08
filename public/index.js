@@ -1,12 +1,5 @@
-import {
-  $,
-  $$,
-  cloneTemplate,
-  effect,
-  highlightText,
-  isInView,
-  signal,
-} from "./lib.js";
+import { highlightText } from "./highlight.js";
+import { $, $$, cloneTemplate, effect, isInView, signal } from "./lib.js";
 
 /** @typedef {{ input: string, date: number }} CliInput */
 
