@@ -69,33 +69,34 @@ tagsContainer.addEventListener("click", (e) => {
     }
     tagEl.setAttribute("variant", "primary");
     tagEl.setAttribute("aria-pressed", "true");
-    const text = `[${tagEl.textContent}]`;
-    filterInput.value = text;
-    setFilter(text);
+    filterInput.value = tagEl.textContent;
+    setFilter(tagEl.textContent);
   } else {
     tagEl.setAttribute("variant", "neutral");
     tagEl.setAttribute("aria-pressed", "true");
     filterInput.value = "";
-    setFilter('');
+    setFilter("");
   }
 });
 /** @type {Set<string>} */
 const tagsSet = new Set();
-/** @param {string} text */
-function maybeAddTag(text) {
-  const tagText = text.match(/\[(\w+)\]/)?.[1];
-  if (!tagText) return;
-  if (tagsSet.has(tagText)) return;
+/** @param {HTMLElement} logEl */
+function maybeAddTag(logEl) {
+  const newTags = [...logEl.querySelectorAll(".tag")]
+    .map((el) => el.textContent)
+    .filter((tag) => !tagsSet.has(tag));
 
-  tagsSet.add(tagText);
-  const tag = cloneTemplate(".badge", { textContent: tagText });
-  tagsContainer.append(tag);
+  for (const tagText of newTags) {
+    tagsSet.add(tagText);
+    const tag = cloneTemplate(".badge", { textContent: tagText });
+    tagsContainer.append(tag);
+  }
 }
 
 /** @param {CliInput} cliInput */
 function getLogEl({ input, date }) {
   const logEl = cloneTemplate(".log", { innerHTML: highlightText(input) });
-  maybeAddTag(input);
+  maybeAddTag(logEl);
   logEl.setAttribute(
     "data-date",
     new Date(date).toLocaleDateString("en-US", {
