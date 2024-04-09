@@ -1,34 +1,34 @@
 import { highlightText } from "./highlight.js";
-import { $, $$, cloneTemplate, effect, isInView, signal } from "./lib.js";
+import { $, $$, cloneTemplate, isInView } from "./lib.js";
 
 /** @typedef {{ input: string, date: number }} CliInput */
 
-const logsSig = signal(/**@type {CliInput[]}*/ ([]));
-const filterSig = signal("");
-const filterCountSig = signal(0);
+/** @type {CliInput[]} */
+const logs = [];
+let filterText = "";
+let filterItemsCount = 0;
 
-{
-  // set log counts
-  effect(() => {
-    $(".log-count .total").textContent = `(${logsSig.value.length})`;
-  });
-  effect(() => {
-    $(".log-count .filtered").textContent = filterSig.value.length
-      ? `filtered: (${filterCountSig.value})`
-      : "";
-  });
-}
-// update filtered items
-effect(() => {
-  const filter = filterSig.value;
-  let filterCount = 0;
-  for (const logEl of $$(".container .log")) {
-    const shouldDisplay = logEl.textContent.includes(filter);
-    if (shouldDisplay) filterCount++;
-    logEl.style.display = shouldDisplay ? "" : "none";
+/** @param {string} newText */
+const setFilter = (newText) => {
+  filterText = newText;
+
+  {
+    // update filtered items
+    let filterCount = 0;
+    const filter = filterText.toLowerCase();
+    for (const logEl of $$(".container .log")) {
+      const shouldDisplay = logEl.textContent.toLowerCase().includes(filter);
+      if (shouldDisplay) filterCount++;
+      logEl.style.display = shouldDisplay ? "" : "none";
+    }
+    filterItemsCount = filterCount;
   }
-  filterCountSig.value = filterCount;
-});
+
+  // set filter log count text
+  $(".log-count .filtered").textContent = filterText.length
+    ? `filtered: (${filterItemsCount})`
+    : "";
+};
 
 const logContainer = $(".container");
 
@@ -38,17 +38,18 @@ downButton.addEventListener("click", () => {
   logContainer.children[logContainer.children.length - 1].scrollIntoView();
 });
 let showButton = downButton.classList.contains("show");
+const GOAL_DIST = 150;
 logContainer.addEventListener("scroll", (e) => {
-  const dist =
+  const dist = Math.abs(
     logContainer.scrollHeight -
-    logContainer.scrollTop -
-    logContainer.clientHeight;
-  console.log({ dist });
-  const GOAL_DIST = 150;
-  if (Math.abs(dist) > GOAL_DIST && !showButton) {
+      logContainer.scrollTop -
+      logContainer.clientHeight
+  );
+
+  if (dist > GOAL_DIST && !showButton) {
     downButton.classList.add("show");
     showButton = true;
-  } else if (Math.abs(dist) < GOAL_DIST && showButton) {
+  } else if (dist < GOAL_DIST && showButton) {
     downButton.classList.remove("show");
     showButton = false;
   }
@@ -68,30 +69,34 @@ tagsContainer.addEventListener("click", (e) => {
     }
     tagEl.setAttribute("variant", "primary");
     tagEl.setAttribute("aria-pressed", "true");
-    filterInput.value = filterSig.value = `[${tagEl.textContent}]`;
+    filterInput.value = tagEl.textContent;
+    setFilter(tagEl.textContent);
   } else {
     tagEl.setAttribute("variant", "neutral");
     tagEl.setAttribute("aria-pressed", "true");
-    filterInput.value = filterSig.value = "";
+    filterInput.value = "";
+    setFilter("");
   }
 });
 /** @type {Set<string>} */
 const tagsSet = new Set();
-/** @param {string} text */
-function maybeAddTag(text) {
-  const tagText = text.match(/\[(\w+)\]/)?.[1];
-  if (!tagText) return;
-  if (tagsSet.has(tagText)) return;
+/** @param {HTMLElement} logEl */
+function maybeAddTag(logEl) {
+  const newTags = [...logEl.querySelectorAll(".tag")]
+    .map((el) => el.textContent)
+    .filter((tag) => !tagsSet.has(tag));
 
-  tagsSet.add(tagText);
-  const tag = cloneTemplate(".badge", { textContent: tagText });
-  tagsContainer.append(tag);
+  for (const tagText of newTags) {
+    tagsSet.add(tagText);
+    const tag = cloneTemplate(".badge", { textContent: tagText });
+    tagsContainer.append(tag);
+  }
 }
 
 /** @param {CliInput} cliInput */
 function getLogEl({ input, date }) {
   const logEl = cloneTemplate(".log", { innerHTML: highlightText(input) });
-  maybeAddTag(input);
+  maybeAddTag(logEl);
   logEl.setAttribute(
     "data-date",
     new Date(date).toLocaleDateString("en-US", {
@@ -101,9 +106,9 @@ function getLogEl({ input, date }) {
     })
   );
 
-  const shouldDisplay = input.includes(filterSig.value);
+  const shouldDisplay = input.includes(filterText);
   logEl.style.display = shouldDisplay ? "" : "none";
-  if (shouldDisplay) filterCountSig.value++;
+  if (shouldDisplay) filterItemsCount++;
 
   return logEl;
 }
@@ -130,7 +135,7 @@ async function appendLog(...logEls) {
     for (const logEl of $$(".container .log")) {
       logEl.style.display = logEl.textContent.includes(filter) ? "" : "none";
     }
-    filterSig.value = filter;
+    setFilter(filter);
   });
 }
 
@@ -141,9 +146,12 @@ cliSource.onmessage = async (event) => {
 
   if (Array.isArray(data)) {
     /** @type {CliInput[]} */
-    const logs = data;
-    logsSig.value = [...logsSig.value, ...logs];
-    await appendLog(...logs.map((log) => getLogEl(log)));
+    const newLogs = data;
+
+    logs.push(...newLogs);
+    $(".log-count .total").textContent = `(${logs.length})`;
+
+    await appendLog(...newLogs.map((log) => getLogEl(log)));
     return;
   }
 

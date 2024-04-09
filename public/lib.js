@@ -1,9 +1,3 @@
-import {
-  signal as signalPreact,
-  effect as effectPreact,
-  computed as computedPreact,
-} from "https://esm.sh/@preact/signals";
-
 /**
  * Document query selector alias
  * @type {(selector: string) => HTMLElement}
@@ -16,24 +10,6 @@ export const $ = (s) => document.querySelector(s);
  */
 export const $$ = (s) =>
   /**@type {HTMLElement[]}*/ ([...document.querySelectorAll(s)]);
-
-/**
- * Preact signal alias
- * @type {<T>(init: T) => { value: T }}
- */
-export const signal = signalPreact;
-
-/**
- * Preact effect alias
- * @type {(func: () => void) => void}
- */
-export const effect = effectPreact;
-
-/**
- * Preact computed alias
- * @type {<T>(func: () => T) => T}
- */
-export const computed = computedPreact;
 
 const cloneMap = new Map();
 /**
