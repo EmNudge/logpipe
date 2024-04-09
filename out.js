@@ -24,14 +24,16 @@ function logRandom() {
 
   const branches = [
     () => console.log("[INFO]", new Date(), '"log random"', count),
+    () => console.log("Info 2024-04-08 19:10:00,779 /opt/tmp/file_seq.data"),
     () =>
       console.log(
-        "[WARN]",
-        "This is a dangerous error. You are fumbulating the fumblertrons. Stop immediately or the blimdpad will forbulmdip."
+        "[Error(danger)]",
+        "This is a dangerous error."
       ),
-    () => console.log("testing | here is some data: ", count),
+    () => console.log('failed to throw an error. This is surprisingly not a good thing.'),
+    () => console.log("[INFO] /opt/file_thing.sock:019 | all systems go"),
     () =>
-      console.log("my object", {
+      console.log("on http://localhost:8080 (127.0.0.1) someone cool made a GET request (source: file_thing.js:32)", {
         a: 1,
         b: 2,
         c: Math.random() * 50,
