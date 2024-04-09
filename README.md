@@ -1,8 +1,8 @@
 # Logpipe
 
-> Get clarity on development logs
+*Get clarity on development logs*
 
-https://github.com/EmNudge/logpipe/assets/24513691/0115d249-0fa3-4e4a-9a38-68a45fd854c6
+<video src="https://github.com/EmNudge/logpipe/assets/24513691/0115d249-0fa3-4e4a-9a38-68a45fd854c6"></video>
 
 ## Installation
 
