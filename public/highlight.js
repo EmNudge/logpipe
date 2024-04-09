@@ -125,6 +125,10 @@ export function highlightText(text) {
         `<span class="key">${key}</span>=<span class="value">${value}</span>`
       );
     })
+    // parse [TAG] indicators
+    .replace(/\[[^\[\]]+\]|^warn\b|^info\b|^error\b/gi, (m) => {
+      return getReplacement(`<span class="tag">${m}</span>`);
+    })
     // parse URL
     .replace(/[a-z]+:\/\/[\w\.]+(?::\d+)?/g, (m) => {
       return getReplacement(`<a class="url" href="${m}">${m}</a>`);
@@ -151,10 +155,6 @@ export function highlightText(text) {
     .replace(/\berror\b|\bfail(?:ure|ed)\b/gi, (m) => {
       return getReplacement(`<span class="error">${m}</span>`);
     })
-    // parse [TAG] indicators
-    .replace(/\[[^\[\]]+\]|^warn\b|^info\b|^error\b/gi, (m) => {
-      return getReplacement(`<span class="tag">${m}</span>`);
-    });
 
   return modified.replace(/\$\d+;/g, (m) => {
     return map.get(m);
