@@ -67,7 +67,7 @@ header {
   .tag {
     color: #aae2aa;
   }
-  .number, .ip {
+  .number, .ip, .url {
     color: yellow;
   }
   .date {
@@ -76,7 +76,7 @@ header {
   .string {
     color: #f8b652;
   }
-  .value {
+  .value, .file {
     color: #fff3ae;
   }
   .error {

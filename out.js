@@ -31,7 +31,7 @@ function logRandom() {
         "This is a dangerous error."
       ),
     () => console.log('failed to throw an error. This is surprisingly not a good thing.'),
-    () => console.log("[INFO] testing | here is some data: ", count),
+    () => console.log("[INFO] /opt/file_thing.sock:019 | all systems go"),
     () =>
       console.log("on http://localhost:8080 (127.0.0.1) someone cool made a GET request (source: file_thing.js:32)", {
         a: 1,

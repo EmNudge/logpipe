@@ -125,6 +125,14 @@ export function highlightText(text) {
         `<span class="key">${key}</span>=<span class="value">${value}</span>`
       );
     })
+    // parse URL
+    .replace(/[a-z]+:\/\/[\w\.]+(?::\d+)?/g, (m) => {
+      return getReplacement(`<a class="url" href="${m}">${m}</a>`);
+    })
+    // parse file
+    .replace(/(?:[\/\w]+)?[\w.]+:\d+/g, (m) => {
+      return getReplacement(`<span class="file">${m}</span>`);
+    })
     // parse quoted strings
     .replace(/"[^"]*?"/g, (m) => {
       return getReplacement(`<span class="string">${m}</span>`);
