@@ -1,34 +1,33 @@
 import { highlightText } from "./highlight.js";
-import { $, $$, cloneTemplate, effect, isInView, signal } from "./lib.js";
+import { $, $$, cloneTemplate, isInView } from "./lib.js";
 
 /** @typedef {{ input: string, date: number }} CliInput */
 
-const logsSig = signal(/**@type {CliInput[]}*/ ([]));
-const filterSig = signal("");
-const filterCountSig = signal(0);
+/** @type {CliInput[]} */
+const logs = [];
+let filterText = "";
+let filterItemsCount = 0;
 
-{
-  // set log counts
-  effect(() => {
-    $(".log-count .total").textContent = `(${logsSig.value.length})`;
-  });
-  effect(() => {
-    $(".log-count .filtered").textContent = filterSig.value.length
-      ? `filtered: (${filterCountSig.value})`
-      : "";
-  });
-}
-// update filtered items
-effect(() => {
-  const filter = filterSig.value;
-  let filterCount = 0;
-  for (const logEl of $$(".container .log")) {
-    const shouldDisplay = logEl.textContent.includes(filter);
-    if (shouldDisplay) filterCount++;
-    logEl.style.display = shouldDisplay ? "" : "none";
+/** @param {string} newText */
+const setFilter = (newText) => {
+  filterText = newText;
+
+  {
+    // update filtered items
+    let filterCount = 0;
+    for (const logEl of $$(".container .log")) {
+      const shouldDisplay = logEl.textContent.includes(filterText);
+      if (shouldDisplay) filterCount++;
+      logEl.style.display = shouldDisplay ? "" : "none";
+    }
+    filterItemsCount = filterCount;
   }
-  filterCountSig.value = filterCount;
-});
+
+  // set filter log count text
+  $(".log-count .filtered").textContent = filterText.length
+    ? `filtered: (${filterItemsCount})`
+    : "";
+};
 
 const logContainer = $(".container");
 
@@ -45,7 +44,7 @@ logContainer.addEventListener("scroll", (e) => {
       logContainer.scrollTop -
       logContainer.clientHeight
   );
-  
+
   if (dist > GOAL_DIST && !showButton) {
     downButton.classList.add("show");
     showButton = true;
@@ -69,11 +68,14 @@ tagsContainer.addEventListener("click", (e) => {
     }
     tagEl.setAttribute("variant", "primary");
     tagEl.setAttribute("aria-pressed", "true");
-    filterInput.value = filterSig.value = `[${tagEl.textContent}]`;
+    const text = `[${tagEl.textContent}]`;
+    filterInput.value = text;
+    setFilter(text);
   } else {
     tagEl.setAttribute("variant", "neutral");
     tagEl.setAttribute("aria-pressed", "true");
-    filterInput.value = filterSig.value = "";
+    filterInput.value = "";
+    setFilter('');
   }
 });
 /** @type {Set<string>} */
@@ -102,9 +104,9 @@ function getLogEl({ input, date }) {
     })
   );
 
-  const shouldDisplay = input.includes(filterSig.value);
+  const shouldDisplay = input.includes(filterText);
   logEl.style.display = shouldDisplay ? "" : "none";
-  if (shouldDisplay) filterCountSig.value++;
+  if (shouldDisplay) filterItemsCount++;
 
   return logEl;
 }
@@ -131,7 +133,7 @@ async function appendLog(...logEls) {
     for (const logEl of $$(".container .log")) {
       logEl.style.display = logEl.textContent.includes(filter) ? "" : "none";
     }
-    filterSig.value = filter;
+    setFilter(filter);
   });
 }
 
@@ -142,9 +144,12 @@ cliSource.onmessage = async (event) => {
 
   if (Array.isArray(data)) {
     /** @type {CliInput[]} */
-    const logs = data;
-    logsSig.value = [...logsSig.value, ...logs];
-    await appendLog(...logs.map((log) => getLogEl(log)));
+    const newLogs = data;
+
+    logs.push(...newLogs);
+    $(".log-count .total").textContent = `(${logs.length})`;
+
+    await appendLog(...newLogs.map((log) => getLogEl(log)));
     return;
   }
 
