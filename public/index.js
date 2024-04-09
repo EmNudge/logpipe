@@ -38,17 +38,18 @@ downButton.addEventListener("click", () => {
   logContainer.children[logContainer.children.length - 1].scrollIntoView();
 });
 let showButton = downButton.classList.contains("show");
+const GOAL_DIST = 150;
 logContainer.addEventListener("scroll", (e) => {
-  const dist =
+  const dist = Math.abs(
     logContainer.scrollHeight -
-    logContainer.scrollTop -
-    logContainer.clientHeight;
-  console.log({ dist });
-  const GOAL_DIST = 150;
-  if (Math.abs(dist) > GOAL_DIST && !showButton) {
+      logContainer.scrollTop -
+      logContainer.clientHeight
+  );
+  
+  if (dist > GOAL_DIST && !showButton) {
     downButton.classList.add("show");
     showButton = true;
-  } else if (Math.abs(dist) < GOAL_DIST && showButton) {
+  } else if (dist < GOAL_DIST && showButton) {
     downButton.classList.remove("show");
     showButton = false;
   }
