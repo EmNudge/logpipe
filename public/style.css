@@ -40,6 +40,21 @@ header {
   overflow-y: auto;
   height: 400px;
 }
+.input-container {
+  position: relative;
+
+  sl-button  {
+    position: absolute;
+    top: -50px;
+    right: 20px;
+    opacity: 0;
+    transition: .25s;
+
+    &.show {
+      opacity: 1;
+    }
+  }
+}
 
 .log {
   padding: 4px 8px;
