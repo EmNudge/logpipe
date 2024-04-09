@@ -15,8 +15,9 @@ const setFilter = (newText) => {
   {
     // update filtered items
     let filterCount = 0;
+    const filter = filterText.toLowerCase();
     for (const logEl of $$(".container .log")) {
-      const shouldDisplay = logEl.textContent.includes(filterText);
+      const shouldDisplay = logEl.textContent.toLowerCase().includes(filter);
       if (shouldDisplay) filterCount++;
       logEl.style.display = shouldDisplay ? "" : "none";
     }
