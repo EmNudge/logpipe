@@ -32,8 +32,29 @@ effect(() => {
 
 const logContainer = $(".container");
 
-const tagsContainer = $(".tags");
+// scroll to bottom of container
+const downButton = $(".down-button");
+downButton.addEventListener("click", () => {
+  logContainer.children[logContainer.children.length - 1].scrollIntoView();
+});
+let showButton = downButton.classList.contains("show");
+logContainer.addEventListener("scroll", (e) => {
+  const dist =
+    logContainer.scrollHeight -
+    logContainer.scrollTop -
+    logContainer.clientHeight;
+  console.log({ dist });
+  const GOAL_DIST = 150;
+  if (Math.abs(dist) > GOAL_DIST && !showButton) {
+    downButton.classList.add("show");
+    showButton = true;
+  } else if (Math.abs(dist) < GOAL_DIST && showButton) {
+    downButton.classList.remove("show");
+    showButton = false;
+  }
+});
 
+const tagsContainer = $(".tags");
 tagsContainer.addEventListener("click", (e) => {
   const tagEl = e.target;
   if (!(tagEl instanceof HTMLElement)) return;
