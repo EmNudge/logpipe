@@ -1,4 +1,4 @@
-# Logpipe
+# Logpipe ![tinyest](https://github.com/EmNudge/logpipe/assets/24513691/8526ba7d-e8a1-460a-8fad-60c488b5b15e) 
 
 *Get clarity on development logs*
 
@@ -42,7 +42,7 @@ Many programs will output their logs to stderr instead of stdout. If `logpipe` i
 You can use bash redirection to fix this.
 
 ```sh
-my-program  2>&1 | logpipe # note the "2>&1"
+my-program 2>&1 | logpipe # note the "2>&1"
 ```
 
 ## Motivation
@@ -78,3 +78,16 @@ There is a file called `out.js` which is purely used to simulate logs like in a 
 ```sh
 nodemon --exec 'node out.js | node index.mjs -p 7280' -e ts,html,js,mjs,css
 ```
+
+## Similar Tools (Alternatives)
+
+The primary goal of logpipe is to simplify viewing and searching real-time development logs. If this is not your exact use-case, you may be better served by other tools.
+
+For a direct CLI-specific alternative, I quite like [tailspin](https://github.com/bensadeh/tailspin).
+
+For viewing structured logs in the CLI, check out [klp](https://github.com/dloss/klp) or [lnav](https://github.com/tstack/lnav).
+
+Web UIs are going to be the easiest for viewing logs individually and filtering on them. [logscreen](https://github.com/soorajshankar/logScreen) and [logdy](https://logdy.dev/) both exist in this category, but neither applies syntax highlighting or function well with unstructured logs.
+
+Logpipe seems to exist solely in this niche of "live webui view on unstructured logs with automatic syntax highlighting". If you find another tool that fits into this category, file an issue and I'll add it to this section.
+
