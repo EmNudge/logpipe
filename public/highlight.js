@@ -8,62 +8,64 @@
  */
 function replaceAnsi(text, getReplacement) {
   let openingTags = 0;
-  return text
-    // replace links (yes, these exist)
-    .replace(/\x1B]8;;(.+?)\x1B\\(.+?)\x1B]8;;\x1B\\/g, (_, link, text) => {
-      return getReplacement(`<a href="${link}">${text}</a>`);
-    })
-    .replace(/\x1B\[((?:\d+|;)+?)m/g, (_, /** @type {string} */ num) => {
-      if (num === "0") {
-        const closingTags = "</span>".repeat(openingTags);
-        openingTags = 0;
-        return getReplacement(closingTags);
-      }
-
-      openingTags++;
-
-      if (num.startsWith("38;5")) {
-        const ansiColor = Number(num.split(";").slice(-1)[0]);
-        const colors = [
-          "black",
-          "red",
-          "green",
-          "yellow",
-          "blue",
-          "magenta",
-          "cyan",
-          "white",
-          "gray",
-          "red",
-          "brightgreen",
-          "yellow",
-          "dodgerblue",
-          "pink",
-          "aqua",
-          "white",
-        ];
-        if (colors[ansiColor]) {
-          return getReplacement(`<span style="color: ${colors[ansiColor]}">`);
+  return (
+    text
+      // replace links (yes, these exist)
+      .replace(/\x1B]8;;(.+?)\x1B\\(.+?)\x1B]8;;\x1B\\/g, (_, link, text) => {
+        return getReplacement(`<a href="${link}">${text}</a>`);
+      })
+      .replace(/\x1B\[((?:\d+|;)+?)m/g, (_, /** @type {string} */ num) => {
+        if (num === "0") {
+          const closingTags = "</span>".repeat(openingTags);
+          openingTags = 0;
+          return getReplacement(closingTags);
         }
-        return getReplacement(
-          `<span class="ansi-256-foreground-${ansiColor}">`
-        );
-      }
 
-      const codes = num.split(";");
-      const styles = codes
-        .map((code) => {
-          if (code === "1") return "bold";
-          if (code === "2") return "dim";
-          if (code === "3") return "italic";
-          if (code === "4") return "underline";
-          if (code === "5") return "blink";
-          return code;
-        })
-        .map((name) => `ansi-${name}`);
+        openingTags++;
 
-      return getReplacement(`<span class="${styles.join(" ")}">`);
-    });
+        if (num.startsWith("38;5")) {
+          const ansiColor = Number(num.split(";").slice(-1)[0]);
+          const colors = [
+            "black",
+            "red",
+            "green",
+            "yellow",
+            "blue",
+            "magenta",
+            "cyan",
+            "white",
+            "gray",
+            "red",
+            "brightgreen",
+            "yellow",
+            "dodgerblue",
+            "pink",
+            "aqua",
+            "white",
+          ];
+          if (colors[ansiColor]) {
+            return getReplacement(`<span style="color: ${colors[ansiColor]}">`);
+          }
+          return getReplacement(
+            `<span class="ansi-256-foreground-${ansiColor}">`
+          );
+        }
+
+        const codes = num.split(";");
+        const styles = codes
+          .map((code) => {
+            if (code === "1") return "bold";
+            if (code === "2") return "dim";
+            if (code === "3") return "italic";
+            if (code === "4") return "underline";
+            if (code === "5") return "blink";
+            return code;
+          })
+          .map((name) => `ansi-${name}`);
+
+        return getReplacement(`<span class="${styles.join(" ")}">`);
+      })
+  );
 }
 
 /**
@@ -75,24 +77,25 @@ function replaceAnsi(text, getReplacement) {
  * @returns {string} html
  */
 function replaceDate(text, getReplacement) {
-  return text
-  .replace(/\d+\/\d+\/\d+ \d+:\d+:\d+(?:[\.,]\d+)?/g, (m) => {
-    return getReplacement(`<span class="date">${m}</span>`);
-  })
-  // parse ISO date
-  .replace(/\S+/g, (m) => {
-    const dateObj = new Date(m);
-    if (Number.isNaN(dateObj.valueOf())) {
-      return m;
-    }
-    if (dateObj.toISOString() === m) {
-      return getReplacement(`<span class="date">${m}</span>`);
-    }
+  return (
+    text
+      .replace(/\d+[-\/]\d+[-\/]\d+ \d+:\d+:\d+(?:[\.,]\d+)?/g, (m) => {
+        return getReplacement(`<span class="date">${m}</span>`);
+      })
+      // parse ISO date
+      .replace(/\S+/g, (m) => {
+        const dateObj = new Date(m);
+        if (Number.isNaN(dateObj.valueOf())) {
+          return m;
+        }
+        if (dateObj.toISOString() === m) {
+          return getReplacement(`<span class="date">${m}</span>`);
+        }
 
-    return m;
-  })
+        return m;
+      })
+  );
 }
-
 
 /**
  * Highlights some text based off of various heuristics.
@@ -118,7 +121,9 @@ export function highlightText(text) {
   modified = modified
     // parse key=value pairs
     .replace(/(\S+?)=(\S+)/g, (_, key, value) => {
-      return getReplacement(`<span class="key">${key}</span>=<span class="value">${value}</span>`);
+      return getReplacement(
+        `<span class="key">${key}</span>=<span class="value">${value}</span>`
+      );
     })
     // parse quoted strings
     .replace(/"[^"]*?"/g, (m) => {
@@ -130,8 +135,16 @@ export function highlightText(text) {
 
       return getReplacement(`<span class="number">${m}</span>`);
     })
+    // parse IP addrs
+    .replace(/\b\d+\.\d+\.\d+\.\d+\b/g, (m) => {
+      return getReplacement(`<span class="ip">${m}</span>`);
+    })
+    // parse IP addrs
+    .replace(/\berror\b|\bfail(?:ure|ed)\b/gi, (m) => {
+      return getReplacement(`<span class="error">${m}</span>`);
+    })
     // parse [TAG] indicators
-    .replace(/\[\w+\]/g, (m) => {
+    .replace(/\[[^\[\]]+\]|^warn\b|^info\b|^error\b/gi, (m) => {
       return getReplacement(`<span class="tag">${m}</span>`);
     });
 

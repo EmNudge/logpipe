@@ -67,7 +67,7 @@ header {
   .tag {
     color: #aae2aa;
   }
-  .number {
+  .number, .ip {
     color: yellow;
   }
   .date {
@@ -78,6 +78,9 @@ header {
   }
   .value {
     color: #fff3ae;
+  }
+  .error {
+    color: rgb(255, 98, 98);
   }
 
   /* ANSI escape sequences */
