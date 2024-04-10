@@ -95,7 +95,8 @@ function maybeAddTag(logEl) {
 
 /** @param {CliInput} cliInput */
 function getLogEl({ input, date }) {
-  const logEl = cloneTemplate(".log", { innerHTML: highlightText(input) });
+  const logEl = cloneTemplate(".log");
+  logEl.append(...highlightText(input));
   maybeAddTag(logEl);
   logEl.setAttribute(
     "data-date",
