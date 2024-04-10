@@ -12,14 +12,6 @@ npm i -g https://github.com/EmNudge/logpipe.git
 
 ## Usage
 
-> [!CAUTION]
-> `logpipe` is a tool for inspecting development logs for <ins>a tool you trust</ins>. It uses a lot of `.innerHTML` from input taken directly out of your terminal.
->
-> This is ripe for an **XSS attack or code-injection** with a trivial amount of effort.
->
-> I will hopefully address this in the future, but it is not an immediate concern due to the context of its use.
-
-
 ```sh
 $ some-other-program | logpipe
 
