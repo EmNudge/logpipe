@@ -188,7 +188,6 @@ export function highlightText(text) {
   return modified
     .match(new RegExp(`${VARIATION_SELECTOR_100}\\d+${VARIATION_SELECTOR_100}|[^${VARIATION_SELECTOR_100}]+`, 'g'))
     .flatMap(/** @returns {(Node | string)[]} */ str => {
-      console.log({ str: [...str], s: str.startsWith(VARIATION_SELECTOR_100), h: map.get(str) })
       if (!str.startsWith(VARIATION_SELECTOR_100)) return [str];
       return map.get(str);
     })
