@@ -31,7 +31,6 @@ header {
   }
 }
 
-
 .template {
   display: none;
 }
@@ -43,12 +42,12 @@ header {
 .input-container {
   position: relative;
 
-  sl-button  {
+  sl-button {
     position: absolute;
     top: -50px;
     right: 20px;
     opacity: 0;
-    transition: .25s;
+    transition: 0.25s;
 
     &.show {
       opacity: 1;
@@ -67,14 +66,14 @@ header {
   &:focus {
     background-color: var(--sl-color-primary-100);
     outline: none;
-    
+
     &:after {
       content: attr(data-date);
       float: right;
       opacity: 0.5;
     }
   }
-  
+
   .hide {
     display: none;
   }
@@ -82,7 +81,9 @@ header {
   .tag {
     color: #aae2aa;
   }
-  .number, .ip, .url {
+  .number,
+  .ip,
+  .url {
     color: yellow;
   }
   .date {
@@ -91,7 +92,8 @@ header {
   .string {
     color: #f8b652;
   }
-  .value, .file {
+  .value,
+  .file {
     color: #fff3ae;
   }
   .error {
@@ -136,5 +138,53 @@ header {
   }
   .ansi-34 {
     color: #a6a6ff;
+  }
+  .ansi-black {
+    color: black;
+  }
+  .ansi-red {
+    color: red;
+  }
+  .ansi-green {
+    color: green;
+  }
+  .ansi-yellow {
+    color: yellow;
+  }
+  .ansi-blue {
+    color: blue;
+  }
+  .ansi-magenta {
+    color: magenta;
+  }
+  .ansi-cyan {
+    color: cyan;
+  }
+  .ansi-white {
+    color: white;
+  }
+  .ansi-gray {
+    color: gray;
+  }
+  .ansi-red {
+    color: red;
+  }
+  .ansi-brightgreen {
+    color: greenyellow;
+  }
+  .ansi-yellow {
+    color: yellow;
+  }
+  .ansi-dodgerblue {
+    color: dodgerblue;
+  }
+  .ansi-pink {
+    color: pink;
+  }
+  .ansi-aqua {
+    color: aqua;
+  }
+  .ansi-white {
+    color: white;
   }
 }
