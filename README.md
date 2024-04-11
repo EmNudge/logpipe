@@ -1,8 +1,10 @@
-# Logpipe ![tinyest](https://github.com/EmNudge/logpipe/assets/24513691/8526ba7d-e8a1-460a-8fad-60c488b5b15e) 
+# Logpipe ![logpipe logo](https://github.com/EmNudge/logpipe/assets/24513691/8526ba7d-e8a1-460a-8fad-60c488b5b15e) 
 
 *Get clarity on development logs*
 
 <video src="https://github.com/EmNudge/logpipe/assets/24513691/0115d249-0fa3-4e4a-9a38-68a45fd854c6"></video>
+
+See it in action in [this online demo](https://logpipe-demo.emnudge.dev/)!
 
 ## Installation
 
