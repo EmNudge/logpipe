@@ -1,35 +1,12 @@
 import { highlightText } from "./highlight.js";
 import { $, $$, cloneTemplate, isInView } from "./lib.js";
+import { applyFilter, setFilter } from "./filter.js";
 import './contextmenu.js';
 
 /** @typedef {{ input: string, date: number, id: string }} CliInput */
 
 /** @type {CliInput[]} */
 const logs = [];
-let filterText = "";
-let filterItemsCount = 0;
-
-/** @param {string} newText */
-const setFilter = (newText) => {
-  filterText = newText;
-
-  {
-    // update filtered items
-    let filterCount = 0;
-    const filter = filterText.toLowerCase();
-    for (const logEl of $$(".container .log")) {
-      const shouldDisplay = logEl.textContent.toLowerCase().includes(filter);
-      if (shouldDisplay) filterCount++;
-      logEl.style.display = shouldDisplay ? "" : "none";
-    }
-    filterItemsCount = filterCount;
-  }
-
-  // set filter log count text
-  $(".log-count .filtered").textContent = filterText.length
-    ? `filtered: (${filterItemsCount})`
-    : "";
-};
 
 const logContainer = $(".container");
 
@@ -79,6 +56,7 @@ tagsContainer.addEventListener("click", (e) => {
     setFilter("");
   }
 });
+
 /** @type {Set<string>} */
 const tagsSet = new Set();
 /** @param {HTMLElement} logEl */
@@ -110,9 +88,7 @@ function getLogEl({ input, date, id }) {
     })
   );
 
-  const shouldDisplay = input.includes(filterText);
-  logEl.style.display = shouldDisplay ? "" : "none";
-  if (shouldDisplay) filterItemsCount++;
+  applyFilter(input, logEl);
 
   return logEl;
 }
@@ -129,18 +105,6 @@ async function appendLog(...logEls) {
   } else if (!lastElement) {
     logContainer.lastElementChild.scrollIntoView();
   }
-}
-
-{
-  // apply filters
-  const filterInput = /** @type {HTMLInputElement} */ ($(".filter"));
-  filterInput.addEventListener("input", () => {
-    const filter = filterInput.value;
-    for (const logEl of $$(".container .log")) {
-      logEl.style.display = logEl.textContent.includes(filter) ? "" : "none";
-    }
-    setFilter(filter);
-  });
 }
 
 const cliSource = new EventSource("/cli-input");
