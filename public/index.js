@@ -100,10 +100,10 @@ async function appendLog(...logEls) {
     : false;
 
   logContainer.append(...logEls);
-  if (shouldScrollDown && lastElement) {
+  if (shouldScrollDown) {
     lastElement.scrollIntoView();
   } else if (!lastElement) {
-    logContainer.lastElementChild.scrollIntoView();
+    logContainer.lastElementChild?.scrollIntoView();
   }
 }
 
