@@ -153,6 +153,35 @@ function replaceDate(text, getReplacement) {
  * Highlights some text based off of various heuristics.
  * Returns html as a string
  *
+ * @param {string} text text to transform
+ * @param {(...els: HTMLElement[]) => string} getReplacement function for inserting replacements.
+ * @returns {string} html
+ */
+function replaceTags(text, getReplacement) {
+  return (
+    text
+      .replace(/\d+[-\/]\d+[-\/]\d+ \d+:\d+:\d+(?:[\.,]\d+)?/g, (m) => {
+        return getReplacement(getSpan("date", m));
+      })
+      // parse ISO date
+      .replace(/\S+/g, (m) => {
+        const dateObj = new Date(m);
+        if (Number.isNaN(dateObj.valueOf())) {
+          return m;
+        }
+        if (dateObj.toISOString() === m) {
+          return getReplacement(getSpan("date", m));
+        }
+
+        return m;
+      })
+  );
+}
+
+/**
+ * Highlights some text based off of various heuristics.
+ * Returns html as a string
+ *
  * @param {string} text
  * @returns {(string | Node)[]} html
  */
@@ -197,9 +226,8 @@ export function highlightText(text) {
       return getReplacement(getSpan("string", m));
     })
     // parse numbers
-    .replace(/ \$?(?:-|\+)?\d+(?:\.\d+)?(?: |,|\n|$)/g, (m) => {
-      if (m.startsWith(" $")) return m;
-
+    .replace(new RegExp(String.raw`${VARIATION_SELECTOR_100}?\b(?:-|\+)?\d+(?:\.\d+)?\b`, 'g'), (m) => {
+      if (m.startsWith(VARIATION_SELECTOR_100)) return m;
       return getReplacement(getSpan("number", m));
     })
     // parse IP addrs
