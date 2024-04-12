@@ -49,8 +49,13 @@ document.body.addEventListener("keydown", (e) => {
   }
 });
 
-inputEl.addEventListener("input", (e) => {
-  console.log(inputEl.value);
+inputEl.addEventListener("input", () => {
+  const filterText = inputEl.value;
+  for (const menuItem of listEl.querySelectorAll('sl-menu-item')) {
+    const shouldDisplay = menuItem.textContent.toLowerCase().includes(filterText);
+    // @ts-ignore
+    menuItem.style.display = shouldDisplay ? '' : 'none';
+  }
 });
 
 listEl.addEventListener(
