@@ -22,30 +22,41 @@ export const applyFilter = (input, logEl) => {
 export const setFilter = (newText) => {
   filterText = newText;
 
-  let filterCount = 0;
-  const filter = filterText.toLowerCase();
-  if (/@`.+?`/.test(filter)) {
-    const tags = [...filter.matchAll(/@`(.+?)`/g)].map((m) => m[1]);
-    for (const logEl of $$(".container .log")) {
+  let logs = $$(".container .log");
+  let filterCount = logs.length;
+  let filter = filterText.toLowerCase();
+
+
+  if (/@@[\w,]+/.test(filter)) {
+    const tags = [...filter.matchAll(/@@([\w,]+)/g)].map((m) => m[1]);
+    logs = logs.filter((logEl) => {
+      console.log(tags)
       const shouldDisplay = tags
         .map((tagGroup) => {
           const elements = logEl.querySelectorAll(
             tagGroup
               .split(/\s*,\s*/)
+              // remove empty strings from trailing commas
+              .filter((s) => s.length)
               .map((tag) => `span.${tag}`)
               .join(",")
           );
+          console.log(elements)
           return elements.length;
         })
         .every((len) => len > 0);
 
-      if (shouldDisplay) filterCount++;
+      if (!shouldDisplay) filterCount--;
       logEl.style.display = shouldDisplay ? "" : "none";
-    }
-  } else {
-    for (const logEl of $$(".container .log")) {
+      return shouldDisplay;
+    });
+    filter = filter.replace(/@@[\w,]+/g, "").trim();
+  }
+
+  if (filter) {
+    for (const logEl of logs) {
       const shouldDisplay = logEl.textContent.toLowerCase().includes(filter);
-      if (shouldDisplay) filterCount++;
+      if (!shouldDisplay) filterCount--;
       logEl.style.display = shouldDisplay ? "" : "none";
     }
   }
