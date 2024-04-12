@@ -28,7 +28,7 @@ function logRandom() {
     () =>
       console.log(
         "[Error(danger)]",
-        "This is a dangerous error."
+        "An error occurred due to a false value when expecting a true value"
       ),
     () => console.log('failed to throw an error. This is surprisingly not a good thing.'),
     () => console.log("[INFO] /opt/file_thing.sock:019 | all systems go"),
@@ -51,7 +51,7 @@ function logRandom() {
           2
         )
       ),
-    () => console.log("server caught error!"),
+    () => console.log("Debug received POST, GET, PATCH, PUT, and DELETE from 192.168.1.1 (somehow)"),
   ];
   branches[branches.length * Math.random() | 0]();
 }

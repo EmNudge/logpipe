@@ -96,6 +96,35 @@ function replaceAnsi(text, getReplacement) {
  * Returns html as a string
  *
  * @param {string} text text to transform
+ * @param {(...el: HTMLElement[]) => string} getReplacement function for inserting replacements.
+ * @returns {string} html
+ */
+function replaceURLs(text, getReplacement) {
+  return text.replace(
+    // Lord forgive me, for I have sinned
+    /\b(https?:)\/\/(\w+(?:\.\w+)*)(:\d+)?((?:\/[\w\.]+)*\/?)((?:\?(?:&?\w+=\w+)*))?/gi,
+    (_, protocol, host, port, path, params) => {
+      const urlContainer = getSpan("url");
+      urlContainer.append(
+        getSpan("url-protocol", protocol),
+        "//",
+        getSpan("url-host", host)
+      );
+      for (const [key, value] of Object.entries({ port, path, params })) {
+        if (!value) continue;
+        urlContainer.append(getSpan(`url-${key}`, value));
+      }
+
+      return getReplacement(urlContainer);
+    }
+  );
+}
+
+/**
+ * Highlights some text based off of various heuristics.
+ * Returns html as a string
+ *
+ * @param {string} text text to transform
  * @param {(...els: HTMLElement[]) => string} getReplacement function for inserting replacements.
  * @returns {string} html
  */
@@ -143,6 +172,7 @@ export function highlightText(text) {
   // Remove specific invisible character we will be using for regex replacing
   let modified = text.replace(new RegExp(VARIATION_SELECTOR_100, "g"), "");
   modified = replaceAnsi(text, getReplacement);
+  modified = replaceURLs(modified, getReplacement);
   modified = replaceDate(modified, getReplacement);
 
   modified = modified
@@ -155,12 +185,8 @@ export function highlightText(text) {
       );
     })
     // parse [TAG] indicators
-    .replace(/\[[^\[\]]+\]|^warn\b|^info\b|^error\b/gi, (m) => {
+    .replace(/\[[^\[\]]+\]|^info\b|^warn\b|^error\b|^debug\b|^trace\b/gi, (m) => {
       return getReplacement(getSpan("tag", m));
-    })
-    // parse URL
-    .replace(/[a-z]+:\/\/[\w\.]+(?::\d+)?/g, (m) => {
-      return getReplacement(getEl("a", { href: m, textContent: m }));
     })
     // parse file
     .replace(/(?:[\/\w]+)?[\w.]+:\d+/g, (m) => {
@@ -171,24 +197,37 @@ export function highlightText(text) {
       return getReplacement(getSpan("string", m));
     })
     // parse numbers
-    .replace(/ \$?(?:-|\+)?\d+(?:\.\d+)?(?: |,|\n|$)/g, (m) => {
-      if (m.startsWith(" $")) return m;
-
+    .replace(new RegExp(String.raw`(?:${VARIATION_SELECTOR_100})?\b(?:-|\+)?\d+(?:\.\d+)?\b`, 'g'), (m) => {
+      if (m.startsWith(VARIATION_SELECTOR_100)) return m;
       return getReplacement(getSpan("number", m));
     })
     // parse IP addrs
     .replace(/\b\d+\.\d+\.\d+\.\d+\b/g, (m) => {
       return getReplacement(getSpan("ip", m));
     })
+    .replace(/\b(?:GET|POST|PUT|PATCH|DELETE)\b/g, (m) => {
+      return getReplacement(getSpan("http-method http-method-" + m.toLowerCase(), m));
+    })
+    // parse keywords
+    .replace(/\b(?:true|false|null|undefined)\b/gi, (m) => {
+      return getReplacement(getSpan("keyword", m));
+    })
     // parse errors
-    .replace(/\berror\b|\bfail(?:ure|ed)\b/gi, (m) => {
+    .replace(/\b(?:error|fail(?:ure|ed))\b/gi, (m) => {
       return getReplacement(getSpan("error", m));
     });
 
   return modified
-    .match(new RegExp(`${VARIATION_SELECTOR_100}\\d+${VARIATION_SELECTOR_100}|[^${VARIATION_SELECTOR_100}]+`, 'g'))
-    .flatMap(/** @returns {(Node | string)[]} */ str => {
-      if (!str.startsWith(VARIATION_SELECTOR_100)) return [str];
-      return map.get(str);
-    })
+    .match(
+      new RegExp(
+        `${VARIATION_SELECTOR_100}\\d+${VARIATION_SELECTOR_100}|[^${VARIATION_SELECTOR_100}]+`,
+        "g"
+      )
+    )
+    .flatMap(
+      /** @returns {(Node | string)[]} */ (str) => {
+        if (!str.startsWith(VARIATION_SELECTOR_100)) return [str];
+        return map.get(str);
+      }
+    );
 }
