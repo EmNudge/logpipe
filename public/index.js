@@ -1,7 +1,8 @@
 import { highlightText } from "./highlight.js";
 import { $, $$, cloneTemplate, isInView } from "./lib.js";
+import './contextmenu.js';
 
-/** @typedef {{ input: string, date: number }} CliInput */
+/** @typedef {{ input: string, date: number, id: string }} CliInput */
 
 /** @type {CliInput[]} */
 const logs = [];
@@ -94,10 +95,12 @@ function maybeAddTag(logEl) {
 }
 
 /** @param {CliInput} cliInput */
-function getLogEl({ input, date }) {
+function getLogEl({ input, date, id }) {
   const logEl = cloneTemplate(".log");
   logEl.append(...highlightText(input));
   maybeAddTag(logEl);
+
+  logEl.setAttribute("data-id", id);
   logEl.setAttribute(
     "data-date",
     new Date(date).toLocaleDateString("en-US", {
