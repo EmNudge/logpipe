@@ -3,6 +3,16 @@ import { $ } from "./lib.js";
 const logContainer = $(".container");
 const contextMenu = $(".contextmenu");
 
+const copyNotifEl = /** @type {HTMLElement & { [key: string]: () => Promise<void> }} */($(".copy-notif"));
+/** @param {string} text @param {string} desc */
+const copyText = async (text, desc) => {
+  await copyNotifEl.hide();
+  copyNotifEl.querySelector('.copy-label').textContent = desc;
+
+  await navigator.clipboard.writeText(text);
+  copyNotifEl.toast();
+}
+
 /** @type {HTMLElement | undefined} */
 let selectedLog;
 
@@ -22,7 +32,6 @@ const closeContextMenu = () => {
 };
 
 document.addEventListener("click", (e) => {
-  console.log(e.target);
   if (!contextMenu.contains(e.target)) {
     closeContextMenu();
   }
@@ -37,14 +46,11 @@ contextMenu.addEventListener("sl-select", async (e) => {
   }
 
   if (action === "copy-log") {
-    const text = selectedLog.textContent;
-    await navigator.clipboard.writeText(text);
+    copyText(selectedLog.textContent, 'log contents')
   } else if (action === "copy-date") {
-    const { date } = selectedLog.dataset;
-    await navigator.clipboard.writeText(date);
+    copyText(selectedLog.dataset.date, 'log date')
   } else if (action === "copy-id") {
-    const { id } = selectedLog.dataset;
-    await navigator.clipboard.writeText(id);
+    copyText(selectedLog.dataset.id, 'log ID')
   } else {
     const { id } = selectedLog.dataset;
     console.log("attempt to jump to", id);
