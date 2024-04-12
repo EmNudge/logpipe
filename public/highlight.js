@@ -153,35 +153,6 @@ function replaceDate(text, getReplacement) {
  * Highlights some text based off of various heuristics.
  * Returns html as a string
  *
- * @param {string} text text to transform
- * @param {(...els: HTMLElement[]) => string} getReplacement function for inserting replacements.
- * @returns {string} html
- */
-function replaceTags(text, getReplacement) {
-  return (
-    text
-      .replace(/\d+[-\/]\d+[-\/]\d+ \d+:\d+:\d+(?:[\.,]\d+)?/g, (m) => {
-        return getReplacement(getSpan("date", m));
-      })
-      // parse ISO date
-      .replace(/\S+/g, (m) => {
-        const dateObj = new Date(m);
-        if (Number.isNaN(dateObj.valueOf())) {
-          return m;
-        }
-        if (dateObj.toISOString() === m) {
-          return getReplacement(getSpan("date", m));
-        }
-
-        return m;
-      })
-  );
-}
-
-/**
- * Highlights some text based off of various heuristics.
- * Returns html as a string
- *
  * @param {string} text
  * @returns {(string | Node)[]} html
  */
@@ -214,7 +185,7 @@ export function highlightText(text) {
       );
     })
     // parse [TAG] indicators
-    .replace(/\[[^\[\]]+\]|^warn\b|^info\b|^error\b/gi, (m) => {
+    .replace(/\[[^\[\]]+\]|^info\b|^warn\b|^error\b|^debug\b|^trace\b/gi, (m) => {
       return getReplacement(getSpan("tag", m));
     })
     // parse file
@@ -234,8 +205,15 @@ export function highlightText(text) {
     .replace(/\b\d+\.\d+\.\d+\.\d+\b/g, (m) => {
       return getReplacement(getSpan("ip", m));
     })
+    .replace(/\b(?:GET|POST|PUT|PATCH|DELETE)\b/g, (m) => {
+      return getReplacement(getSpan("http-method http-method-" + m.toLowerCase(), m));
+    })
+    // parse keywords
+    .replace(/\b(?:true|false|null|undefined)\b/gi, (m) => {
+      return getReplacement(getSpan("keyword", m));
+    })
     // parse errors
-    .replace(/\berror\b|\bfail(?:ure|ed)\b/gi, (m) => {
+    .replace(/\b(?:error|fail(?:ure|ed))\b/gi, (m) => {
       return getReplacement(getSpan("error", m));
     });
 

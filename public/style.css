@@ -97,8 +97,28 @@ header {
   .file {
     color: #fff3ae;
   }
-  .error {
+  .error, .keyword {
     color: rgb(255, 98, 98);
+  }
+  .keyword {
+    font-style: italic;
+  }
+
+  .http-method  {
+    padding: 0 4px;
+
+    &.http-method-get {
+      background-color: #318331;
+    }
+    &.http-method-post {
+      background-color: #8f5e14;
+    }
+    &.http-method-patch, &.http-method-put {
+      background-color: #4d4d89;
+    }
+    &.http-method-delete {
+      background: #8d2626;
+    }
   }
 
   /* ANSI escape sequences */
