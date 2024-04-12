@@ -1,4 +1,4 @@
-/** @param {(log: { date: number, input: string }[]) => void} func */
+/** @param {(log: { date: number, input: string, id: string }[]) => void} func */
 export function startEmitter(func) {
   let count = 0;
 
@@ -23,11 +23,17 @@ export function startEmitter(func) {
         2
       ),
     ],
-    () => ["Debug received POST, GET, PATCH, PUT, and DELETE from 192.168.1.1 (somehow)"],
+    () => [
+      "Debug received POST, GET, PATCH, PUT, and DELETE from 192.168.1.1 (somehow)",
+    ],
   ];
 
   const getBranch = () => branches[(branches.length * Math.random()) | 0]();
-  const getLog = () => ({ input: getBranch().join(" "), date: Date.now() });
+  const getLog = () => ({
+    input: getBranch().join(" "),
+    date: Date.now(),
+    id: String(count++),
+  });
 
   func(Array(10).fill().map(getLog));
 
