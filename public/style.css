@@ -38,6 +38,7 @@ header {
 .container {
   overflow-y: auto;
   height: 400px;
+  color: #d3d3d3;
 }
 .input-container {
   position: relative;
