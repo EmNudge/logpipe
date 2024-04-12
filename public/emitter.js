@@ -10,11 +10,6 @@ export function startEmitter(func) {
     () => ["[INFO] /opt/file_thing.sock:019 | all systems go"],
     () => [
       "on http://localhost:8080 (127.0.0.1) someone cool made a GET request (source: file_thing.js:32)",
-      {
-        a: 1,
-        b: 2,
-        c: Math.random() * 50,
-      },
     ],
     () => [
       "stringified",
@@ -28,11 +23,11 @@ export function startEmitter(func) {
         2
       ),
     ],
-    () => ["server caught error!"],
+    () => ["Debug received POST, GET, PATCH, PUT, and DELETE from 192.168.1.1 (somehow)"],
   ];
 
   const getBranch = () => branches[(branches.length * Math.random()) | 0]();
-  const getLog = () => ({ input: getBranch().join(' '), date: Date.now() });
+  const getLog = () => ({ input: getBranch().join(" "), date: Date.now() });
 
   func(Array(10).fill().map(getLog));
 
