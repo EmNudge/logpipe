@@ -1,7 +1,6 @@
 html {
   font-family: var(--sl-font-sans, monospace);
   background-color: var(--sl-color-neutral-50, #111111);
-  color: white;
 
   display: flex;
   justify-content: center;
@@ -64,6 +63,12 @@ header {
   border-radius: var(--sl-border-radius-medium, 4px);
   white-space: pre-wrap;
 
+  @media (prefers-color-scheme: light) {
+    & {
+      background: var(--sl-color-neutral-800);
+    }
+  }
+
   &:focus, &.selected {
     background-color: var(--sl-color-primary-100);
     outline: none;
@@ -72,6 +77,13 @@ header {
       content: attr(data-date);
       float: right;
       opacity: 0.5;
+    }
+  }
+
+
+  @media (prefers-color-scheme: light) {
+    &:focus, &.selected {
+      background-color: var(--sl-color-primary-900);
     }
   }
 
