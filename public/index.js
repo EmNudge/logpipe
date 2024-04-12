@@ -2,6 +2,7 @@ import { highlightText } from "./highlight.js";
 import { $, $$, cloneTemplate, isInView } from "./lib.js";
 import { applyFilter, setFilter } from "./filter.js";
 import './contextmenu.js';
+import './command-palette.js';
 
 /** @typedef {{ input: string, date: number, id: string }} CliInput */
 
