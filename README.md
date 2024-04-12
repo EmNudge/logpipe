@@ -2,7 +2,8 @@
 
 *Get clarity on development logs*
 
-<video src="https://github.com/EmNudge/logpipe/assets/24513691/0115d249-0fa3-4e4a-9a38-68a45fd854c6"></video>
+<video src="https://github.com/EmNudge/logpipe/assets/24513691/906c3e92-85dc-439b-8575-0d033150d3d6"></video>
+
 
 See it in action in [this online demo](https://logpipe-demo.emnudge.dev/)!
 
