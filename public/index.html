@@ -49,15 +49,24 @@
     <strong>Copied <span class="copy-label"></span> to clipboard</strong>
   </sl-alert>
 
+  <sl-dialog class="command-palette" label="Command Palette">
+    <form class="palette-form">
+      <sl-input class="palette-filter" autofocus placeholder="Search"></sl-input>
+      <sl-menu>
+        <sl-menu-item value="set-title">Set Title</sl-menu-item>
+      </sl-menu>
+    </form>
+
+    <form class="hide title-form">
+      <sl-input autofocus placeholder="New page title"></sl-input>
+    </form>
+    </div>
+  </sl-dialog>
+
   <!-- templates -->
   <div class="template log" tabindex="0"></div>
-  <sl-badge 
-    class="template badge"
-    variant="neutral" 
-    tabindex="0" 
-    role="button" 
-    aria-pressed="false"
-  ></sl-badge>
+  <sl-badge class="template badge" variant="neutral" tabindex="0" role="button" aria-pressed="false">
+  </sl-badge>
 </body>
 
 </html>

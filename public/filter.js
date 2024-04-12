@@ -2,6 +2,8 @@ import { $, $$ } from "./lib.js";
 
 /** @typedef {{ input: string, date: number, id: string }} CliInput */
 
+const filterInputEl = /** @type {HTMLInputElement} */ ($("sl-input.filter"));
+
 let filterText = "";
 let filterItemsCount = 0;
 
@@ -38,14 +40,17 @@ export const setFilter = (newText) => {
     : "";
 };
 
-{
-  // apply filters
-  const filterInput = /** @type {HTMLInputElement} */ ($(".filter"));
-  filterInput.addEventListener("input", () => {
-    const filter = filterInput.value;
-    for (const logEl of $$(".container .log")) {
-      logEl.style.display = logEl.textContent.includes(filter) ? "" : "none";
-    }
-    setFilter(filter);
-  });
-}
+filterInputEl.addEventListener("input", () => {
+  const filter = filterInputEl.value;
+  for (const logEl of $$(".container .log")) {
+    logEl.style.display = logEl.textContent.includes(filter) ? "" : "none";
+  }
+  setFilter(filter);
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key !== '/' || e.metaKey || document.activeElement === filterInputEl) return;
+
+  filterInputEl.focus();
+  e.preventDefault();
+});
