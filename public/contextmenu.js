@@ -1,3 +1,4 @@
+import { setFilter } from "./filter.js";
 import { $ } from "./lib.js";
 
 const logContainer = $(".container");
@@ -63,8 +64,8 @@ contextMenu.addEventListener(
     } else if (action === "copy-id") {
       copyText(selectedLog.dataset.id, "log ID");
     } else {
-      const { id } = selectedLog.dataset;
-      console.log("attempt to jump to", id);
+      setFilter('');
+      selectedLog.scrollIntoView();
     }
 
     contextMenu.classList.remove("show");
