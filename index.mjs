@@ -5,7 +5,7 @@ import fs from "fs/promises";
 import { join } from "path";
 import { fileURLToPath } from "url";
 
-/** @typedef {{ input: string, date: number }} CliInput */
+/** @typedef {{ input: string, date: number, id: string }} CliInput */
 
 /** @type {CliInput[]} */
 const lines = [];
@@ -17,6 +17,7 @@ process.stdin.on("data", (data) => {
   /** @type {string} */
   const input = data.toString();
   const date = Date.now();
+  const id = String(lines.length);
 
   /** @type {CliInput[]} */
   const newLines = [];
@@ -25,9 +26,9 @@ process.stdin.on("data", (data) => {
     const curWhitespace = line.match(/^\s+/)?.[0].length;
     if ((curWhitespace > prevWhitespace || line === "}") && newLines.length) {
       const { input } = newLines.pop();
-      newLines.push({ input: [input, line].join("\n"), date });
+      newLines.push({ input: [input, line].join("\n"), date, id });
     } else {
-      newLines.push({ input: line, date });
+      newLines.push({ input: line, date, id });
     }
   }
 
