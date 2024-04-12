@@ -1,17 +1,22 @@
+import { setFilter } from "./filter.js";
 import { $ } from "./lib.js";
 
 const logContainer = $(".container");
 const contextMenu = $(".contextmenu");
 
-const copyNotifEl = /** @type {HTMLElement & { [key: string]: () => Promise<void> }} */($(".copy-notif"));
+const copyNotifEl =
+  /** @type {HTMLElement & { [key: string]: () => Promise<void> }} */ (
+    $(".copy-notif")
+  );
+
 /** @param {string} text @param {string} desc */
 const copyText = async (text, desc) => {
   await copyNotifEl.hide();
-  copyNotifEl.querySelector('.copy-label').textContent = desc;
+  copyNotifEl.querySelector(".copy-label").textContent = desc;
 
   await navigator.clipboard.writeText(text);
   copyNotifEl.toast();
-}
+};
 
 /** @type {HTMLElement | undefined} */
 let selectedLog;
@@ -31,33 +36,41 @@ const closeContextMenu = () => {
   selectedLog = undefined;
 };
 
-document.addEventListener("click", (e) => {
-  if (!contextMenu.contains(e.target)) {
-    closeContextMenu();
+document.addEventListener(
+  "click",
+  (/** @type {Event & { target: Element }} e */ e) => {
+    if (!contextMenu.contains(e.target)) {
+      closeContextMenu();
+    }
   }
-});
+);
 
-contextMenu.addEventListener("sl-select", async (e) => {
-  /** @type {'copy-log' | 'copy-id' | 'copy-date' | 'jump'} */
-  const action = e.detail.item.value;
+contextMenu.addEventListener(
+  "sl-select",
+  async (/** @type {Event & { detail: any }} e */ e) => {
+    /** @type {'copy-log' | 'copy-id' | 'copy-date' | 'jump'} */
+    const action = e.detail.item.value;
 
-  if (!selectedLog) {
-    throw new Error(`could not perform action ${action} on undefined element`);
+    if (!selectedLog) {
+      throw new Error(
+        `could not perform action ${action} on undefined element`
+      );
+    }
+
+    if (action === "copy-log") {
+      copyText(selectedLog.textContent, "log contents");
+    } else if (action === "copy-date") {
+      copyText(selectedLog.dataset.date, "log date");
+    } else if (action === "copy-id") {
+      copyText(selectedLog.dataset.id, "log ID");
+    } else {
+      setFilter('');
+      selectedLog.scrollIntoView();
+    }
+
+    contextMenu.classList.remove("show");
   }
-
-  if (action === "copy-log") {
-    copyText(selectedLog.textContent, 'log contents')
-  } else if (action === "copy-date") {
-    copyText(selectedLog.dataset.date, 'log date')
-  } else if (action === "copy-id") {
-    copyText(selectedLog.dataset.id, 'log ID')
-  } else {
-    const { id } = selectedLog.dataset;
-    console.log("attempt to jump to", id);
-  }
-
-  contextMenu.classList.remove("show");
-});
+);
 
 logContainer.addEventListener("contextmenu", (e) => {
   // ignore any modifiers to allow browser-native debugging
