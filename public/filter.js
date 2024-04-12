@@ -22,17 +22,14 @@ export const applyFilter = (input, logEl) => {
 export const setFilter = (newText) => {
   filterText = newText;
 
-  {
-    // update filtered items
-    let filterCount = 0;
-    const filter = filterText.toLowerCase();
-    for (const logEl of $$(".container .log")) {
-      const shouldDisplay = logEl.textContent.toLowerCase().includes(filter);
-      if (shouldDisplay) filterCount++;
-      logEl.style.display = shouldDisplay ? "" : "none";
-    }
-    filterItemsCount = filterCount;
+  let filterCount = 0;
+  const filter = filterText.toLowerCase();
+  for (const logEl of $$(".container .log")) {
+    const shouldDisplay = logEl.textContent.toLowerCase().includes(filter);
+    if (shouldDisplay) filterCount++;
+    logEl.style.display = shouldDisplay ? "" : "none";
   }
+  filterItemsCount = filterCount;
 
   // set filter log count text
   $(".log-count .filtered").textContent = filterText.length
