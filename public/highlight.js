@@ -226,7 +226,7 @@ export function highlightText(text) {
       return getReplacement(getSpan("string", m));
     })
     // parse numbers
-    .replace(new RegExp(String.raw`${VARIATION_SELECTOR_100}?\b(?:-|\+)?\d+(?:\.\d+)?\b`, 'g'), (m) => {
+    .replace(new RegExp(String.raw`(?:${VARIATION_SELECTOR_100})?\b(?:-|\+)?\d+(?:\.\d+)?\b`, 'g'), (m) => {
       if (m.startsWith(VARIATION_SELECTOR_100)) return m;
       return getReplacement(getSpan("number", m));
     })
