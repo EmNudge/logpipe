@@ -50,25 +50,26 @@ const extractTagGroups = (filterText) => {
  * @param {HTMLElement} logEl
  */
 const matchTags = (tagGroups, logEl) => {
-  return tagGroups
-    .map((tagGroup) => {
-      const selector = tagGroup.map(({ tag }) => `span.${tag}`).join(", ");
-
-      let elements = /** @type {HTMLSpanElement[]} */ ([
-        ...logEl.querySelectorAll(selector),
-      ]);
-
+  // all groups must match for it to match log
+  for (const tagGroup of tagGroups) {
+    // if any tag in group matches, this group is a match
+    const matches = (() => {
       for (const { tag, textValue } of tagGroup) {
-        if (!textValue) continue;
-        elements = elements.filter((el) => {
-          if (!el.classList.contains(tag)) return true;
-          return el.textContent === textValue;
-        });
-      }
+        const elements = logEl.querySelectorAll(`span.${tag}`);
+        if (!elements.length) continue;
 
-      return elements.length;
-    })
-    .every((len) => len > 0);
+        if (!textValue) return true;
+        
+        const oneMatch = [...elements].some(el => el.textContent === textValue);
+        if (oneMatch) return true;
+      }
+      return false;
+    })();
+
+    if (!matches) return false;
+  }
+
+  return true;
 };
 
 /**
