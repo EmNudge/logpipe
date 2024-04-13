@@ -26,23 +26,23 @@ export const setFilter = (newText) => {
   let filterCount = logs.length;
   let filter = filterText.toLowerCase();
 
-  const SELECTOR_MATCH = /@@([\w,]+)/g;
+  const getSelector = () => /@@([\w,]+)(?:="((?:\\"|[^"])+)")?/g;
 
-  if (SELECTOR_MATCH.test(filter)) {
-    const tags = [...filter.matchAll(SELECTOR_MATCH)].map((m) => m[1]);
+  if (getSelector().test(filter)) {
+    const tagGroups = [...filter.matchAll(getSelector())]
+      .map(([_, tagList, textValue]) => {
+        const tags = tagList.split(/\s*,\s*/).filter((s) => s.length);
+        const selector = tags.map(tag => `span.${tag}`).join(', ')
+        return { selector, textValue }
+      });
+
     logs = logs.filter((logEl) => {
-      console.log(tags)
-      const shouldDisplay = tags
-        .map((tagGroup) => {
-          const elements = logEl.querySelectorAll(
-            tagGroup
-              .split(/\s*,\s*/)
-              // remove empty strings from trailing commas
-              .filter((s) => s.length)
-              .map((tag) => `span.${tag}`)
-              .join(",")
-          );
-          console.log(elements)
+      const shouldDisplay = tagGroups
+        .map(({ selector, textValue }) => {
+          let elements = [...logEl.querySelectorAll(selector)];
+          if (textValue) {
+            elements = elements.filter(el => el.textContent.toLowerCase().includes(textValue))
+          }
           return elements.length;
         })
         .every((len) => len > 0);
@@ -51,7 +51,7 @@ export const setFilter = (newText) => {
       logEl.style.display = shouldDisplay ? "" : "none";
       return shouldDisplay;
     });
-    filter = filter.replace(SELECTOR_MATCH, "").trim();
+    filter = filter.replace(getSelector(), "").trim();
   }
 
   if (filter) {
