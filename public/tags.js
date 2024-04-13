@@ -2,6 +2,8 @@ import { setFilter } from "./filter.js";
 import { $, $$, cloneTemplate } from "./lib.js";
 
 const tagsContainer = $(".tags");
+const tagsOverflowContainer = $(".tags-overflow");
+const tagsDialogContainer = $(".tags-dialog");
 
 const setFilterForTags = () => {
   const tagStrings = $$(".tags sl-badge")
@@ -55,5 +57,25 @@ export function maybeAddTag(logEl) {
     tagsSet.add(tagText);
     const tag = cloneTemplate(".badge", { textContent: tagText });
     tagsContainer.append(tag);
+    $('.view-tags-btn sl-badge').textContent = tagsContainer.children.length;
+  }
+
+  adjustTagWidth();
+}
+
+
+$('.view-tags-btn').addEventListener('click', () => {
+  $('.tags-dialog').show();
+})
+
+function adjustTagWidth() {
+  // if already open, ignore
+  if (!tagsOverflowContainer.classList.contains('hide')) return;
+
+  const tagsLength = tagsContainer.getBoundingClientRect().width;
+  const parentLength = tagsContainer.parentElement.getBoundingClientRect().width;
+  if (tagsLength > parentLength) {
+    tagsOverflowContainer.classList.remove('hide');
+    tagsDialogContainer.append(tagsContainer);
   }
 }

@@ -30,6 +30,7 @@ function logRandom() {
         "[Error(danger)]",
         "An error occurred [42] seconds ago due to a false value when expecting a true value"
       ),
+      () => console.log(`tag: [${Math.random().toString(32).slice(2)}]`),
     () => console.log('failed to throw an error. This is surprisingly not a good thing.'),
     () => console.log("[INFO] /opt/file_thing.sock:019 | all systems go"),
     () =>
