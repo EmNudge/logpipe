@@ -186,6 +186,8 @@ export function highlightText(text) {
     })
     // parse [TAG] indicators
     .replace(/\[[^\[\]]+\]|^info\b|^warn\b|^error\b|^debug\b|^trace\b/gi, (m) => {
+      // don't parse numbers and IPs as tags
+      if (/\[[\d\.:]+\]/.test(m)) return m;
       return getReplacement(getSpan("tag", m));
     })
     // parse file
