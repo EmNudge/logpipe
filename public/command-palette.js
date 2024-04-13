@@ -11,7 +11,7 @@ const showForm = (formEl, title = "Command Palette") => {
 
   if (commandPaletteEl.open) {
     // @ts-ignore
-    formEl.querySelector('sl-input, sl-button')?.focus();
+    formEl.querySelector("sl-input, sl-button")?.focus();
   }
 };
 
@@ -69,6 +69,19 @@ inputEl.addEventListener("input", () => {
       .includes(filterText);
     // @ts-ignore
     menuItem.style.display = shouldDisplay ? "" : "none";
+  }
+});
+inputEl.addEventListener("keydown", (e) => {
+  if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+
+  const items = [...listEl.querySelectorAll("sl-menu-item")];
+  if (e.key === "ArrowUp") items.reverse();
+  
+  for (const menuItem of items) {
+    if (menuItem.classList.contains("hide")) continue;
+    // @ts-ignore
+    menuItem.focus();
+    return;
   }
 });
 
