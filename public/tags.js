@@ -5,12 +5,22 @@ const tagsContainer = $(".tags");
 const tagsOverflowContainer = $(".tags-overflow");
 const tagsDialogContainer = $(".tags-dialog");
 
+const viewTagsButton = $(".view-tags-btn");
+const dialogEl = /** @type {HTMLElement & { show: () => Promise<void> }}*/ (
+  $(".tags-dialog")
+);
+const tagsCount = $(".view-tags-btn sl-badge");
+
+viewTagsButton.addEventListener("click", () => {
+  dialogEl.show();
+});
+
 const setFilterForTags = () => {
   const tagStrings = $$(".tags sl-badge")
     .filter((el) => el.getAttribute("aria-pressed") === "true")
     .map((el) => `tag="${el.textContent}"`);
-  
-  const tagGroup = tagStrings.length ? `@@${tagStrings.join(',')}` : '';
+
+  const tagGroup = tagStrings.length ? `@@${tagStrings.join(",")}` : "";
   setFilter(tagGroup, true, false);
 };
 
@@ -57,25 +67,20 @@ export function maybeAddTag(logEl) {
     tagsSet.add(tagText);
     const tag = cloneTemplate(".badge", { textContent: tagText });
     tagsContainer.append(tag);
-    $('.view-tags-btn sl-badge').textContent = tagsContainer.children.length;
+    tagsCount.textContent = String(tagsContainer.children.length);
   }
 
-  adjustTagWidth();
-}
-
-
-$('.view-tags-btn').addEventListener('click', () => {
-  $('.tags-dialog').show();
-})
-
-function adjustTagWidth() {
-  // if already open, ignore
-  if (!tagsOverflowContainer.classList.contains('hide')) return;
-
-  const tagsLength = tagsContainer.getBoundingClientRect().width;
-  const parentLength = tagsContainer.parentElement.getBoundingClientRect().width;
-  if (tagsLength > parentLength) {
-    tagsOverflowContainer.classList.remove('hide');
-    tagsDialogContainer.append(tagsContainer);
-  }
+  // wait a tick to check size
+  setTimeout(() => {
+    // move tags into overflow if the size is too large
+    if (tagsOverflowContainer.classList.contains("hide")) {
+      const tagsLength = tagsContainer.getBoundingClientRect().width;
+      const parentLength =
+        tagsContainer.parentElement.getBoundingClientRect().width;
+      if (tagsLength > parentLength - 100) {
+        tagsOverflowContainer.classList.remove("hide");
+        tagsDialogContainer.append(tagsContainer);
+      }
+    }
+  });
 }
