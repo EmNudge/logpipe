@@ -64,7 +64,7 @@ contextMenu.addEventListener(
     } else if (action === "copy-id") {
       copyText(selectedLog.dataset.id, "log ID");
     } else {
-      setFilter('');
+      setFilter('', true);
       selectedLog.scrollIntoView();
     }
 

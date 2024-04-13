@@ -8,40 +8,106 @@ let filterText = "";
 let filterItemsCount = 0;
 
 /**
+ * Syntax: \@@ (,<classname>[="<text>"])+
+ * e.g. `@@tag="[INFO]"`
+ * e.g. `@@tag,number,string`
+ * e.g. `@@tag="[INFO]",number`
+ */
+const getSelector = () =>
+  new RegExp(
+    [
+      /@@/,
+      /\w+(?:="((?:\\"|[^"])+)")?/, // match <classname> with optional ="<string>"
+      /(?:,\w+(?:="((?:\\"|[^"])+)")?)*/, // optionally match multiple instances separated by comma
+    ]
+      .map((r) => r.source)
+      .join(""),
+    "g"
+  );
+
+/** @param {string} filterText */
+const extractTags = (filterText) => {
+  return [...filterText.matchAll(getSelector())].map(
+    ([_, tagList, textValue]) => {
+      const tags = tagList.split(/\s*,\s*/).filter((s) => s.length);
+      const selector = tags.map((tag) => `span.${tag}`).join(", ");
+      return { selector, textValue };
+    }
+  );
+};
+
+/**
+ * Match tags against input. Tags work on HTML DOM instead of text.
+ *
+ * @param {{ selector: string, textValue: string }[]} tags
+ * @param {HTMLElement} logEl
+ */
+const matchTags = (tags, logEl) => {
+  return tags
+    .map(({ selector, textValue }) => {
+      let elements = [...logEl.querySelectorAll(selector)];
+      if (textValue) {
+        elements = elements.filter((el) =>
+          el.textContent.toLowerCase().includes(textValue)
+        );
+      }
+      return elements.length;
+    })
+    .every((len) => len > 0);
+};
+
+/**
  * Applies filter to element based off of input content
  *
  * @param {string} input
  * @param {HTMLElement} logEl */
 export const applyFilter = (input, logEl) => {
+  let filter = filterText;
+  const tags = extractTags(filterText);
+  if (tags) {
+    if (!matchTags(tags, logEl)) {
+      logEl.style.display = "none";
+      return;
+    }
+
+    filter = filter.replace(getSelector(), "").trim();
+  }
+
   const shouldDisplay = input.includes(filterText);
   logEl.style.display = shouldDisplay ? "" : "none";
   if (shouldDisplay) filterItemsCount++;
 };
 
-/** @param {string} newText */
-export const setFilter = (newText) => {
+/**
+ * @param {string} newText
+ * @param {boolean} changeInput
+ */
+export const setFilter = (newText, changeInput = false) => {
   filterText = newText;
+  if (changeInput) filterInputEl.value = newText;
 
   let logs = $$(".container .log");
   let filterCount = logs.length;
   let filter = filterText.toLowerCase();
 
-  const getSelector = () => /@@([\w,]+)(?:="((?:\\"|[^"])+)")?/g;
+  if (!filter.length) {
+    for (const logEl of logs) {
+      logEl.style.display = "";
+    }
+    return;
+  }
 
   if (getSelector().test(filter)) {
-    const tagGroups = [...filter.matchAll(getSelector())]
-      .map(([_, tagList, textValue]) => {
-        const tags = tagList.split(/\s*,\s*/).filter((s) => s.length);
-        const selector = tags.map(tag => `span.${tag}`).join(', ')
-        return { selector, textValue }
-      });
+    const tagGroups = extractTags(filter);
 
     logs = logs.filter((logEl) => {
       const shouldDisplay = tagGroups
         .map(({ selector, textValue }) => {
           let elements = [...logEl.querySelectorAll(selector)];
           if (textValue) {
-            elements = elements.filter(el => el.textContent.toLowerCase().includes(textValue))
+            elements = elements.filter((el) =>
+              el.textContent.toLowerCase().includes(textValue)
+            );
           }
           return elements.length;
         })
