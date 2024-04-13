@@ -8,12 +8,16 @@ const showForm = (formEl, title = "Command Palette") => {
   }
   formEl.classList.remove("hide");
   commandPaletteEl.setAttribute("label", title);
+
+  if (commandPaletteEl.open) {
+    // @ts-ignore
+    formEl.querySelector("sl-input, sl-button")?.focus();
+  }
 };
 
-const closeCommandPalette = async () => {
-  await commandPaletteEl.hide();
+commandPaletteEl.addEventListener("sl-after-hide", () => {
   showForm(rootFormEl);
-};
+});
 
 /** @type {HTMLInputElement} */
 const inputEl = commandPaletteEl.querySelector("sl-input.palette-filter");
@@ -27,7 +31,9 @@ rootFormEl.addEventListener("submit", (e) => {
   for (const menuItem of listEl.querySelectorAll("sl-menu-item")) {
     if (menuItem.classList.contains("hide")) continue;
 
-    listEl.dispatchEvent(new CustomEvent("sl-select", { detail: { item: menuItem } }));
+    listEl.dispatchEvent(
+      new CustomEvent("sl-select", { detail: { item: menuItem } })
+    );
     break;
   }
 });
@@ -40,7 +46,13 @@ setTitleFormEl.addEventListener("submit", (e) => {
   const inputEl = setTitleFormEl.querySelector("sl-input");
   document.querySelector("main > h1").textContent = inputEl.value;
   document.title = inputEl.value;
-  closeCommandPalette();
+  commandPaletteEl.hide();
+});
+
+const helpFormEl = commandPaletteEl.querySelector("form.help-menu");
+helpFormEl.addEventListener("submit", (e) => {
+  e.preventDefault();
+  commandPaletteEl.hide();
 });
 
 document.body.addEventListener("keydown", (e) => {
@@ -51,24 +63,38 @@ document.body.addEventListener("keydown", (e) => {
 
 inputEl.addEventListener("input", () => {
   const filterText = inputEl.value;
-  for (const menuItem of listEl.querySelectorAll('sl-menu-item')) {
-    const shouldDisplay = menuItem.textContent.toLowerCase().includes(filterText);
+  for (const menuItem of listEl.querySelectorAll("sl-menu-item")) {
+    const shouldDisplay = menuItem.textContent
+      .toLowerCase()
+      .includes(filterText);
     // @ts-ignore
-    menuItem.style.display = shouldDisplay ? '' : 'none';
+    menuItem.style.display = shouldDisplay ? "" : "none";
+  }
+});
+inputEl.addEventListener("keydown", (e) => {
+  if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+
+  const items = [...listEl.querySelectorAll("sl-menu-item")];
+  if (e.key === "ArrowUp") items.reverse();
+  
+  for (const menuItem of items) {
+    if (menuItem.classList.contains("hide")) continue;
+    // @ts-ignore
+    menuItem.focus();
+    return;
   }
 });
 
 listEl.addEventListener(
   "sl-select",
   (/** @type {Event & { detail: any }} e */ e) => {
-    /** @type {'set-title'} */
+    /** @type {'set-title' | 'help'} */
     const action = e.detail.item.value;
 
     if (action === "set-title") {
       showForm(setTitleFormEl, "Set Title");
-      /** @type {Element & { focus: () => Promise<void>}} */
-      const formInputEl = setTitleFormEl.querySelector("sl-input");
-      formInputEl.focus();
+    } else if (action === "help") {
+      showForm(helpFormEl, "Help Menu");
     }
   }
 );

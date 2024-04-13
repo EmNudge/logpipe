@@ -184,6 +184,10 @@ export function highlightText(text) {
         getSpan("value", value)
       );
     })
+    // parse IP addrs
+    .replace(/\b\d+\.\d+\.\d+\.\d+\b/g, (m) => {
+      return getReplacement(getSpan("ip", m));
+    })
     // parse [TAG] indicators
     .replace(/\[[^\[\]]+\]|^info\b|^warn\b|^error\b|^debug\b|^trace\b/gi, (m) => {
       // don't parse numbers and IPs as tags
@@ -202,10 +206,6 @@ export function highlightText(text) {
     .replace(new RegExp(String.raw`(?:${VARIATION_SELECTOR_100})?\b(?:-|\+)?\d+(?:\.\d+)?\b`, 'g'), (m) => {
       if (m.startsWith(VARIATION_SELECTOR_100)) return m;
       return getReplacement(getSpan("number", m));
-    })
-    // parse IP addrs
-    .replace(/\b\d+\.\d+\.\d+\.\d+\b/g, (m) => {
-      return getReplacement(getSpan("ip", m));
     })
     .replace(/\b(?:GET|POST|PUT|PATCH|DELETE)\b/g, (m) => {
       return getReplacement(getSpan("http-method http-method-" + m.toLowerCase(), m));
