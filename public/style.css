@@ -236,3 +236,21 @@ header {
     display: block;
   }
 }
+
+form.help-menu {
+  dt {
+    color: var(--sl-color-neutral-900);
+  }
+  dd {
+    color: var(--sl-color-neutral-700);
+  }
+  code {
+    background: var(--sl-color-neutral-300);
+    padding: var(--sl-spacing-2x-small) var(--sl-spacing-x-small);
+    border-radius: var(--sl-border-radius-small);
+  }
+  .form-footer {
+    display: flex;
+    justify-content: flex-end;
+  }
+}

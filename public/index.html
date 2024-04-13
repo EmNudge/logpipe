@@ -63,13 +63,54 @@
       <sl-input class="palette-filter" autofocus placeholder="Search"></sl-input>
       <sl-menu>
         <sl-menu-item value="set-title">Set Title</sl-menu-item>
+        <sl-menu-item value="help">Help</sl-menu-item>
       </sl-menu>
     </form>
 
     <form class="hide title-form">
       <sl-input autofocus placeholder="New page title"></sl-input>
     </form>
-    </div>
+    <form class="hide help-menu">
+      <dl>
+        <dt>My logs aren't showing!</dt>
+        <dd>
+          <p>Your logs may be outputting to stderr. Try using bash redirection.</p>
+          <p>
+            <code>my-program <strong>2>&1</strong> | logpipe</code>
+          </p>
+        </dd>
+        
+        <dt>How do I copy a log?</dt>
+        <dd>
+          <p>Try out the right-click menu! Right click a log for a list of options.</p>
+        </dd>
+
+        <dt>How do I jump to a log's source location?</dt>
+        <dd>
+          <p>Also in the right-click menu!</p>
+        </dd>
+
+        <dt>How do I search for all URLs?</dt>
+        <dd>
+          <p>Use the logpipe query language!</p>
+          <p>
+            <code>@@url</code>
+          </p>
+        </dd>
+
+        <dt>What are the supported query types?</dt>
+        <dd>
+          <p>Here is a query which includes all of them!</p>
+          <p>
+            <code class="multiline">@@string,number,tag,url,ip,error,file,http-method,key,value,keyword</code>
+          </p>
+        </dd>
+      </dl>
+
+      <div class="form-footer">
+        <sl-button type="submit">Got It!</sl-button>
+      </div>
+    </form>
   </sl-dialog>
 
   <!-- templates -->
