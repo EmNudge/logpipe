@@ -8,8 +8,12 @@ Checkout [the docs](https://logpipe.emnudge.dev/) or see it in action in [this o
 
 ## Installation
 
+There is no build step in this codebase, so you can install it directly from git if you want.
+
 ```sh
 npm i -g https://github.com/EmNudge/logpipe.git
+# or
+npm i -g @emnudge/logpipe
 ```
 
 ## Usage

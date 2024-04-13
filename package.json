@@ -1,5 +1,5 @@
 {
-  "name": "logpipe",
+  "name": "@emnudge/logpipe",
   "version": "0.0.1",
   "bin": {
     "logpipe": "./index.mjs"
