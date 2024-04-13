@@ -8,7 +8,6 @@ tagsContainer.addEventListener("click", (e) => {
   if (!(tagEl instanceof HTMLElement)) return;
   if (tagEl.tagName !== "SL-BADGE") return;
 
-  const filterInput = /** @type {HTMLInputElement} */ ($(".filter"));
   if (tagEl.getAttribute("variant") === "neutral") {
     for (const tag of $$(".tags sl-badge")) {
       tag.setAttribute("variant", "neutral");
@@ -16,25 +15,22 @@ tagsContainer.addEventListener("click", (e) => {
     }
     tagEl.setAttribute("variant", "primary");
     tagEl.setAttribute("aria-pressed", "true");
-    filterInput.value = `@@tag="${tagEl.textContent}"`;
-    setFilter(tagEl.textContent);
+    setFilter(`@@tag="${tagEl.textContent}"`, true);
   } else {
     tagEl.setAttribute("variant", "neutral");
     tagEl.setAttribute("aria-pressed", "true");
-    filterInput.value = "";
-    setFilter("");
+    setFilter("", true);
   }
 });
-
 
 /** @type {Set<string>} */
 const tagsSet = new Set();
 
-/** 
+/**
  * Finds all tag elements in a log.
  * Only adds a new tag if it is not already present.
- * 
- * @param {HTMLElement} logEl 
+ *
+ * @param {HTMLElement} logEl
  */
 export function maybeAddTag(logEl) {
   const newTags = [...logEl.querySelectorAll(".tag")]

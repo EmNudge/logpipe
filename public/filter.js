@@ -25,32 +25,48 @@ const getSelector = () =>
     "g"
   );
 
-/** @param {string} filterText */
-const extractTags = (filterText) => {
-  return [...filterText.matchAll(getSelector())].map(
-    ([_, tagList, textValue]) => {
-      const tags = tagList.split(/\s*,\s*/).filter((s) => s.length);
-      const selector = tags.map((tag) => `span.${tag}`).join(", ");
-      return { selector, textValue };
-    }
-  );
+/** @typedef {{ tag: string; textValue?: string; }[]} TagGroup */
+
+/**
+ * @param {string} filterText
+ * @returns {TagGroup[]}
+ */
+const extractTagGroups = (filterText) => {
+  return [...filterText.matchAll(getSelector())].map(([match]) => {
+    return match
+      .slice(2)
+      .split(",")
+      .map((tagText) => {
+        const [tag, textValue] = tagText.split("=");
+        return { tag, textValue: textValue?.slice(1, -1) };
+      });
+  });
 };
 
 /**
  * Match tags against input. Tags work on HTML DOM instead of text.
  *
- * @param {{ selector: string, textValue: string }[]} tags
+ * @param {TagGroup[]} tagGroups
  * @param {HTMLElement} logEl
  */
-const matchTags = (tags, logEl) => {
-  return tags
-    .map(({ selector, textValue }) => {
-      let elements = [...logEl.querySelectorAll(selector)];
-      if (textValue) {
-        elements = elements.filter((el) =>
-          el.textContent.toLowerCase().includes(textValue)
-        );
+const matchTags = (tagGroups, logEl) => {
+  return tagGroups
+    .map((tagGroup) => {
+      const selector = tagGroup.map(({ tag }) => `span.${tag}`).join(", ");
+
+      let elements = /** @type {HTMLSpanElement[]} */ ([
+        ...logEl.querySelectorAll(selector),
+      ]);
+
+      for (const { tag, textValue } of tagGroup) {
+        if (!textValue) continue;
+        elements = elements.filter((el) => {
+          if (!el.classList.contains(tag)) return true;
+          console.log(el.textContent, textValue)
+          return el.textContent === textValue;
+        });
       }
+
       return elements.length;
     })
     .every((len) => len > 0);
@@ -63,8 +79,8 @@ const matchTags = (tags, logEl) => {
  * @param {HTMLElement} logEl */
 export const applyFilter = (input, logEl) => {
   let filter = filterText;
-  const tags = extractTags(filterText);
-  if (tags) {
+  const tags = extractTagGroups(filterText);
+  if (tags.length) {
     if (!matchTags(tags, logEl)) {
       logEl.style.display = "none";
       return;
@@ -88,7 +104,7 @@ export const setFilter = (newText, changeInput = false) => {
 
   let logs = $$(".container .log");
   let filterCount = logs.length;
-  let filter = filterText.toLowerCase();
+  let filter = filterText;
 
   if (!filter.length) {
     for (const logEl of logs) {
@@ -98,20 +114,10 @@ export const setFilter = (newText, changeInput = false) => {
   }
 
   if (getSelector().test(filter)) {
-    const tagGroups = extractTags(filter);
+    const tagGroups = extractTagGroups(filter);
 
     logs = logs.filter((logEl) => {
-      const shouldDisplay = tagGroups
-        .map(({ selector, textValue }) => {
-          let elements = [...logEl.querySelectorAll(selector)];
-          if (textValue) {
-            elements = elements.filter((el) =>
-              el.textContent.toLowerCase().includes(textValue)
-            );
-          }
-          return elements.length;
-        })
-        .every((len) => len > 0);
+      const shouldDisplay = matchTags(tagGroups, logEl);
 
       if (!shouldDisplay) filterCount--;
       logEl.style.display = shouldDisplay ? "" : "none";
@@ -121,6 +127,7 @@ export const setFilter = (newText, changeInput = false) => {
   }
 
   if (filter) {
+    filter = filter.toLowerCase();
     for (const logEl of logs) {
       const shouldDisplay = logEl.textContent.toLowerCase().includes(filter);
       if (!shouldDisplay) filterCount--;
@@ -136,13 +143,7 @@ export const setFilter = (newText, changeInput = false) => {
     : "";
 };
 
-filterInputEl.addEventListener("input", () => {
-  const filter = filterInputEl.value;
-  for (const logEl of $$(".container .log")) {
-    logEl.style.display = logEl.textContent.includes(filter) ? "" : "none";
-  }
-  setFilter(filter);
-});
+filterInputEl.addEventListener("input", () => setFilter(filterInputEl.value));
 
 document.addEventListener("keydown", (e) => {
   if (e.key !== "/" || e.metaKey || document.activeElement === filterInputEl)
