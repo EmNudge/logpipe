@@ -9,7 +9,7 @@ const setFilterForTags = () => {
     .map((el) => `tag="${el.textContent}"`);
   
   const tagGroup = tagStrings.length ? `@@${tagStrings.join(',')}` : '';
-  setFilter(tagGroup, true);
+  setFilter(tagGroup, true, false);
 };
 
 tagsContainer.addEventListener("click", (e) => {

@@ -103,9 +103,14 @@ export const applyFilter = (logEl) => {
  * @param {string} newText
  * @param {boolean} changeInput
  */
-export const setFilter = (newText, changeInput = false) => {
+export const setFilter = (newText, changeInput = false, dispatchEvent = changeInput) => {
   filterText = newText;
-  if (changeInput) filterInputEl.value = newText;
+  if (changeInput) {
+    filterInputEl.value = newText;
+    if (dispatchEvent) {
+      filterInputEl.dispatchEvent(new KeyboardEvent('input'));
+    }
+  }
 
   let logs = $$(".container .log");
   let filterCount = logs.length;
