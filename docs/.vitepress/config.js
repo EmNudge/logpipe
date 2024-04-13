@@ -7,6 +7,7 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: "Guide", link: "/guide/quickstart" },
+      { text: "Github", link: "https://github.com/EmNudge/logpipe" },
       { text: "Demo", link: "https://logpipe-demo.emnudge.dev/" },
     ],
     sidebar: {
