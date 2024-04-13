@@ -1,6 +1,7 @@
 import { highlightText } from "./highlight.js";
-import { $, $$, cloneTemplate, isInView } from "./lib.js";
-import { applyFilter, setFilter } from "./filter.js";
+import { $, cloneTemplate, isInView } from "./lib.js";
+import { applyFilter } from "./filter.js";
+import { maybeAddTag } from "./tags.js";
 import './contextmenu.js';
 import './command-palette.js';
 
@@ -34,45 +35,6 @@ logContainer.addEventListener("scroll", (e) => {
   }
 });
 
-const tagsContainer = $(".tags");
-tagsContainer.addEventListener("click", (e) => {
-  const tagEl = e.target;
-  if (!(tagEl instanceof HTMLElement)) return;
-  if (tagEl.tagName !== "SL-BADGE") return;
-
-  const filterInput = /** @type {HTMLInputElement} */ ($(".filter"));
-  if (tagEl.getAttribute("variant") === "neutral") {
-    for (const tag of $$(".tags sl-badge")) {
-      tag.setAttribute("variant", "neutral");
-      tag.setAttribute("aria-pressed", "false");
-    }
-    tagEl.setAttribute("variant", "primary");
-    tagEl.setAttribute("aria-pressed", "true");
-    filterInput.value = tagEl.textContent;
-    setFilter(tagEl.textContent);
-  } else {
-    tagEl.setAttribute("variant", "neutral");
-    tagEl.setAttribute("aria-pressed", "true");
-    filterInput.value = "";
-    setFilter("");
-  }
-});
-
-/** @type {Set<string>} */
-const tagsSet = new Set();
-/** @param {HTMLElement} logEl */
-function maybeAddTag(logEl) {
-  const newTags = [...logEl.querySelectorAll(".tag")]
-    .map((el) => el.textContent)
-    .filter((tag) => !tagsSet.has(tag));
-
-  for (const tagText of newTags) {
-    tagsSet.add(tagText);
-    const tag = cloneTemplate(".badge", { textContent: tagText });
-    tagsContainer.append(tag);
-  }
-}
-
 /** @param {CliInput} cliInput */
 function getLogEl({ input, date, id }) {
   const logEl = cloneTemplate(".log");
@@ -89,7 +51,7 @@ function getLogEl({ input, date, id }) {
     })
   );
 
-  applyFilter(input, logEl);
+  applyFilter(logEl);
 
   return logEl;
 }
