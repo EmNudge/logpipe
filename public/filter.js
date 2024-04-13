@@ -62,7 +62,6 @@ const matchTags = (tagGroups, logEl) => {
         if (!textValue) continue;
         elements = elements.filter((el) => {
           if (!el.classList.contains(tag)) return true;
-          console.log(el.textContent, textValue)
           return el.textContent === textValue;
         });
       }
@@ -73,23 +72,28 @@ const matchTags = (tagGroups, logEl) => {
 };
 
 /**
- * Applies filter to element based off of input content
- *
- * @param {string} input
- * @param {HTMLElement} logEl */
-export const applyFilter = (input, logEl) => {
+ * Checks if log matches filter (based on global variable filterText)
+ * @param {HTMLElement} logEl DOM element for log
+ */
+const elMatchesFilter = (logEl) => {
   let filter = filterText;
+
   const tags = extractTagGroups(filterText);
   if (tags.length) {
-    if (!matchTags(tags, logEl)) {
-      logEl.style.display = "none";
-      return;
-    }
-
+    if (!matchTags(tags, logEl)) return false;
+    
     filter = filter.replace(getSelector(), "").trim();
+    if (!filter) return true;
   }
 
-  const shouldDisplay = input.includes(filterText);
+  return logEl.textContent.toLowerCase().includes(filterText.toLowerCase());
+};
+
+/**
+ * Applies filter to element based off of input content
+ * @param {HTMLElement} logEl */
+export const applyFilter = (logEl) => {
+  const shouldDisplay = elMatchesFilter(logEl);
   logEl.style.display = shouldDisplay ? "" : "none";
   if (shouldDisplay) filterItemsCount++;
 };
@@ -113,26 +117,11 @@ export const setFilter = (newText, changeInput = false) => {
     return;
   }
 
-  if (getSelector().test(filter)) {
-    const tagGroups = extractTagGroups(filter);
+  for (const logEl of logs) {
+    const shouldDisplay = elMatchesFilter(logEl);
 
-    logs = logs.filter((logEl) => {
-      const shouldDisplay = matchTags(tagGroups, logEl);
-
-      if (!shouldDisplay) filterCount--;
-      logEl.style.display = shouldDisplay ? "" : "none";
-      return shouldDisplay;
-    });
-    filter = filter.replace(getSelector(), "").trim();
-  }
-
-  if (filter) {
-    filter = filter.toLowerCase();
-    for (const logEl of logs) {
-      const shouldDisplay = logEl.textContent.toLowerCase().includes(filter);
-      if (!shouldDisplay) filterCount--;
-      logEl.style.display = shouldDisplay ? "" : "none";
-    }
+    if (!shouldDisplay) filterCount--;
+    logEl.style.display = shouldDisplay ? "" : "none";
   }
 
   filterItemsCount = filterCount;

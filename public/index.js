@@ -51,7 +51,7 @@ function getLogEl({ input, date, id }) {
     })
   );
 
-  applyFilter(input, logEl);
+  applyFilter(logEl);
 
   return logEl;
 }
