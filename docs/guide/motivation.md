@@ -15,7 +15,7 @@ Debug received POST, GET, PATCH, PUT, and DELETE from 192.168.1.1 (somehow)
 
 In contrast, something like your browser's dev console allows filtering, highlighting, and inspection of "unstructured" logs. 
 
-![browser devtools from slickdeals](../public/browser_devtools.webp)
+![browser devtools from slickdeals](/browser_devtools.webp)
 
 The goal is to bring tools like this to any terminal output!
 

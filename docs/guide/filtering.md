@@ -12,13 +12,13 @@ Regular text searches are not case sensitive.
 
 To view the context of a log you see in a search, right-click it and select "Jump to location".
 
-![](../public/jump_to_location.webp)
+![](//jump_to_location.webp)
 
 ## Automatic Tag Detection
 
 "Tags" are automatically detected from input and given a corresponding pill in the upper-right of your search box.
 
-![](../public/tags_list.png)
+![](/tags_list.png)
 
 Clicking these will search for this specific tag by filling your input with the corresponding [syntax query](#Syntax-Query-Language).
 
