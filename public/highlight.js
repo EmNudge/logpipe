@@ -219,6 +219,8 @@ export function highlightText(text) {
       return getReplacement(getSpan("error", m));
     });
 
+  if (!modified) return [];
+
   return modified
     .match(
       new RegExp(
