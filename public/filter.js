@@ -26,9 +26,10 @@ export const setFilter = (newText) => {
   let filterCount = logs.length;
   let filter = filterText.toLowerCase();
 
+  const SELECTOR_MATCH = /@@([\w,]+)/g;
 
-  if (/@@[\w,]+/.test(filter)) {
-    const tags = [...filter.matchAll(/@@([\w,]+)/g)].map((m) => m[1]);
+  if (SELECTOR_MATCH.test(filter)) {
+    const tags = [...filter.matchAll(SELECTOR_MATCH)].map((m) => m[1]);
     logs = logs.filter((logEl) => {
       console.log(tags)
       const shouldDisplay = tags
@@ -50,7 +51,7 @@ export const setFilter = (newText) => {
       logEl.style.display = shouldDisplay ? "" : "none";
       return shouldDisplay;
     });
-    filter = filter.replace(/@@[\w,]+/g, "").trim();
+    filter = filter.replace(SELECTOR_MATCH, "").trim();
   }
 
   if (filter) {
