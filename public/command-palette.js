@@ -1,3 +1,5 @@
+import { downloadResource } from "./lib.js";
+
 /** @type {Element & { [key: string]: () => Promise<void> }} */
 const commandPaletteEl = document.querySelector("sl-dialog.command-palette");
 
@@ -76,7 +78,7 @@ inputEl.addEventListener("keydown", (e) => {
 
   const items = [...listEl.querySelectorAll("sl-menu-item")];
   if (e.key === "ArrowUp") items.reverse();
-  
+
   for (const menuItem of items) {
     if (menuItem.classList.contains("hide")) continue;
     // @ts-ignore
@@ -88,11 +90,14 @@ inputEl.addEventListener("keydown", (e) => {
 listEl.addEventListener(
   "sl-select",
   (/** @type {Event & { detail: any }} e */ e) => {
-    /** @type {'set-title' | 'help'} */
+    /** @type {'set-title' | 'save' | 'help'} */
     const action = e.detail.item.value;
 
     if (action === "set-title") {
       showForm(setTitleFormEl, "Set Title");
+    } else if (action === "save") {
+      downloadResource("/_/logs", "logs");
+      commandPaletteEl.hide();
     } else if (action === "help") {
       showForm(helpFormEl, "Help Menu");
     }

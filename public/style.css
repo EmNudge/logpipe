@@ -241,6 +241,11 @@ header {
   }
 }
 
+sl-dialog form:not(.palette-form, .hide) {
+  display: grid;
+  gap: var(--sl-spacing-medium);
+}
+
 form.help-menu {
   dl {
     padding: 0 var(--sl-spacing-x-large);
@@ -259,10 +264,10 @@ form.help-menu {
   code.multiline {
     display: block;
   }
-  .form-footer {
-    display: flex;
-    justify-content: flex-end;
-  }
+}
+.form-footer {
+  display: flex;
+  justify-content: flex-end;
 }
 
 kbd {
