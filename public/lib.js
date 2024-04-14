@@ -64,3 +64,16 @@ export function isInView(logEl, root) {
     }, 5);
   });
 }
+
+/**
+ * Download resource via an <a> tag
+ * @param {string} url raw URL or data URL
+ */
+export function downloadResource(url) {
+  const a = document.createElement('a');
+  a.href = url;
+  a.setAttribute('download', 'true');
+  document.body.append(a);
+  a.click();
+  a.remove();
+}

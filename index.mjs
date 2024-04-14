@@ -83,18 +83,19 @@ if (/--help| -h/.test(process.argv.slice(2).join(" "))) {
   console.log("  --title TITLE  The title of the web page.");
   console.log("");
   console.log("Examples:");
-  console.log("  your-program | logpipe --port 8080 --title \"My CLI Input\"");
-  console.log("  your-program | logpipe -p 8080 -t \"My CLI Input\"");
+  console.log('  your-program | logpipe --port 8080 --title "My CLI Input"');
+  console.log('  your-program | logpipe -p 8080 -t "My CLI Input"');
   console.log("  your-program | logpipe");
   console.log("");
   process.exit();
 }
 
-
 const PUBLIC_DIR = join(fileURLToPath(import.meta.url), "..", "public");
 
 const server = http
   .createServer(async (req, res) => {
+    if (req.method !== "GET") return;
+
     if (req.url === "/_/cli-input") {
       res.writeHead(200, {
         "Content-Type": "text/event-stream",
@@ -109,6 +110,15 @@ const server = http
       return;
     }
 
+    // We could directly write to FS, but we shouldn't trust the user to specify download location information correctly. 
+    // This means we'd need a lot of error handling. It's easier to let the browser handle file downloads.
+    if (req.url === "/_/logs" && req.method === "GET") {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.write(JSON.stringify(lines));
+      res.end();
+      return;
+    }
+
     // node js read local directory files into an array
     const files = new Set(await fs.readdir(PUBLIC_DIR));
 
@@ -118,7 +128,7 @@ const server = http
         "X-Custom-Title": title,
       });
       /** @type {string} */
-      const site = (await fs.readFile(join(PUBLIC_DIR, "index.html"), 'utf8'))
+      const site = (await fs.readFile(join(PUBLIC_DIR, "index.html"), "utf8"))
         .replace(/<title>.+?<\/title>/g, `<title>${title}</title>`)
         .replace(/<h1>.+?<\/h1>/g, `<h1>${title}</h1>`);
       res.write(site);

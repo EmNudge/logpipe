@@ -1,3 +1,5 @@
+import { downloadResource } from "./lib.js";
+
 /** @type {Element & { [key: string]: () => Promise<void> }} */
 const commandPaletteEl = document.querySelector("sl-dialog.command-palette");
 
@@ -55,22 +57,6 @@ helpFormEl.addEventListener("submit", (e) => {
   commandPaletteEl.hide();
 });
 
-/** @type {HTMLFormElement} */
-const saveFormEl = commandPaletteEl.querySelector("form.save-to-disk");
-saveFormEl.addEventListener("submit", (e) => {
-  e.preventDefault();
-
-  const { folder, file } = Object.fromEntries([...new FormData(saveFormEl)]);
-  if (!folder || !file) {
-    console.error('no file or folder');
-    return;
-  }
-
-  
-
-  commandPaletteEl.hide();
-});
-
 document.body.addEventListener("keydown", (e) => {
   if (e.key === "k" && e.metaKey) {
     commandPaletteEl.show();
@@ -92,7 +78,7 @@ inputEl.addEventListener("keydown", (e) => {
 
   const items = [...listEl.querySelectorAll("sl-menu-item")];
   if (e.key === "ArrowUp") items.reverse();
-  
+
   for (const menuItem of items) {
     if (menuItem.classList.contains("hide")) continue;
     // @ts-ignore
@@ -110,7 +96,8 @@ listEl.addEventListener(
     if (action === "set-title") {
       showForm(setTitleFormEl, "Set Title");
     } else if (action === "save") {
-      showForm(saveFormEl, "Save To Disk");
+      downloadResource("/_/logs");
+      commandPaletteEl.hide();
     } else if (action === "help") {
       showForm(helpFormEl, "Help Menu");
     }
