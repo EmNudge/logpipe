@@ -68,11 +68,12 @@ export function isInView(logEl, root) {
 /**
  * Download resource via an <a> tag
  * @param {string} url raw URL or data URL
+ * @param {string} name name for file ("file" by default)
  */
-export function downloadResource(url) {
+export function downloadResource(url, name = 'file') {
   const a = document.createElement('a');
   a.href = url;
-  a.setAttribute('download', 'true');
+  a.setAttribute('download', name);
   document.body.append(a);
   a.click();
   a.remove();

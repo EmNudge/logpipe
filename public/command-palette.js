@@ -96,7 +96,7 @@ listEl.addEventListener(
     if (action === "set-title") {
       showForm(setTitleFormEl, "Set Title");
     } else if (action === "save") {
-      downloadResource("/_/logs");
+      downloadResource("/_/logs", "logs");
       commandPaletteEl.hide();
     } else if (action === "help") {
       showForm(helpFormEl, "Help Menu");
