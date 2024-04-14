@@ -17,8 +17,8 @@ const getSelector = () =>
   new RegExp(
     [
       /@@/,
-      /\w+(?:="((?:\\"|[^"])+)")?/, // match <classname> with optional ="<string>"
-      /(?:,\w+(?:="((?:\\"|[^"])+)")?)*/, // optionally match multiple instances separated by comma
+      /[\w-]+(?:="((?:\\"|[^"])+)")?/, // match <classname> with optional ="<string>"
+      /(?:,[\w-]+(?:="((?:\\"|[^"])+)")?)*/, // optionally match multiple instances separated by comma
     ]
       .map((r) => r.source)
       .join(""),
@@ -56,6 +56,7 @@ const matchTags = (tagGroups, logEl) => {
     const matches = (() => {
       for (const { tag, textValue } of tagGroup) {
         const elements = logEl.querySelectorAll(`span.${tag}`);
+        console.log(elements)
         if (!elements.length) continue;
 
         if (!textValue) return true;
