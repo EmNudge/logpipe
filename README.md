@@ -4,7 +4,7 @@
 
 <video src="https://github.com/EmNudge/logpipe/assets/24513691/906c3e92-85dc-439b-8575-0d033150d3d6"></video>
 
-Checkout [the docs](https://logpipe.emnudge.dev/) or see it in action in [this online demo](https://logpipe-demo.emnudge.dev/)!
+Checkout [the docs](https://logpipe.emnudge.dev/) or see it in action in [this online demo](https://logpipe.pages.dev)!
 
 ## Installation
 
