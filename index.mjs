@@ -95,7 +95,7 @@ const PUBLIC_DIR = join(fileURLToPath(import.meta.url), "..", "public");
 
 const server = http
   .createServer(async (req, res) => {
-    if (req.url === "/cli-input") {
+    if (req.url === "/_/cli-input") {
       res.writeHead(200, {
         "Content-Type": "text/event-stream",
         Connection: "keep-alive",

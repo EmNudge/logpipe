@@ -70,7 +70,7 @@ async function appendLog(...logEls) {
   }
 }
 
-const cliSource = new EventSource("/cli-input");
+const cliSource = new EventSource("/_/cli-input");
 /** @param {Event & { data: string }} event */
 cliSource.onmessage = async (event) => {
   const data = JSON.parse(event.data);
