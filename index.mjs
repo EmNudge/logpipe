@@ -5,6 +5,52 @@ import fs from "fs/promises";
 import { join } from "path";
 import { fileURLToPath } from "url";
 
+/** @type {string} */
+const args = process.argv.slice(2).join(" ");
+
+if (/--version| -v/.test(args)) {
+  const packageJsonpath = join(
+    fileURLToPath(import.meta.url),
+    "..",
+    "package.json"
+  );
+  const packageJson = await fs.readFile(packageJsonpath, "utf-8");
+  const { version } = JSON.parse(packageJson);
+  console.log(version);
+  process.exit();
+}
+
+// user asked for CLI help
+if (/--help| -h/.test(args)) {
+  console.log(
+    [
+      "Usage: logpipe [--port PORT] [--title TITLE]",
+      "",
+      "Options:",
+      "  --port <PORT>    The port to run the web server on",
+      "  --title <TITLE>  The title of the web page",
+      "  --help           This menu",
+      "  --version        The version of logpipe",
+      "",
+      "Examples:",
+      "  your-program | logpipe",
+      '  your-program | logpipe --port 8080 --title "My CLI Input"',
+      '  your-program | logpipe -p 8080 -t "My CLI Input"',
+      "",
+    ].join("\n")
+  );
+  process.exit();
+}
+
+const port = (() => {
+  const match = args.match(/--port\s+(\d+)/) ?? args.match(/-p\s*(\d+)/);
+  return match ? Number(match[1]) : 0;
+})();
+const title = (() => {
+  const match = args.match(/--title\s+([\w ]+)/) ?? args.match(/-t\s*([\w ]+)/);
+  return match ? /**@type {string}*/ (match[1]) : "CLI Input";
+})();
+
 /** @typedef {{ input: string, date: number, id: string }} CliInput */
 
 /** @type {CliInput[]} */
@@ -63,32 +109,6 @@ const getMimeTypeForFile = (path) => {
   return mimeType ?? "text/plain";
 };
 
-const port = (() => {
-  const args = process.argv.slice(2).join(" ");
-  const match = args.match(/--port\s+(\d+)/) ?? args.match(/-p\s*(\d+)/);
-  return match ? Number(match[1]) : 0;
-})();
-const title = (() => {
-  const args = process.argv.slice(2).join(" ");
-  const match = args.match(/--title\s+([\w ]+)/) ?? args.match(/-t\s*([\w ]+)/);
-  return match ? match[1] : "CLI Input";
-})();
-
-// user asked for CLI help
-if (/--help| -h/.test(process.argv.slice(2).join(" "))) {
-  console.log("Usage: logpipe [--port PORT] [--title TITLE]");
-  console.log("");
-  console.log("Options:");
-  console.log("  --port PORT  The port to run the web server on.");
-  console.log("  --title TITLE  The title of the web page.");
-  console.log("");
-  console.log("Examples:");
-  console.log('  your-program | logpipe --port 8080 --title "My CLI Input"');
-  console.log('  your-program | logpipe -p 8080 -t "My CLI Input"');
-  console.log("  your-program | logpipe");
-  console.log("");
-  process.exit();
-}
 
 const PUBLIC_DIR = join(fileURLToPath(import.meta.url), "..", "public");
 
