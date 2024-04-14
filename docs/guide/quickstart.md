@@ -28,6 +28,10 @@ Then go to the URL and inspect away!
    - Choose a specific port (instead of random). Useful for command runners like nodemon.
 - `--title "<text>"` or `-t "<text>"`
   - Title for the page. Useful if you have multiple "logpipe"s open at once.
+- `--help` or `-h`
+  - Display this list of commands.
+- `--version` or `-v`
+  - Display the current version.
 
 ### Redirecting Stderr
 
