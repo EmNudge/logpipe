@@ -70,31 +70,32 @@ export function isInView(logEl, root) {
  * @param {string} url raw URL or data URL
  * @param {string} name name for file ("file" by default)
  */
-export function downloadResource(url, name = 'file') {
-  const a = document.createElement('a');
+export function downloadResource(url, name = "file") {
+  const a = document.createElement("a");
   a.href = url;
-  a.setAttribute('download', name);
+  a.setAttribute("download", name);
   document.body.append(a);
   a.click();
   a.remove();
 }
 
 /**
- * Loads a folder and its associated code
+ * Loads a folder and its associated code.
  * @param {string} folder component folder name
  */
 export async function loadHtmlComponent(folder) {
-  const html = await fetch(`./${folder}/index.html`).then(res => res.text());
-    
+  const html = await fetch(`/${folder}/index.html`).then((res) => res.text());
+
   // temp element used to deserialize HTML
-  const span = document.createElement('span');
-  span.innerHTML = html;
+  const span = document.createElement("span");
+  // replace relative imports with absolute imports
+  span.innerHTML = html.replace(/"\.\/(.+?)"/g, (_, path) => `/${folder}/${path}`);
 
   // Extract script tag sources because external scripts are blocked by the browser when appending
-  const modules = [...span.querySelectorAll('script')].map(el => el.src);
+  const modules = [...span.querySelectorAll("script")].map((el) => el.src);
 
   document.body.append(...span.children);
 
   // We need to wait for the HTML to be added to the document before requesting
-  await Promise.all(modules.map(src => import(src)));
+  await Promise.all(modules.map((src) => import(src)));
 }
