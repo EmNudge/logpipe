@@ -78,3 +78,19 @@ export function downloadResource(url, name = 'file') {
   a.click();
   a.remove();
 }
+
+/**
+ * Loads a folder and its associated code
+ * @param {string} folder component folder name
+ */
+export async function loadHtmlComponent(folder) {
+  const html = await fetch(`./${folder}/index.html`).then(res => res.text());
+    
+  const span = document.createElement('span');
+  span.innerHTML = html;
+  const modules = [...span.querySelectorAll('script')].map(el => el.src);
+  document.body.append(...span.children);
+  for (const moduleSrc of modules) {
+    await import(moduleSrc);
+  }
+}

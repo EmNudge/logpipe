@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "./dist",
+    "baseUrl": "public",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "module": "nodenext",
     "target": "ESNext",
