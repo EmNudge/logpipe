@@ -86,11 +86,15 @@ export function downloadResource(url, name = 'file') {
 export async function loadHtmlComponent(folder) {
   const html = await fetch(`./${folder}/index.html`).then(res => res.text());
     
+  // temp element used to deserialize HTML
   const span = document.createElement('span');
   span.innerHTML = html;
+
+  // Extract script tag sources because external scripts are blocked by the browser when appending
   const modules = [...span.querySelectorAll('script')].map(el => el.src);
+
   document.body.append(...span.children);
-  for (const moduleSrc of modules) {
-    await import(moduleSrc);
-  }
+
+  // We need to wait for the HTML to be added to the document before requesting
+  await Promise.all(modules.map(src => import(src)));
 }
