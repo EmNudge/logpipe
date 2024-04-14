@@ -63,12 +63,26 @@
       <sl-input class="palette-filter" autofocus placeholder="Search"></sl-input>
       <sl-menu>
         <sl-menu-item value="set-title">Set Title</sl-menu-item>
+        <sl-menu-item value="save">Save Logs To Disk</sl-menu-item>
         <sl-menu-item value="help">Help</sl-menu-item>
       </sl-menu>
     </form>
 
     <form class="hide title-form">
-      <sl-input autofocus placeholder="New page title"></sl-input>
+      <sl-input label="New Title" autofocus placeholder="New page title"></sl-input>
+      <div class="form-footer">
+        <sl-button type="submit">Change Title</sl-button>
+      </div>
+    </form>
+    <form class="hide save-to-disk">
+
+      <sl-input label="Folder location" name="folder"
+        value="~/.logpipe/" autofocus placeholder="Location..."></sl-input>
+      <sl-input label="File Name" name="file"
+        value="file.log" autofocus placeholder="Name..."></sl-input>
+      <div class="form-footer">
+        <sl-button type="submit">Save File</sl-button>
+      </div>
     </form>
     <form class="hide help-menu">
       <dl>
@@ -82,7 +96,8 @@
 
         <dt>How do I specify a port?</dt>
         <dd>
-          <p>The command line supports the options <code>--port</code> and <code>--title</code> for specifying these things.</p>
+          <p>The command line supports the options <code>--port</code> and <code>--title</code> for specifying these
+            things.</p>
           <p>
             <code>my-program | logpipe --port 8080 --title "Backend System"</code>
           </p>

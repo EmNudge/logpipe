@@ -55,6 +55,22 @@ helpFormEl.addEventListener("submit", (e) => {
   commandPaletteEl.hide();
 });
 
+/** @type {HTMLFormElement} */
+const saveFormEl = commandPaletteEl.querySelector("form.save-to-disk");
+saveFormEl.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const { folder, file } = Object.fromEntries([...new FormData(saveFormEl)]);
+  if (!folder || !file) {
+    console.error('no file or folder');
+    return;
+  }
+
+  
+
+  commandPaletteEl.hide();
+});
+
 document.body.addEventListener("keydown", (e) => {
   if (e.key === "k" && e.metaKey) {
     commandPaletteEl.show();
@@ -88,11 +104,13 @@ inputEl.addEventListener("keydown", (e) => {
 listEl.addEventListener(
   "sl-select",
   (/** @type {Event & { detail: any }} e */ e) => {
-    /** @type {'set-title' | 'help'} */
+    /** @type {'set-title' | 'save' | 'help'} */
     const action = e.detail.item.value;
 
     if (action === "set-title") {
       showForm(setTitleFormEl, "Set Title");
+    } else if (action === "save") {
+      showForm(saveFormEl, "Save To Disk");
     } else if (action === "help") {
       showForm(helpFormEl, "Help Menu");
     }
