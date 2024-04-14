@@ -8,7 +8,7 @@ export default defineConfig({
     nav: [
       { text: "Guide", link: "/guide/quickstart" },
       { text: "Github", link: "https://github.com/EmNudge/logpipe" },
-      { text: "Demo", link: "https://logpipe-demo.emnudge.dev/" },
+      { text: "Demo", link: "https://logpipe.pages.dev" },
     ],
     sidebar: {
       '/guide/': { base: '/guide/', items: [

@@ -14,7 +14,7 @@ hero:
       link: /guide/quickstart
     - theme: alt
       text: View Demo
-      link: https://logpipe-demo.emnudge.dev/
+      link: https://logpipe.pages.dev
 
 features:
   - icon: 🌈
