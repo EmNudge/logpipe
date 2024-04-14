@@ -8,7 +8,7 @@ import { fileURLToPath } from "url";
 /** @type {string} */
 const args = process.argv.slice(2).join(" ");
 
-if (/--version| -v/.test(args)) {
+if (/--version|(?: |^)-v/.test(args)) {
   const packageJsonpath = join(
     fileURLToPath(import.meta.url),
     "..",
@@ -21,7 +21,7 @@ if (/--version| -v/.test(args)) {
 }
 
 // user asked for CLI help
-if (/--help| -h/.test(args)) {
+if (/--help|(?: |^)-h/.test(args)) {
   console.log(
     [
       "Usage: logpipe [--port PORT] [--title TITLE]",
@@ -43,11 +43,11 @@ if (/--help| -h/.test(args)) {
 }
 
 const port = (() => {
-  const match = args.match(/--port\s+(\d+)/) ?? args.match(/-p\s*(\d+)/);
+  const match = args.match(/(?:--port\s|(?: |^)-p)\s*(\d+)/);
   return match ? Number(match[1]) : 0;
 })();
 const title = (() => {
-  const match = args.match(/--title\s+([\w ]+)/) ?? args.match(/-t\s*([\w ]+)/);
+  const match = args.match(/(?:--title\s|(?: |^)-t)\s*"([\w ]+)"/);
   return match ? /**@type {string}*/ (match[1]) : "CLI Input";
 })();
 
