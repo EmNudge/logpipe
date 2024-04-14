@@ -4,10 +4,12 @@
 
 ## Installation
 
-There isn't an npm package yet, but luckily you can install packages directly from git!
+There is no build step, so you can install it directly from git or the npm package at `@emnudge/logpipe`.
 
 ```sh
 npm i -g https://github.com/EmNudge/logpipe.git
+# or
+npm i -g @emnudge/logpipe
 ```
 
 ## Usage
