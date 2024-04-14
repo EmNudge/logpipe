@@ -1,0 +1,9 @@
+.contextmenu {
+  position: absolute;
+  left: calc(var(--x) * 1px);
+  top: calc(var(--y) * 1px);
+  display: none;
+  &.show {
+    display: block;
+  }
+}

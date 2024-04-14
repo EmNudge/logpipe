@@ -1,5 +1,5 @@
-import { setFilter } from "./filter.js";
-import { $ } from "./lib.js";
+import { setFilter } from "../filter.js";
+import { $ } from "../lib.js";
 
 const logContainer = $(".container");
 const contextMenu = $(".contextmenu");

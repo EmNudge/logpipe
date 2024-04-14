@@ -1,0 +1,16 @@
+<body>
+  <link rel="stylesheet" href="/context-menu/style.css">
+  <script type="module" src="/context-menu/index.js"></script>
+
+  <sl-menu class="contextmenu">
+    <sl-menu-item value="copy-log">Copy log contents</sl-menu-item>
+    <sl-menu-item value="copy-id">Copy ID</sl-menu-item>
+    <sl-menu-item value="copy-date">Copy date</sl-menu-item>
+    <sl-menu-item value="jump">Jump to location</sl-menu-item>
+  </sl-menu>
+  
+  <sl-alert class="copy-notif" variant="success" duration="3000" closable>
+    <sl-icon slot="icon" name="check2-circle"></sl-icon>
+    <strong>Copied <span class="copy-label"></span> to clipboard</strong>
+  </sl-alert>
+</body>

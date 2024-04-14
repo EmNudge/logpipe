@@ -16,6 +16,8 @@
     onload="document.documentElement.classList.add('sl-theme-dark');">
   <script type="module"
     src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/shoelace-autoloader.js"></script>
+
+  <script type="module" src="./index.js"></script>
 </head>
 
 <body>
@@ -32,9 +34,7 @@
           View Tags
           <sl-badge pill>30</sl-badge>
         </sl-button>
-        <sl-dialog class="tags-dialog" label="Tags">
-
-        </sl-dialog>
+        <sl-dialog class="tags-dialog" label="Tags"></sl-dialog>
       </div>
     </header>
     <div class="container"></div>
@@ -43,94 +43,6 @@
       <sl-button class="down-button" circle label="Go Down">↓</sl-button>
     </div>
   </main>
-
-  <script type="module" src="./index.js"></script>
-
-  <sl-menu class="contextmenu">
-    <sl-menu-item value="copy-log">Copy log contents</sl-menu-item>
-    <sl-menu-item value="copy-id">Copy ID</sl-menu-item>
-    <sl-menu-item value="copy-date">Copy date</sl-menu-item>
-    <sl-menu-item value="jump">Jump to location</sl-menu-item>
-  </sl-menu>
-
-  <sl-alert class="copy-notif" variant="success" duration="3000" closable>
-    <sl-icon slot="icon" name="check2-circle"></sl-icon>
-    <strong>Copied <span class="copy-label"></span> to clipboard</strong>
-  </sl-alert>
-
-  <sl-dialog class="command-palette" label="Command Palette" style="--width: 600px">
-    <form class="palette-form">
-      <sl-input class="palette-filter" autofocus placeholder="Search"></sl-input>
-      <sl-menu>
-        <sl-menu-item value="set-title">Set Title</sl-menu-item>
-        <sl-menu-item value="save">Save Logs To Disk</sl-menu-item>
-        <sl-menu-item value="help">Help</sl-menu-item>
-      </sl-menu>
-    </form>
-
-    <form class="hide title-form">
-      <sl-input label="New Title" autofocus placeholder="New page title"></sl-input>
-      <div class="form-footer">
-        <sl-button type="submit">Change Title</sl-button>
-      </div>
-    </form>
-    <form class="hide help-menu">
-      <dl>
-        <dt>My logs aren't showing!</dt>
-        <dd>
-          <p>Your logs may be outputting to stderr. Try using bash redirection.</p>
-          <p>
-            <code>my-program <strong>2>&1</strong> | logpipe</code>
-          </p>
-        </dd>
-
-        <dt>How do I specify a port?</dt>
-        <dd>
-          <p>The command line supports the options <code>--port</code> and <code>--title</code> for specifying these
-            things.</p>
-          <p>
-            <code>my-program | logpipe --port 8080 --title "Backend System"</code>
-          </p>
-        </dd>
-
-        <dt>How do I copy a log or timestamp?</dt>
-        <dd>
-          <p>Try out the right-click menu! Right click a log for a list of options.</p>
-        </dd>
-
-        <dt>How do I jump to a log's source location?</dt>
-        <dd>
-          <p>Also in the right-click menu!</p>
-        </dd>
-
-        <dt>How do I search for all URLs?</dt>
-        <dd>
-          <p>Use the logpipe query language!</p>
-          <p>
-            <code>@@url</code>
-          </p>
-        </dd>
-
-        <dt>What are the supported query types?</dt>
-        <dd>
-          <p>Here is a query which includes all of them!</p>
-          <p>
-            <code class="multiline">@@string,number,tag,url,ip,error,file,http-method,key,value,keyword</code>
-          </p>
-        </dd>
-
-        <dt>What are the keyboard shortcuts?</dt>
-        <dd>
-          <p><kbd>Cmd</kbd>+<kbd>k</kbd> - Open the command palette</p>
-          <p><kbd>/</kbd> - Focus filter box</p>
-        </dd>
-      </dl>
-
-      <div class="form-footer">
-        <sl-button type="submit">Got It!</sl-button>
-      </div>
-    </form>
-  </sl-dialog>
 
   <!-- templates -->
   <div class="template log" tabindex="0"></div>

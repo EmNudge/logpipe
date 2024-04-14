@@ -1,4 +1,4 @@
-import { downloadResource } from "./lib.js";
+import { downloadResource } from "../lib.js";
 
 /** @type {Element & { [key: string]: () => Promise<void> }} */
 const commandPaletteEl = document.querySelector("sl-dialog.command-palette");

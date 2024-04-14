@@ -1,9 +1,10 @@
 import { highlightText } from "./highlight.js";
-import { $, cloneTemplate, isInView } from "./lib.js";
+import { $, cloneTemplate, isInView, loadHtmlComponent } from "./lib.js";
 import { applyFilter } from "./filter.js";
 import { maybeAddTag } from "./tags.js";
-import './contextmenu.js';
-import './command-palette.js';
+
+loadHtmlComponent('command-palette');
+loadHtmlComponent('context-menu');
 
 /** @typedef {{ input: string, date: number, id: string }} CliInput */
 

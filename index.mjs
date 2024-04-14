@@ -92,6 +92,22 @@ if (/--help| -h/.test(process.argv.slice(2).join(" "))) {
 
 const PUBLIC_DIR = join(fileURLToPath(import.meta.url), "..", "public");
 
+const publicFiles = new Set();
+fs.readdir(PUBLIC_DIR).then((files) =>
+  Promise.all(
+    files.map(async (file) => {
+      const stat = await fs.stat(join(PUBLIC_DIR, file));
+      if (!stat.isDirectory()) {
+        publicFiles.add(file);
+        return;
+      }
+      for (const subFile of await fs.readdir(PUBLIC_DIR)) {
+        publicFiles.add(join(file, subFile));
+      }
+    })
+  )
+);
+
 const server = http
   .createServer(async (req, res) => {
     if (req.method !== "GET") return;
@@ -110,7 +126,7 @@ const server = http
       return;
     }
 
-    // We could directly write to FS, but we shouldn't trust the user to specify download location information correctly. 
+    // We could directly write to FS, but we shouldn't trust the user to specify download location information correctly.
     // This means we'd need a lot of error handling. It's easier to let the browser handle file downloads.
     if (req.url === "/_/logs" && req.method === "GET") {
       res.writeHead(200, { "Content-Type": "application/json" });
@@ -118,9 +134,6 @@ const server = http
       res.end();
       return;
     }
-
-    // node js read local directory files into an array
-    const files = new Set(await fs.readdir(PUBLIC_DIR));
 
     if (req.url == "/" || req.url == "/index.html") {
       res.writeHead(200, {
@@ -134,7 +147,7 @@ const server = http
       res.write(site);
       res.end();
       return;
-    } else if (files.has(req.url.slice(1))) {
+    } else if (publicFiles.has(req.url.slice(1))) {
       res.writeHead(200, { "Content-Type": getMimeTypeForFile(req.url) });
       res.write(await fs.readFile(join(PUBLIC_DIR, req.url.slice(1))));
       res.end();
