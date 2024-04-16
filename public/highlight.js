@@ -220,6 +220,10 @@ export function highlightText(text) {
     .replace(/"(?:\\"|[^"])*?"|'(?:\\'|[^'])*?'/g, (m) => {
       return getReplacement(getSpan("string", m));
     })
+    // parse time
+    .replace(/(?:\d+(\.\d+)?(?:h|m|s|ms))+/g, (m) => {
+      return getReplacement(getSpan("time", m));
+    })
     // parse numbers
     .replace(
       new RegExp(
