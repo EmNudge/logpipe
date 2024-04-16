@@ -99,3 +99,6 @@ export async function loadHtmlComponent(folder) {
   // We need to wait for the HTML to be added to the document before requesting
   await Promise.all(modules.map((src) => import(src)));
 }
+
+/** @param {number} ms */
+export const sleep = (ms) => new Promise(res => setTimeout(res, ms));

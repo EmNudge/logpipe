@@ -1,3 +1,4 @@
+import { toggleAnsiParsing } from "../highlight.js";
 import { $, downloadResource } from "../lib.js";
 
 /** @type {Element & { [key: string]: () => Promise<void> }} */
@@ -109,13 +110,16 @@ function toggleExpandTerminal() {
 listEl.addEventListener(
   "sl-select",
   (/** @type {Event & { detail: any }} e */ e) => {
-    /** @type {'set-title' | 'expand' | 'save' | 'about' | 'help'} */
+    /** @type {'set-title' | 'expand' | 'ansi' | 'save' | 'about' | 'help'} */
     const action = e.detail.item.value;
 
     if (action === "set-title") {
       showForm(setTitleFormEl, "Set Title");
     } else if (action === "expand") {
       toggleExpandTerminal();
+    } else if (action === "ansi") {
+      toggleAnsiParsing();
+      commandPaletteEl.hide();
     } else if (action === "save") {
       downloadResource("/_/logs", "logs");
       commandPaletteEl.hide();

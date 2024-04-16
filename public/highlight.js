@@ -1,3 +1,6 @@
+import { maybeAddTag } from "./tags.js";
+import { $$, sleep } from "./lib.js";
+
 /**
  * @param {string} name
  * @param {Record<string, string>} properties
@@ -21,9 +24,14 @@ const VARIATION_SELECTOR_100 = String.fromCodePoint(917843);
 /**
  * @param {string} text text to transform
  * @param {(...el: HTMLElement[]) => string} getReplacement function for inserting replacements.
+ * @param {boolean} parseAnsi
  * @returns {string} html
  */
-function replaceAnsi(text, getReplacement) {
+function replaceAnsi(text, getReplacement, parseAnsi = true) {
+  if (!parseAnsi) {
+    return text.replace(/\x1B(?:]8;;|\\|\[(?:\d+|;)+?m)/g, '');
+  }
+
   const withReplacedLinks = text
     // replace links (yes, these exist)
     .replace(/\x1B]8;;(.+?)\x1B\\(.+?)\x1B]8;;\x1B\\/g, (_, link, text) => {
@@ -177,6 +185,23 @@ function replaceTags(text, getReplacement) {
     });
 }
 
+let parseAnsi = true;
+
+export async function toggleAnsiParsing() {
+  parseAnsi = !parseAnsi;
+  const logs = $$('.container .log');
+  for (let i = 0; logs.length; i++) {
+    if (i % 100 === 0) {
+      await sleep(0);
+    }
+    const logEl = logs[i]; 
+    const text = logEl.textContent;
+    logEl.innerHTML = '';
+    logEl.append(...highlightText(text));
+    maybeAddTag(logEl);
+  }
+}
+
 /**
  * Highlights some text based off of various heuristics.
  * Returns html as a string
@@ -199,7 +224,10 @@ export function highlightText(text) {
 
   // Remove specific invisible character we will be using for regex replacing
   let modified = text.replace(new RegExp(VARIATION_SELECTOR_100, "g"), "");
-  modified = replaceAnsi(text, getReplacement);
+  modified = replaceAnsi(text, getReplacement, parseAnsi);
+  // mark div as having ANSI later
+  const hasAnsi = map.size > 0;
+
   modified = replaceURLs(modified, getReplacement);
   modified = replaceDate(modified, getReplacement);
   modified = replacePath(modified, getReplacement);
