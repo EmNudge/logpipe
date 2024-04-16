@@ -24,7 +24,7 @@ function logRandom() {
 
   const branches = [
     "\x1B]8;;https://doc.rust-lang.org/cargo/reference/profiles.html#default-profiles\x1B\\`dev` profile [unoptimized + debuginfo]\x1B]8;;\x1B\\",
-    "\x1B[31m Hello There! \x1B[0m",
+    "\x1B[31m [ANSI] Hello There! \x1B[0m",
     `[INFO] ${new Date().toISOString()} "log random" ${count}`,
     "Info 2024-04-08 19:10:00,779 /opt/tmp/file_seq.data",
     "[Error(danger)] An error occurred [42] seconds ago due to a false value when expecting a true value",

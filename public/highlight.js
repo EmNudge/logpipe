@@ -28,7 +28,7 @@ const VARIATION_SELECTOR_100 = String.fromCodePoint(917843);
  */
 function replaceAnsi(text, getReplacement, parseAnsi = true) {
   if (!parseAnsi) {
-    return text.replace(/\x1B(?:]8;;|\\|(?:\d+|;)+?m)/g, '');
+    return text.replace(/\x1B(?:]8;;|\\|\[(?:\d+|;)+?m)/g, '');
   }
 
   const withReplacedLinks = text
