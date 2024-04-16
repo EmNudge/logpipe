@@ -36,3 +36,15 @@ form.about-menu ul {
   display: flex;
   justify-content: flex-end;
 }
+
+.expand {
+  main& {
+    width: 1200px;  
+  }
+  .container& {
+    height: 900px;
+  }
+  .tags-dialog& {
+    --width: 1000px;
+  }
+}
