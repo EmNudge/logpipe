@@ -221,7 +221,7 @@ export function highlightText(text) {
       return getReplacement(getSpan("string", m));
     })
     // parse time
-    .replace(/(?:\d+(\.\d+)?(?:h|m|s|ms))+/g, (m) => {
+    .replace(/(?:\d+(\.\d+)?(?:h|ms?|s))+/g, (m) => {
       return getReplacement(getSpan("time", m));
     })
     // parse numbers
