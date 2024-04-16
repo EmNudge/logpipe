@@ -33,6 +33,8 @@ Then go to the URL and inspect away!
 - `--version` or `-v`
   - Display the current version.
 
+## Shell Redirection
+
 ### Redirecting Stderr
 
 Many programs will output their logs to stderr instead of stdout. If logpipe is not capturing anything and you still see output in your terminal, this is probably what's happening.
@@ -41,9 +43,25 @@ You can use bash redirection to fix this.
 
 ```sh
 my-program 2>&1 | logpipe # note the "2>&1"
+# In modern terminals, this can be shortened to:
+my-program |& logpipe
 ```
 
-## Running The Local Demo
+### Bash Multi-Redirection
+
+Using `|&` allows you to combine stderr into stdout. You may want to separate these 2 into separate streams.
+
+To do this, the syntax is a bit different. 
+
+```sh
+my-program > >(logpipe -t "stdout") 2> >(logpipe -t "stderr")
+# or just pipe the stdout portion as normal
+my-program 2> >(logpipe -t "stderr") | logpipe -t "stdout"
+```
+
+the `-t "string"` parts are optional, but useful if you want to tell these 2 apart.
+
+## Local Demo
 
 To demo logpipe locally when you can't find an input source, you can try the included `out.js` file.
 
@@ -58,11 +76,3 @@ node out.js | node index.mjs
 - `--iterations <number>` or `-i <number>`
   - number of iterations to run (default Infinity)
 
-
-### Developing Logpipe
-
-It has been helpful to use something like [nodemon](https://nodemon.io/) during development to automatically restart the server when the code changes.
-
-```sh
-nodemon --exec 'node out.js | node index.mjs -p 7280' -e ts,html,js,mjs,css
-```

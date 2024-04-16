@@ -20,6 +20,7 @@ export default defineConfig({
             { text: 'Alternatives', link: 'alternatives' },
             { text: 'Filtering', link: 'filtering' },
             { text: 'Command Palette', link: 'command-palette' },
+            { text: 'Contribution Guide', link: 'contribution-guide' },
           ]
         }
       ] },

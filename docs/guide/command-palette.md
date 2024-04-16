@@ -10,13 +10,19 @@ I'm not sure why, but most web tools seemed to have standardized on this one.
 
 ## Features
 
-At present there are only 2 features. Rest assured, this section will expand, however.
+At present there are only 2 features. Rest assured, this section will expand.
 
 ### Set Title
 
 You can set the title from the command line with the `--title` argument, but it's probably not worth restarting the server just to change the title.
 
 Use this to change the title of your tab and page. Useful for if you have multiple logpipe instances open.
+
+### Save Logs To Disk
+
+Download the current logs as a JSON file.
+
+In the future you'll be able to restart a session using this file. For now, use something like [jq](https://jqlang.github.io/jq/) to get what you need.
 
 ### Help Menu
 

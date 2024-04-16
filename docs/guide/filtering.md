@@ -6,7 +6,7 @@ You may want some more power when searching, however.
 
 ## Simple Filtering
 
-"<kbd>/</kbd>" focuses the input.
+<kbd>/</kbd> focuses the input.
 
 Regular text searches are not case sensitive.
 
@@ -52,7 +52,3 @@ And here is one where we look for any message that includes a string <ins>or</in
 ```rs
 @@string,url @@url
 ```
-
-## Command Palette
-
-"<kbd>Cmd</kbd> + <kbd>k</kbd>" opens the command palette.
