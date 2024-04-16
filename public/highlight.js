@@ -160,7 +160,7 @@ function replaceDate(text, getReplacement) {
  */
 function replacePath(text, getReplacement) {
   return text
-    .replace(/(\/?[\w.-]+(?:\/(?:[\w.-]+)*\/)+)(\S*)/g, (_, folder, file) => {
+    .replace(/(\/?(?:[\w.-]+\/)+)(\S+)/g, (_, folder, file) => {
       return getReplacement(getSpan("path", folder), getSpan("file", file));
     })
     .replace(/[\w-]+\.[a-zA-Z]+(?::(?:\d+|\(\d+,\d+\)))?/g, (m) => {
