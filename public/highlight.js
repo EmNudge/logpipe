@@ -1,4 +1,5 @@
-import { $, $$, sleep } from "./lib.js";
+import { maybeAddTag } from "./tags.js";
+import { $$, sleep } from "./lib.js";
 
 /**
  * @param {string} name
@@ -193,9 +194,11 @@ export async function toggleAnsiParsing() {
     if (i % 100 === 0) {
       await sleep(0);
     }
-    const text = logs[i].textContent;
-    logs[i].innerHTML = '';
-    logs[i].append(...highlightText(text));
+    const logEl = logs[i]; 
+    const text = logEl.textContent;
+    logEl.innerHTML = '';
+    logEl.append(...highlightText(text));
+    maybeAddTag(logEl);
   }
 }
 
