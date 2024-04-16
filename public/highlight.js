@@ -217,8 +217,12 @@ export function highlightText(text) {
       return getReplacement(getSpan("ip", m));
     })
     // parse quoted strings
-    .replace(/"[^"]*?"/g, (m) => {
+    .replace(/"(?:\\"|[^"])*?"|'(?:\\'|[^'])*?'/g, (m) => {
       return getReplacement(getSpan("string", m));
+    })
+    // parse time
+    .replace(/(?:\d+(\.\d+)?(?:h|ms?|s))+/g, (m) => {
+      return getReplacement(getSpan("time", m));
     })
     // parse numbers
     .replace(

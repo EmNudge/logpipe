@@ -106,6 +106,9 @@ header {
   .url {
     color: yellow;
   }
+  .time {
+    color: #f4b1f4;
+  }
   .date {
     color: grey;
   }
@@ -115,6 +118,9 @@ header {
   .value,
   .file {
     color: #fff3ae;
+  }
+  .path {
+    color: #fffcde;
   }
   .error,
   .keyword {
