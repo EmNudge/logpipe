@@ -5,10 +5,17 @@ import fs from "fs/promises";
 import { join } from "path";
 import { fileURLToPath } from "url";
 
-/** @type {string} */
-const args = process.argv.slice(2).join(" ");
 
-if (/--version|(?: |^)-v/.test(args)) {
+const argv = /** @type {string[]} */(process.argv.slice(2));
+/** @param {string} name */
+const findArg = (name) => {
+  const index = argv.indexOf(name);
+  if (index === -1) return;
+  if (!argv[index + 1] || argv[index + 1].startsWith('-')) return 'true';
+  return argv[index + 1];
+}
+
+if (findArg('--version') || findArg('-v')) {
   const packageJsonpath = join(
     fileURLToPath(import.meta.url),
     "..",
@@ -21,7 +28,7 @@ if (/--version|(?: |^)-v/.test(args)) {
 }
 
 // user asked for CLI help
-if (/--help|(?: |^)-h/.test(args)) {
+if (findArg('--help') || findArg('-h')) {
   console.log(
     [
       "Usage: logpipe [--port PORT] [--title TITLE]",
@@ -42,14 +49,8 @@ if (/--help|(?: |^)-h/.test(args)) {
   process.exit();
 }
 
-const port = (() => {
-  const match = args.match(/(?:--port\s|(?: |^)-p)\s*(\d+)/);
-  return match ? Number(match[1]) : 0;
-})();
-const title = (() => {
-  const match = args.match(/(?:--title\s|(?: |^)-t)\s*"([\w ]+)"/);
-  return match ? /**@type {string}*/ (match[1]) : "CLI Input";
-})();
+const port = Number(findArg('--port') ?? findArg('-p')) || 0;
+const title = findArg('--title') ?? findArg('-t') ?? 'CLI Input';
 
 /** @typedef {{ input: string, date: number, id: string }} CliInput */
 
