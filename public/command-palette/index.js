@@ -52,7 +52,7 @@ setTitleFormEl.addEventListener("submit", (e) => {
 });
 
 const versionEl = commandPaletteEl.querySelector("span.about-version");
-versionEl.textContent = $('meta[name=version]').getAttribute('content');
+versionEl.textContent = $("meta[name=version]").getAttribute("content");
 const aboutFormEl = commandPaletteEl.querySelector("form.about-menu");
 aboutFormEl.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -95,14 +95,27 @@ inputEl.addEventListener("keydown", (e) => {
   }
 });
 
+const containerEl = $("div.container");
+const mainEl = $("main");
+const tagsDialogEl = $(".tags-dialog");
+function toggleExpandTerminal() {
+  containerEl.classList.toggle("expand");
+  mainEl.classList.toggle("expand");
+  tagsDialogEl.classList.toggle("expand");
+  
+  commandPaletteEl.hide();
+};
+
 listEl.addEventListener(
   "sl-select",
   (/** @type {Event & { detail: any }} e */ e) => {
-    /** @type {'set-title' | 'save' | 'about' | 'help'} */
+    /** @type {'set-title' | 'expand' | 'save' | 'about' | 'help'} */
     const action = e.detail.item.value;
 
     if (action === "set-title") {
       showForm(setTitleFormEl, "Set Title");
+    } else if (action === "expand") {
+      toggleExpandTerminal();
     } else if (action === "save") {
       downloadResource("/_/logs", "logs");
       commandPaletteEl.hide();
