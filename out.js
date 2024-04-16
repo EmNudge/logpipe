@@ -23,38 +23,22 @@ function logRandom() {
   }
 
   const branches = [
-    () => console.log("\x1B[31m Hello There! \x1B[0m"),
-    () => console.log("[INFO]", new Date(), '"log random"', count),
-    () => console.log("Info 2024-04-08 19:10:00,779 /opt/tmp/file_seq.data"),
-    () =>
-      console.log(
-        "[Error(danger)]",
-        "An error occurred [42] seconds ago due to a false value when expecting a true value"
-      ),
-      () => console.log(`tag: [${Math.random().toString(32).slice(2)}]`),
-    () => console.log('failed to throw an error. This is surprisingly not a good thing.'),
-    () => console.log("[INFO] /opt/file_thing.sock:19 took 232.21ms | all systems go"),
-    () =>
-      console.log("on http://localhost:8080 (127.0.0.1) someone cool made a GET request (source: file_thing.js:32)", {
-        a: 1,
-        b: 2,
-        c: Math.random() * 50,
-      }),
-    () => console.log('["this is not a tag"] action took 32h2m1.13s at file_info.go:(12,31)'),
-    () =>
-      console.log(
-        "stringified",
-        JSON.stringify(
-          {
-            a: 1,
-            b: 2,
-            c: Math.random() * 50,
-          },
-          null,
-          2
-        )
-      ),
-    () => console.log("Debug received POST, GET, PATCH, PUT, and DELETE from 192.168.1.1 (somehow)"),
+    "\x1B]8;;https://doc.rust-lang.org/cargo/reference/profiles.html#default-profiles\x1B\\`dev` profile [unoptimized + debuginfo]\x1B]8;;\x1B\\",
+    "\x1B[31m Hello There! \x1B[0m",
+    `[INFO] ${new Date().toISOString()} "log random" ${count}`,
+    "Info 2024-04-08 19:10:00,779 /opt/tmp/file_seq.data",
+    "[Error(danger)] An error occurred [42] seconds ago due to a false value when expecting a true value",
+    "failed to throw an error. This is surprisingly not a good thing.",
+    "[INFO] /opt/file_thing.sock:19 took 232.21ms | all systems go",
+    "on http://localhost:8080 (127.0.0.1) someone cool made a GET request (source: file_thing.js:32)",
+    '["this is not a tag"] action took 32h2m1.13s at file_info.go:(12,31)',
+    `stringified ${JSON.stringify(
+      { a: 1, b: 2, c: Math.random() * 50 },
+      null,
+      2
+    )}`,
+    "Debug received POST, GET, PATCH, PUT, and DELETE from 192.168.1.1 (somehow)",
   ];
-  branches[branches.length * Math.random() | 0]();
+  const log = branches[(branches.length * Math.random()) | 0];
+  console.log(log);
 }
