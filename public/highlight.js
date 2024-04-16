@@ -159,6 +159,23 @@ function replacePath(text, getReplacement) {
 }
 
 /**
+ * @param {string} text text to transform
+ * @param {(...els: HTMLElement[]) => string} getReplacement function for inserting replacements.
+ * @returns {string} html
+ */
+function replaceTags(text, getReplacement) {
+  return text
+    .replace(/^info\b|^warn\b|^error\b|^debug\b|^trace\b/i, (m) => {
+      return getReplacement(getSpan("tag", m));
+    })
+    .replace(/\[\w+(?:\(\w+\))?\]/g, (m) => {
+      // don't parse numbers and IPs as tags
+      if (/\[[\d\.:]+\]/.test(m)) return m;
+      return getReplacement(getSpan("tag", m));
+    });
+}
+
+/**
  * Highlights some text based off of various heuristics.
  * Returns html as a string
  *
@@ -184,6 +201,7 @@ export function highlightText(text) {
   modified = replaceURLs(modified, getReplacement);
   modified = replaceDate(modified, getReplacement);
   modified = replacePath(modified, getReplacement);
+  modified = replaceTags(modified, getReplacement);
 
   modified = modified
     // parse key=value pairs
@@ -198,15 +216,6 @@ export function highlightText(text) {
     .replace(/\b\d+\.\d+\.\d+\.\d+\b/g, (m) => {
       return getReplacement(getSpan("ip", m));
     })
-    // parse [TAG] indicators
-    .replace(
-      /\[[^\[\]]+\]|^info\b|^warn\b|^error\b|^debug\b|^trace\b/gi,
-      (m) => {
-        // don't parse numbers and IPs as tags
-        if (/\[[\d\.:]+\]/.test(m)) return m;
-        return getReplacement(getSpan("tag", m));
-      }
-    )
     // parse quoted strings
     .replace(/"[^"]*?"/g, (m) => {
       return getReplacement(getSpan("string", m));
