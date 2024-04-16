@@ -23,6 +23,7 @@ function logRandom() {
   }
 
   const branches = [
+    () => console.log("\x1B[31m Hello There! \x1B[0m"),
     () => console.log("[INFO]", new Date(), '"log random"', count),
     () => console.log("Info 2024-04-08 19:10:00,779 /opt/tmp/file_seq.data"),
     () =>

@@ -34,58 +34,60 @@ function replaceAnsi(text, getReplacement) {
 
   /** @type {string[]} */
   const ansiClassNames = [];
-  return withReplacedLinks.replace(
-    /\x1B\[((?:\d+|;)+?)m([^\x1B]+)/g,
-    (_, /** @type {string} */ numbers, /** @type {string} */ text) => {
-      if (numbers === "0") {
-        ansiClassNames.length = 0;
-        return text;
-      }
+  return withReplacedLinks
+    .replace(
+      /\x1B\[((?:\d+|;)+?)m([^\x1B]+)/g,
+      (_, /** @type {string} */ numbers, /** @type {string} */ text) => {
+        if (numbers === "0") {
+          ansiClassNames.length = 0;
+          return text;
+        }
 
-      if (numbers.startsWith("38;5")) {
-        const ansiColor = Number(numbers.split(";").slice(-1)[0]);
-        const colors = [
-          "black",
-          "red",
-          "green",
-          "yellow",
-          "blue",
-          "magenta",
-          "cyan",
-          "white",
-          "gray",
-          "red",
-          "brightgreen",
-          "yellow",
-          "dodgerblue",
-          "pink",
-          "aqua",
-          "white",
-        ];
+        if (numbers.startsWith("38;5")) {
+          const ansiColor = Number(numbers.split(";").slice(-1)[0]);
+          const colors = [
+            "black",
+            "red",
+            "green",
+            "yellow",
+            "blue",
+            "magenta",
+            "cyan",
+            "white",
+            "gray",
+            "red",
+            "brightgreen",
+            "yellow",
+            "dodgerblue",
+            "pink",
+            "aqua",
+            "white",
+          ];
 
-        const className = colors[ansiColor]
-          ? `ansi-${colors[ansiColor]}`
-          : `ansi-256-foreground-${ansiColor}`;
-        ansiClassNames.push(className);
+          const className = colors[ansiColor]
+            ? `ansi-${colors[ansiColor]}`
+            : `ansi-256-foreground-${ansiColor}`;
+          ansiClassNames.push(className);
+          return getReplacement(getSpan(ansiClassNames.join(" "), text));
+        }
+
+        const styles = numbers
+          .split(";")
+          .map((code) => {
+            if (code === "1") return "bold";
+            if (code === "2") return "dim";
+            if (code === "3") return "italic";
+            if (code === "4") return "underline";
+            if (code === "5") return "blink";
+            return code;
+          })
+          .map((name) => `ansi-${name}`);
+        ansiClassNames.push(...styles);
+
         return getReplacement(getSpan(ansiClassNames.join(" "), text));
       }
-
-      const styles = numbers
-        .split(";")
-        .map((code) => {
-          if (code === "1") return "bold";
-          if (code === "2") return "dim";
-          if (code === "3") return "italic";
-          if (code === "4") return "underline";
-          if (code === "5") return "blink";
-          return code;
-        })
-        .map((name) => `ansi-${name}`);
-      ansiClassNames.push(...styles);
-
-      return getReplacement(getSpan(ansiClassNames.join(" "), text));
-    }
-  );
+    )
+    .replace(/\x1B\[0m/g, "");
 }
 
 /**
