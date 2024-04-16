@@ -119,6 +119,9 @@ header {
   .file {
     color: #fff3ae;
   }
+  .path {
+    color: #fffcde;
+  }
   .error,
   .keyword {
     color: rgb(255, 98, 98);
