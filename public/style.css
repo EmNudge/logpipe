@@ -26,9 +26,9 @@ header {
     gap: 4px;
   }
   .tags-overflow .tags {
-    display: grid;
-    grid-gap: 10px;
-    grid-template-columns: repeat(auto-fill, 100px);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
   }
   .tags sl-badge {
     cursor: pointer;
