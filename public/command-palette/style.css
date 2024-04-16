@@ -22,6 +22,16 @@ form.help-menu {
     display: block;
   }
 }
+
+form.about-menu ul {
+  font-family: monospace;
+  line-height: 2;
+  font-size: 1rem;
+  list-style: none;
+  text-align: center;
+  padding: 0;
+}
+
 .form-footer {
   display: flex;
   justify-content: flex-end;

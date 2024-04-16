@@ -1,4 +1,4 @@
-import { downloadResource } from "../lib.js";
+import { $, downloadResource } from "../lib.js";
 
 /** @type {Element & { [key: string]: () => Promise<void> }} */
 const commandPaletteEl = document.querySelector("sl-dialog.command-palette");
@@ -51,6 +51,14 @@ setTitleFormEl.addEventListener("submit", (e) => {
   commandPaletteEl.hide();
 });
 
+const versionEl = commandPaletteEl.querySelector("span.about-version");
+versionEl.textContent = $('meta[name=version]').getAttribute('content');
+const aboutFormEl = commandPaletteEl.querySelector("form.about-menu");
+aboutFormEl.addEventListener("submit", (e) => {
+  e.preventDefault();
+  commandPaletteEl.hide();
+});
+
 const helpFormEl = commandPaletteEl.querySelector("form.help-menu");
 helpFormEl.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -90,7 +98,7 @@ inputEl.addEventListener("keydown", (e) => {
 listEl.addEventListener(
   "sl-select",
   (/** @type {Event & { detail: any }} e */ e) => {
-    /** @type {'set-title' | 'save' | 'help'} */
+    /** @type {'set-title' | 'save' | 'about' | 'help'} */
     const action = e.detail.item.value;
 
     if (action === "set-title") {
@@ -98,6 +106,8 @@ listEl.addEventListener(
     } else if (action === "save") {
       downloadResource("/_/logs", "logs");
       commandPaletteEl.hide();
+    } else if (action === "about") {
+      showForm(aboutFormEl, "About");
     } else if (action === "help") {
       showForm(helpFormEl, "Help Menu");
     }
