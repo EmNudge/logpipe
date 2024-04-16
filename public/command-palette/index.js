@@ -103,20 +103,24 @@ function toggleExpandTerminal() {
   containerEl.classList.toggle("expand");
   mainEl.classList.toggle("expand");
   tagsDialogEl.classList.toggle("expand");
-  
+
   commandPaletteEl.hide();
-};
+}
 
 listEl.addEventListener(
   "sl-select",
   (/** @type {Event & { detail: any }} e */ e) => {
-    /** @type {'set-title' | 'expand' | 'ansi' | 'save' | 'about' | 'help'} */
+    /** @type {'set-title' | 'expand' | 'theme' | 'ansi' | 'save' | 'about' | 'help'} */
     const action = e.detail.item.value;
 
     if (action === "set-title") {
       showForm(setTitleFormEl, "Set Title");
     } else if (action === "expand") {
       toggleExpandTerminal();
+    } else if (action === "theme") {
+      $("html").classList.toggle("sl-theme-dark");
+      $("html").classList.toggle("sl-theme-light");
+      commandPaletteEl.hide();
     } else if (action === "ansi") {
       toggleAnsiParsing();
       commandPaletteEl.hide();
