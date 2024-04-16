@@ -5,10 +5,16 @@ import fs from "fs/promises";
 import { join } from "path";
 import { fileURLToPath } from "url";
 
-/** @type {string} */
-const args = process.argv.slice(2).join(" ");
+const argv = /** @type {string[]} */ (process.argv.slice(2));
+/** @param {string} name */
+const findArg = (name) => {
+  const index = argv.indexOf(name);
+  if (index === -1) return;
+  if (!argv[index + 1] || argv[index + 1].startsWith("-")) return "true";
+  return argv[index + 1];
+};
 
-if (/--version|(?: |^)-v/.test(args)) {
+if (findArg("--version") || findArg("-v")) {
   const packageJsonpath = join(
     fileURLToPath(import.meta.url),
     "..",
@@ -21,7 +27,7 @@ if (/--version|(?: |^)-v/.test(args)) {
 }
 
 // user asked for CLI help
-if (/--help|(?: |^)-h/.test(args)) {
+if (findArg("--help") || findArg("-h")) {
   console.log(
     [
       "Usage: logpipe [--port PORT] [--title TITLE]",
@@ -42,14 +48,9 @@ if (/--help|(?: |^)-h/.test(args)) {
   process.exit();
 }
 
-const port = (() => {
-  const match = args.match(/(?:--port\s|(?: |^)-p)\s*(\d+)/);
-  return match ? Number(match[1]) : 0;
-})();
-const title = (() => {
-  const match = args.match(/(?:--title\s|(?: |^)-t)\s*"([\w ]+)"/);
-  return match ? /**@type {string}*/ (match[1]) : "CLI Input";
-})();
+const port = Number(findArg("--port") ?? findArg("-p")) || 0;
+const DEFAULT_TITLE = "CLI Input";
+const title = findArg("--title") ?? findArg("-t") ?? "CLI Input";
 
 /** @typedef {{ input: string, date: number, id: string }} CliInput */
 
@@ -108,7 +109,6 @@ const getMimeTypeForFile = (path) => {
   }[ext];
   return mimeType ?? "text/plain";
 };
-
 
 const PUBLIC_DIR = join(fileURLToPath(import.meta.url), "..", "public");
 
@@ -189,4 +189,8 @@ if (!server.address() && port) {
 }
 
 const address = `http://localhost:${server.address().port}`;
-console.log(`\nLogs are displayed on \x1b[32;1;4m${address}\x1b[0m\n`);
+let log = `Logs are displayed on \x1b[32;1;4m${address}\x1b[0m`
+if (title !== DEFAULT_TITLE) {
+  log += ` with title \x1b[34;3m"${title}"\x1b[0m`;
+}
+console.log(`\n${log}\n`);
