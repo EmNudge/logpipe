@@ -19,9 +19,6 @@ const getSpan = (className, textContent = "", properties = {}) => {
 const VARIATION_SELECTOR_100 = String.fromCodePoint(917843);
 
 /**
- * Highlights some text based off of various heuristics.
- * Returns html as a string
- *
  * @param {string} text text to transform
  * @param {(...el: HTMLElement[]) => string} getReplacement function for inserting replacements.
  * @returns {string} html
@@ -92,9 +89,6 @@ function replaceAnsi(text, getReplacement) {
 }
 
 /**
- * Highlights some text based off of various heuristics.
- * Returns html as a string
- *
  * @param {string} text text to transform
  * @param {(...el: HTMLElement[]) => string} getReplacement function for inserting replacements.
  * @returns {string} html
@@ -150,6 +144,21 @@ function replaceDate(text, getReplacement) {
 }
 
 /**
+ * @param {string} text text to transform
+ * @param {(...els: HTMLElement[]) => string} getReplacement function for inserting replacements.
+ * @returns {string} html
+ */
+function replacePath(text, getReplacement) {
+  return text
+    .replace(/((?:\/?(?:[\w.-]+)+\/)+)(\S*)/g, (_, folder, file) => {
+      return getReplacement(getSpan("path", folder), getSpan("file", file));
+    })
+    .replace(/(?:[\w-]+)+\.[a-zA-Z]+(?::(?:\d+|\(\d+,\d+\)))?/g, (m) => {
+      return getReplacement(getSpan("file", m));
+    });
+}
+
+/**
  * Highlights some text based off of various heuristics.
  * Returns html as a string
  *
@@ -174,6 +183,7 @@ export function highlightText(text) {
   modified = replaceAnsi(text, getReplacement);
   modified = replaceURLs(modified, getReplacement);
   modified = replaceDate(modified, getReplacement);
+  modified = replacePath(modified, getReplacement);
 
   modified = modified
     // parse key=value pairs
@@ -189,26 +199,33 @@ export function highlightText(text) {
       return getReplacement(getSpan("ip", m));
     })
     // parse [TAG] indicators
-    .replace(/\[[^\[\]]+\]|^info\b|^warn\b|^error\b|^debug\b|^trace\b/gi, (m) => {
-      // don't parse numbers and IPs as tags
-      if (/\[[\d\.:]+\]/.test(m)) return m;
-      return getReplacement(getSpan("tag", m));
-    })
-    // parse file
-    .replace(/(?:[\/\w]+)?[\w.]+:\d+/g, (m) => {
-      return getReplacement(getSpan("file", m));
-    })
+    .replace(
+      /\[[^\[\]]+\]|^info\b|^warn\b|^error\b|^debug\b|^trace\b/gi,
+      (m) => {
+        // don't parse numbers and IPs as tags
+        if (/\[[\d\.:]+\]/.test(m)) return m;
+        return getReplacement(getSpan("tag", m));
+      }
+    )
     // parse quoted strings
     .replace(/"[^"]*?"/g, (m) => {
       return getReplacement(getSpan("string", m));
     })
     // parse numbers
-    .replace(new RegExp(String.raw`(?:${VARIATION_SELECTOR_100})?\b(?:-|\+)?\d+(?:\.\d+)?\b`, 'g'), (m) => {
-      if (m.startsWith(VARIATION_SELECTOR_100)) return m;
-      return getReplacement(getSpan("number", m));
-    })
+    .replace(
+      new RegExp(
+        String.raw`(?:${VARIATION_SELECTOR_100})?\b(?:-|\+)?\d+(?:\.\d+)?\b`,
+        "g"
+      ),
+      (m) => {
+        if (m.startsWith(VARIATION_SELECTOR_100)) return m;
+        return getReplacement(getSpan("number", m));
+      }
+    )
     .replace(/\b(?:GET|POST|PUT|PATCH|DELETE)\b/g, (m) => {
-      return getReplacement(getSpan("http-method http-method-" + m.toLowerCase(), m));
+      return getReplacement(
+        getSpan("http-method http-method-" + m.toLowerCase(), m)
+      );
     })
     // parse keywords
     .replace(/\b(?:true|false|null|undefined)\b/gi, (m) => {

@@ -32,13 +32,14 @@ function logRandom() {
       ),
       () => console.log(`tag: [${Math.random().toString(32).slice(2)}]`),
     () => console.log('failed to throw an error. This is surprisingly not a good thing.'),
-    () => console.log("[INFO] /opt/file_thing.sock:019 | all systems go"),
+    () => console.log("[INFO] /opt/file_thing.sock:19 took 232.21ms | all systems go"),
     () =>
       console.log("on http://localhost:8080 (127.0.0.1) someone cool made a GET request (source: file_thing.js:32)", {
         a: 1,
         b: 2,
         c: Math.random() * 50,
       }),
+    () => console.log('["this is not a tag"] action took 32h2m1.13s at file_info.go:(12,31)'),
     () =>
       console.log(
         "stringified",
