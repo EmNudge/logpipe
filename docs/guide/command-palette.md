@@ -18,7 +18,11 @@ You can set the title from the command line with the `--title` argument, but it'
 
 Use this to change the title of your tab and page. Useful for if you have multiple logpipe instances open.
 
-### Save Logs To Disk
+### Expand Terminal
+
+The default size might be a bit small for some people. This size was chosen on purpose, but you can expand the sizing of many panes with this feature. It's a toggle, so it can be reverted just as easily.
+
+### Save Logs
 
 Download the current logs as a JSON file.
 
