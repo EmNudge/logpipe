@@ -135,7 +135,7 @@ function replaceURLs(text, getReplacement) {
 function replaceDate(text, getReplacement) {
   return (
     text
-      .replace(/\d+[-\/]\d+[-\/]\d+ \d+:\d+:\d+(?:[\.,]\d+)?/g, (m) => {
+      .replace(/\b\d+[-\/]\d+[-\/]\d+ \d+:\d+:\d+(?:[.,]\d+)?/g, (m) => {
         return getReplacement(getSpan("date", m));
       })
       // parse ISO date
@@ -160,10 +160,10 @@ function replaceDate(text, getReplacement) {
  */
 function replacePath(text, getReplacement) {
   return text
-    .replace(/((?:\/?(?:[\w.-]+)+\/)+)(\S*)/g, (_, folder, file) => {
+    .replace(/(\/?[\w.-]+(?:\/(?:[\w.-]+)*\/)+)(\S*)/g, (_, folder, file) => {
       return getReplacement(getSpan("path", folder), getSpan("file", file));
     })
-    .replace(/(?:[\w-]+)+\.[a-zA-Z]+(?::(?:\d+|\(\d+,\d+\)))?/g, (m) => {
+    .replace(/[\w-]+\.[a-zA-Z]+(?::(?:\d+|\(\d+,\d+\)))?/g, (m) => {
       return getReplacement(getSpan("file", m));
     });
 }
