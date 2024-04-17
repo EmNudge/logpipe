@@ -67,8 +67,11 @@ helpFormEl.addEventListener("submit", (e) => {
 });
 
 document.body.addEventListener("keydown", (e) => {
-  if (e.key === "k" && e.metaKey) {
+  if (e.key !== "k") return;
+
+  if ((navigator.userAgent.includes(" Mac") && e.metaKey) || e.ctrlKey) {
     commandPaletteEl.show();
+    e.preventDefault();
   }
 });
 
