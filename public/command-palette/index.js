@@ -137,3 +137,11 @@ listEl.addEventListener(
     }
   }
 );
+
+const cmdPlatteHint = $('.command-palette-hint');
+cmdPlatteHint.classList.remove('hide');
+$('h1').insertAdjacentElement('afterend', cmdPlatteHint);
+
+if (!navigator.userAgent.includes(' Mac')) {
+  cmdPlatteHint.querySelector('.modifier').textContent = 'Ctrl';
+}

@@ -39,7 +39,7 @@ form.about-menu ul {
 
 .expand {
   main& {
-    width: 1200px;  
+    width: 1200px;
   }
   .container& {
     height: 900px;
@@ -47,4 +47,12 @@ form.about-menu ul {
   .tags-dialog& {
     --width: 1000px;
   }
+}
+
+.command-palette-hint {
+  margin-top: -1.25rem;
+  scale: 0.75;
+  translate: 10px;
+  transform-origin: left;
+  opacity: 0.4;
 }
