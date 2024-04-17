@@ -18,6 +18,9 @@ sl-dialog form:not(.palette-form, .hide) {
   &[aria-selected="true"] {
     background: var(--sl-color-primary-100);
   }
+  &[aria-hidden="true"] {
+    display: none;
+  }
 }
 
 form.help-menu {
