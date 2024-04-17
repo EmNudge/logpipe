@@ -13,11 +13,17 @@ export default defineConfig({
     sidebar: {
       '/guide/': { base: '/guide/', items: [
         {
-          text: 'Guide',
+          text: 'Overview',
           items: [
             { text: 'Quickstart', link: 'quickstart' },
             { text: 'Motivation', link: 'motivation' },
             { text: 'Alternatives', link: 'alternatives' },
+          ]
+        },
+        {
+          text: 'Guides',
+          items: [
+            { text: 'Shell Redirection', link: 'shell-redirection' },
             { text: 'Filtering', link: 'filtering' },
             { text: 'Command Palette', link: 'command-palette' },
             { text: 'Contribution Guide', link: 'contribution-guide' },
