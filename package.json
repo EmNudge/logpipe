@@ -5,6 +5,9 @@
     "type": "git",
     "url": "https://github.com/EmNudge/logpipe.git"
   },
+  "scripts": {
+    "dev": "nodemon --exec 'node out.js | node index.mjs -p 7280' -e ts,html,js,mjs,css"
+  },
   "bin": {
     "logpipe": "./index.mjs"
   },
