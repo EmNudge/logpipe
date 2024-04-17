@@ -1,8 +1,46 @@
 import { toggleAnsiParsing } from "../highlight.js";
 import { $, downloadResource } from "../lib.js";
 
-/** @type {Element & { [key: string]: () => Promise<void> }} */
-const commandPaletteEl = document.querySelector("sl-dialog.command-palette");
+const commandPaletteEl =
+  /** @type {HTMLElement & { [key: string]: () => Promise<void> }} */ (
+    $("sl-dialog.command-palette")
+  );
+
+const menuEl = $(".palette-form .menu");
+
+/** @param {HTMLElement} newSelection */
+const changeSelection = (newSelection) => {
+  const selectedEl = menuEl.querySelector('[aria-selected="true"]');
+  selectedEl.setAttribute("aria-selected", "false");
+
+  newSelection.setAttribute("aria-selected", "true");
+  newSelection.scrollIntoView();
+};
+
+/** @param {string} key */
+const moveSelection = (key) => {
+  if (key !== "ArrowDown" && key !== "ArrowUp") return;
+
+  const selectedEl = menuEl.querySelector('[aria-selected="true"]');
+  const els = menuEl.querySelectorAll('[role="menuitem"]');
+  if (els.length < 2) return;
+
+  const index = [...els].indexOf(selectedEl);
+  if (key === 'ArrowDown') {
+    const nextEl = els[(index + 1) % els.length];
+    changeSelection(/** @type {HTMLElement} **/ (nextEl));
+  } else {
+    const nextEl = els[(els.length + index - 1) % els.length];
+    changeSelection(/** @type {HTMLElement} **/ (nextEl));
+  }
+};
+
+menuEl.addEventListener("click", (e) => {
+  if (!(e.target instanceof HTMLElement)) return;
+  if (e.target.getAttribute("role") !== "menuitem") return;
+
+  changeSelection(e.target);
+});
 
 /** @param {Element} formEl @param {string} title */
 const showForm = (formEl, title = "Command Palette") => {
@@ -18,6 +56,7 @@ const showForm = (formEl, title = "Command Palette") => {
   }
 };
 
+const rootFormEl = commandPaletteEl.querySelector("form.palette-form");
 commandPaletteEl.addEventListener("sl-after-hide", () => {
   showForm(rootFormEl);
 });
@@ -25,21 +64,20 @@ commandPaletteEl.addEventListener("sl-after-hide", () => {
 /** @type {HTMLInputElement} */
 const inputEl = commandPaletteEl.querySelector("sl-input.palette-filter");
 /** @type {HTMLElement & { [key: string]: () => Promise<void> }} */
-const listEl = commandPaletteEl.querySelector("sl-menu");
+// const listEl = commandPaletteEl.querySelector("sl-menu");
 
-const rootFormEl = commandPaletteEl.querySelector("form.palette-form");
-rootFormEl.addEventListener("submit", (e) => {
-  e.preventDefault();
+// rootFormEl.addEventListener("submit", (e) => {
+//   e.preventDefault();
 
-  for (const menuItem of listEl.querySelectorAll("sl-menu-item")) {
-    if (menuItem.classList.contains("hide")) continue;
+//   for (const menuItem of listEl.querySelectorAll("sl-menu-item")) {
+//     if (menuItem.classList.contains("hide")) continue;
 
-    listEl.dispatchEvent(
-      new CustomEvent("sl-select", { detail: { item: menuItem } })
-    );
-    break;
-  }
-});
+//     listEl.dispatchEvent(
+//       new CustomEvent("sl-select", { detail: { item: menuItem } })
+//     );
+//     break;
+//   }
+// });
 
 const setTitleFormEl = commandPaletteEl.querySelector("form.title-form");
 setTitleFormEl.addEventListener("submit", (e) => {
@@ -75,28 +113,20 @@ document.body.addEventListener("keydown", (e) => {
   }
 });
 
-inputEl.addEventListener("input", () => {
-  const filterText = inputEl.value;
-  for (const menuItem of listEl.querySelectorAll("sl-menu-item")) {
-    const shouldDisplay = menuItem.textContent
-      .toLowerCase()
-      .includes(filterText);
-    // @ts-ignore
-    menuItem.style.display = shouldDisplay ? "" : "none";
-  }
-});
+// inputEl.addEventListener("input", () => {
+//   const filterText = inputEl.value;
+//   for (const menuItem of listEl.querySelectorAll("sl-menu-item")) {
+//     const shouldDisplay = menuItem.textContent
+//       .toLowerCase()
+//       .includes(filterText);
+//     // @ts-ignore
+//     menuItem.style.display = shouldDisplay ? "" : "none";
+//   }
+// });
 inputEl.addEventListener("keydown", (e) => {
   if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
 
-  const items = [...listEl.querySelectorAll("sl-menu-item")];
-  if (e.key === "ArrowUp") items.reverse();
-
-  for (const menuItem of items) {
-    if (menuItem.classList.contains("hide")) continue;
-    // @ts-ignore
-    menuItem.focus();
-    return;
-  }
+  moveSelection(e.key);
 });
 
 const containerEl = $("div.container");
@@ -110,7 +140,7 @@ function toggleExpandTerminal() {
   commandPaletteEl.hide();
 }
 
-listEl.addEventListener(
+menuEl.addEventListener(
   "sl-select",
   (/** @type {Event & { detail: any }} e */ e) => {
     /** @type {'set-title' | 'expand' | 'theme' | 'ansi' | 'save' | 'about' | 'help'} */
@@ -138,10 +168,10 @@ listEl.addEventListener(
   }
 );
 
-const cmdPlatteHint = $('.command-palette-hint');
-cmdPlatteHint.classList.remove('hide');
-$('h1').insertAdjacentElement('afterend', cmdPlatteHint);
+const cmdPlatteHint = $(".command-palette-hint");
+cmdPlatteHint.classList.remove("hide");
+$("h1").insertAdjacentElement("afterend", cmdPlatteHint);
 
-if (!navigator.userAgent.includes(' Mac')) {
-  cmdPlatteHint.querySelector('.modifier').textContent = 'Ctrl';
+if (!navigator.userAgent.includes(" Mac")) {
+  cmdPlatteHint.querySelector(".modifier").textContent = "Ctrl";
 }

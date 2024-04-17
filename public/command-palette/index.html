@@ -1,28 +1,90 @@
 <body>
-  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./style.css" />
   <script type="module" src="./index.js"></script>
-  
-  <sl-dialog class="command-palette" label="Command Palette" style="--width: 600px">
+
+  <sl-dialog
+    class="command-palette"
+    label="Command Palette"
+    style="--width: 600px"
+  >
     <form class="palette-form">
-      <sl-input class="palette-filter" autofocus placeholder="Search"></sl-input>
-      <sl-menu>
-        <sl-menu-item value="set-title">Set Title</sl-menu-item>
-        <sl-menu-item value="expand">Toggle Terminal Expand</sl-menu-item>
-        <sl-menu-item value="ansi">Toggle ANSI Parsing</sl-menu-item>
-        <sl-menu-item value="theme">Toggle Theme</sl-menu-item>
-        <sl-menu-item value="save">Save Logs</sl-menu-item>
-        <sl-menu-item value="about">About</sl-menu-item>
-        <sl-menu-item value="help">Help</sl-menu-item>
-      </sl-menu>
+      <sl-input
+        class="palette-filter"
+        autofocus
+        placeholder="Search"
+      ></sl-input>
+      <div class="menu" role="menu">
+        <!-- aria-selected -->
+        <div
+          class="menu-item"
+          role="menuitem"
+          value="set-title"
+          aria-selected="true"
+        >
+          Set Title
+        </div>
+        <div
+          class="menu-item"
+          role="menuitem"
+          value="expand"
+          aria-selected="false"
+        >
+          Toggle Terminal Expand
+        </div>
+        <div
+          class="menu-item"
+          role="menuitem"
+          value="ansi"
+          aria-selected="false"
+        >
+          Toggle ANSI Parsing
+        </div>
+        <div
+          class="menu-item"
+          role="menuitem"
+          value="theme"
+          aria-selected="false"
+        >
+          Toggle Theme
+        </div>
+        <div
+          class="menu-item"
+          role="menuitem"
+          value="save"
+          aria-selected="false"
+        >
+          Save Logs
+        </div>
+        <div
+          class="menu-item"
+          role="menuitem"
+          value="about"
+          aria-selected="false"
+        >
+          About
+        </div>
+        <div
+          class="menu-item"
+          role="menuitem"
+          value="help"
+          aria-selected="false"
+        >
+          Help
+        </div>
+      </div>
     </form>
-  
+
     <form class="hide title-form">
-      <sl-input label="New Title" autofocus placeholder="New page title"></sl-input>
+      <sl-input
+        label="New Title"
+        autofocus
+        placeholder="New page title"
+      ></sl-input>
       <div class="form-footer">
         <sl-button type="submit">Change Title</sl-button>
       </div>
     </form>
-  
+
     <form class="hide about-menu">
       <ul>
         <li>Version <span class="about-version"></span></li>
@@ -39,31 +101,40 @@
       <dl>
         <dt>My logs aren't showing!</dt>
         <dd>
-          <p>Your logs may be outputting to stderr. Try using bash redirection.</p>
+          <p>
+            Your logs may be outputting to stderr. Try using bash redirection.
+          </p>
           <p>
             <code>my-program <strong>2>&1</strong> | logpipe</code>
           </p>
         </dd>
-  
+
         <dt>How do I specify a port?</dt>
         <dd>
-          <p>The command line supports the options <code>--port</code> and <code>--title</code> for specifying these
-            things.</p>
           <p>
-            <code>my-program | logpipe --port 8080 --title "Backend System"</code>
+            The command line supports the options <code>--port</code> and
+            <code>--title</code> for specifying these things.
+          </p>
+          <p>
+            <code
+              >my-program | logpipe --port 8080 --title "Backend System"</code
+            >
           </p>
         </dd>
-  
+
         <dt>How do I copy a log or timestamp?</dt>
         <dd>
-          <p>Try out the right-click menu! Right click a log for a list of options.</p>
+          <p>
+            Try out the right-click menu! Right click a log for a list of
+            options.
+          </p>
         </dd>
-  
+
         <dt>How do I jump to a log's source location?</dt>
         <dd>
           <p>Also in the right-click menu!</p>
         </dd>
-  
+
         <dt>How do I search for all URLs?</dt>
         <dd>
           <p>Use the logpipe query language!</p>
@@ -71,22 +142,24 @@
             <code>@@url</code>
           </p>
         </dd>
-  
+
         <dt>What are the supported query types?</dt>
         <dd>
           <p>Here is a query which includes all of them!</p>
           <p>
-            <code class="multiline">@@string,number,tag,url,ip,error,file,http-method,key,value,keyword</code>
+            <code class="multiline"
+              >@@string,number,tag,url,ip,error,file,http-method,key,value,keyword</code
+            >
           </p>
         </dd>
-  
+
         <dt>What are the keyboard shortcuts?</dt>
         <dd>
           <p><kbd>Cmd</kbd>+<kbd>k</kbd> - Open the command palette</p>
           <p><kbd>/</kbd> - Focus filter box</p>
         </dd>
       </dl>
-  
+
       <div class="form-footer">
         <sl-button type="submit">Got It!</sl-button>
       </div>
