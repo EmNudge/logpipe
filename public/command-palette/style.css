@@ -3,6 +3,26 @@ sl-dialog form:not(.palette-form, .hide) {
   gap: var(--sl-spacing-medium);
 }
 
+.menu {
+  height: 250px;
+  overflow: auto;
+}
+.menu .menu-item {
+  padding: var(--sl-spacing-small) var(--sl-spacing-medium);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--sl-color-primary-50);
+  }
+
+  &[aria-selected="true"] {
+    background: var(--sl-color-primary-100);
+  }
+  &[aria-hidden="true"] {
+    display: none;
+  }
+}
+
 form.help-menu {
   dl {
     padding: 0 var(--sl-spacing-x-large);
