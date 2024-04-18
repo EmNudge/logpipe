@@ -121,7 +121,8 @@ fs.readdir(PUBLIC_DIR).then((files) =>
         publicFiles.add(file);
         return;
       }
-      for (const subFile of await fs.readdir(PUBLIC_DIR)) {
+      const curFolder = join(PUBLIC_DIR, file);
+      for (const subFile of await fs.readdir(curFolder)) {
         publicFiles.add(join(file, subFile));
       }
     })
