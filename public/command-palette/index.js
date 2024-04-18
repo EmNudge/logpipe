@@ -1,5 +1,24 @@
-import { toggleAnsiParsing } from "../highlight.js";
-import { $, downloadResource } from "../lib.js";
+import { maybeAddTag } from "../tags.js";
+import { $, $$, downloadResource, sleep } from "../lib.js";
+
+
+let parseAnsi = true;
+
+export async function toggleAnsiParsing() {
+  parseAnsi = !parseAnsi;
+  const logs = $$('.container .log');
+  for (let i = 0; logs.length; i++) {
+    if (i % 100 === 0) {
+      await sleep(0);
+    }
+    const logEl = logs[i]; 
+    const text = logEl.textContent;
+    logEl.innerHTML = '';
+    // logEl.append(...highlightText(text));
+    maybeAddTag(logEl);
+  }
+}
+
 
 const commandPaletteEl =
   /** @type {HTMLElement & { [key: string]: () => Promise<void> }} */ (

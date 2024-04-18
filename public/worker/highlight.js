@@ -1,14 +1,11 @@
-import { maybeAddTag } from "./tags.js";
-import { $$, sleep } from "./lib.js";
+/** @typedef {{ name: string, [key: string]: any }} Element */
 
 /**
  * @param {string} name
  * @param {Record<string, string>} properties
+ * @returns {Element}
  */
-const getEl = (name, properties) => {
-  const span = document.createElement(name);
-  return Object.assign(span, properties);
-};
+const getEl = (name, properties) => ({ name, ...properties });
 
 /**
  * @param {string} className
@@ -23,7 +20,7 @@ const VARIATION_SELECTOR_100 = String.fromCodePoint(917843);
 
 /**
  * @param {string} text text to transform
- * @param {(...el: HTMLElement[]) => string} getReplacement function for inserting replacements.
+ * @param {(...el: Element[]) => string} getReplacement function for inserting replacements.
  * @param {boolean} parseAnsi
  * @returns {string} html
  */
@@ -100,7 +97,7 @@ function replaceAnsi(text, getReplacement, parseAnsi = true) {
 
 /**
  * @param {string} text text to transform
- * @param {(...el: HTMLElement[]) => string} getReplacement function for inserting replacements.
+ * @param {(...el: Element[]) => string} getReplacement function for inserting replacements.
  * @returns {string} html
  */
 function replaceURLs(text, getReplacement) {
@@ -109,14 +106,15 @@ function replaceURLs(text, getReplacement) {
     /\b(https?:)\/\/(\w+(?:\.\w+)*)(:\d+)?((?:\/[\w\.]+)*\/?)((?:\?(?:&?\w+=\w+)*))?/gi,
     (_, protocol, host, port, path, params) => {
       const urlContainer = getSpan("url");
-      urlContainer.append(
+      urlContainer.children = [];
+      urlContainer.children.push(
         getSpan("url-protocol", protocol),
         "//",
         getSpan("url-host", host)
       );
       for (const [key, value] of Object.entries({ port, path, params })) {
         if (!value) continue;
-        urlContainer.append(getSpan(`url-${key}`, value));
+        urlContainer.children.push(getSpan(`url-${key}`, value));
       }
 
       return getReplacement(urlContainer);
@@ -129,7 +127,7 @@ function replaceURLs(text, getReplacement) {
  * Returns html as a string
  *
  * @param {string} text text to transform
- * @param {(...els: HTMLElement[]) => string} getReplacement function for inserting replacements.
+ * @param {(...els: Element[]) => string} getReplacement function for inserting replacements.
  * @returns {string} html
  */
 function replaceDate(text, getReplacement) {
@@ -155,7 +153,7 @@ function replaceDate(text, getReplacement) {
 
 /**
  * @param {string} text text to transform
- * @param {(...els: HTMLElement[]) => string} getReplacement function for inserting replacements.
+ * @param {(...els: Element[]) => string} getReplacement function for inserting replacements.
  * @returns {string} html
  */
 function replacePath(text, getReplacement) {
@@ -170,7 +168,7 @@ function replacePath(text, getReplacement) {
 
 /**
  * @param {string} text text to transform
- * @param {(...els: HTMLElement[]) => string} getReplacement function for inserting replacements.
+ * @param {(...els: Element[]) => string} getReplacement function for inserting replacements.
  * @returns {string} html
  */
 function replaceTags(text, getReplacement) {
@@ -185,37 +183,21 @@ function replaceTags(text, getReplacement) {
     });
 }
 
-let parseAnsi = true;
-
-export async function toggleAnsiParsing() {
-  parseAnsi = !parseAnsi;
-  const logs = $$('.container .log');
-  for (let i = 0; logs.length; i++) {
-    if (i % 100 === 0) {
-      await sleep(0);
-    }
-    const logEl = logs[i]; 
-    const text = logEl.textContent;
-    logEl.innerHTML = '';
-    logEl.append(...highlightText(text));
-    maybeAddTag(logEl);
-  }
-}
-
 /**
  * Highlights some text based off of various heuristics.
  * Returns html as a string
  *
  * @param {string} text
- * @returns {(string | Node)[]} html
+ * @param {boolean} parseAnsi
+ * @returns {(string | Element)[]} html
  */
-export function highlightText(text) {
-  /** @type {Map<string, Node[]>} */
+export function highlightText(text, parseAnsi = true) {
+  /** @type {Map<string, (Element | string)[]>} */
   const map = new Map();
   let ident = 0;
   const getIdent = () =>
     `${VARIATION_SELECTOR_100}${ident++}${VARIATION_SELECTOR_100}`;
-  /** @param {Node[]} el */
+  /** @param {(Element | string)[]} el */
   const getReplacement = (...el) => {
     const placeholder = getIdent();
     map.set(placeholder, el);
@@ -238,7 +220,7 @@ export function highlightText(text) {
     .replace(/(\S+?)=(\S+)/g, (_, key, value) => {
       return getReplacement(
         getSpan("key", key),
-        new Text("="),
+        "=",
         getSpan("value", value)
       );
     })
@@ -289,7 +271,7 @@ export function highlightText(text) {
       )
     )
     .flatMap(
-      /** @returns {(Node | string)[]} */ (str) => {
+      /** @returns {(Element | string)[]} */ (str) => {
         if (!str.startsWith(VARIATION_SELECTOR_100)) return [str];
         return map.get(str);
       }

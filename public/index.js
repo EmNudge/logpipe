@@ -1,10 +1,10 @@
-import { highlightText } from "./highlight.js";
+// import { highlightText } from "./worker/highlight.js";
 import { $, cloneTemplate, isInView, loadHtmlComponent } from "./lib.js";
 import { applyFilter } from "./filter.js";
 import { maybeAddTag } from "./tags.js";
 
-loadHtmlComponent('command-palette');
-loadHtmlComponent('context-menu');
+loadHtmlComponent("command-palette");
+loadHtmlComponent("context-menu");
 
 /** @typedef {{ input: string, date: number, id: string }} CliInput */
 
@@ -36,10 +36,38 @@ logContainer.addEventListener("scroll", (e) => {
   }
 });
 
+const highlightWorker = new Worker("./worker/index.js", { type: "module" });
+
+/** @param {string} input */
+const highlightText = (input) => {
+  /** @param {any} obj */
+  const getElementForObj = (obj) => {
+    if (typeof obj == "string") return obj;
+
+    const { name, children, ...rest } = obj;
+    const element = Object.assign(document.createElement(name), rest);
+    for (const child of obj?.children ?? []) {
+      element.append(getElementForObj(child));
+    }
+    return element;
+  };
+
+  return new Promise((res) => {
+    /** @param {MessageEvent<any>} e */
+    const listener = (e) => {
+      const elements = e.data.map((obj) => getElementForObj(obj));
+      res(elements);
+    };
+    highlightWorker.addEventListener("message", listener, { once: true });
+    highlightWorker.postMessage(input);
+  });
+};
+
 /** @param {CliInput} cliInput */
-function getLogEl({ input, date, id }) {
+async function getLogEl({ input, date, id }) {
   const logEl = cloneTemplate(".log");
-  logEl.append(...highlightText(input));
+  const elements = await highlightText(input);
+  logEl.append(...elements);
   maybeAddTag(logEl);
 
   logEl.setAttribute("data-id", id);
@@ -83,7 +111,8 @@ cliSource.onmessage = async (event) => {
     logs.push(...newLogs);
     $(".log-count .total").textContent = `(${logs.length})`;
 
-    await appendLog(...newLogs.map((log) => getLogEl(log)));
+    const logEls = await Promise.all(newLogs.map((log) => getLogEl(log)));
+    await appendLog(...logEls);
     return;
   }
 
