@@ -102,3 +102,36 @@ export async function loadHtmlComponent(folder) {
 
 /** @param {number} ms */
 export const sleep = (ms) => new Promise(res => setTimeout(res, ms));
+
+
+const highlightWorker = new Worker("./worker/index.js", { type: "module" });
+
+/** 
+ * Highlights text!
+ * Calls the worker and deserializes the response into DOM nodes.
+ * @param {string} input 
+ * @returns {Promise<Node[]>}
+ * */
+export const highlightText = (input) => {
+  /** @param {any} obj */
+  const getElementForObj = (obj) => {
+    if (typeof obj == "string") return obj;
+
+    const { name, children, ...rest } = obj;
+    const element = Object.assign(document.createElement(name), rest);
+    for (const child of obj?.children ?? []) {
+      element.append(getElementForObj(child));
+    }
+    return element;
+  };
+
+  return new Promise((res) => {
+    /** @param {MessageEvent<any>} e */
+    const listener = (e) => {
+      const elements = e.data.map((obj) => getElementForObj(obj));
+      res(elements);
+    };
+    highlightWorker.addEventListener("message", listener, { once: true });
+    highlightWorker.postMessage(input);
+  });
+};

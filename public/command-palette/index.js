@@ -1,5 +1,5 @@
 import { maybeAddTag } from "../tags.js";
-import { $, $$, downloadResource, sleep } from "../lib.js";
+import { $, $$, downloadResource, highlightText, sleep } from "../lib.js";
 
 
 let parseAnsi = true;
@@ -14,7 +14,9 @@ export async function toggleAnsiParsing() {
     const logEl = logs[i]; 
     const text = logEl.textContent;
     logEl.innerHTML = '';
-    // logEl.append(...highlightText(text));
+    // TODO: only re-highlight if it contains ANSI
+    const nodes = await highlightText(text);
+    logEl.append(...nodes);
     maybeAddTag(logEl);
   }
 }

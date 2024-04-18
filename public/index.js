@@ -1,5 +1,5 @@
 // import { highlightText } from "./worker/highlight.js";
-import { $, cloneTemplate, isInView, loadHtmlComponent } from "./lib.js";
+import { $, cloneTemplate, highlightText, isInView, loadHtmlComponent } from "./lib.js";
 import { applyFilter } from "./filter.js";
 import { maybeAddTag } from "./tags.js";
 
@@ -35,33 +35,6 @@ logContainer.addEventListener("scroll", (e) => {
     showButton = false;
   }
 });
-
-const highlightWorker = new Worker("./worker/index.js", { type: "module" });
-
-/** @param {string} input */
-const highlightText = (input) => {
-  /** @param {any} obj */
-  const getElementForObj = (obj) => {
-    if (typeof obj == "string") return obj;
-
-    const { name, children, ...rest } = obj;
-    const element = Object.assign(document.createElement(name), rest);
-    for (const child of obj?.children ?? []) {
-      element.append(getElementForObj(child));
-    }
-    return element;
-  };
-
-  return new Promise((res) => {
-    /** @param {MessageEvent<any>} e */
-    const listener = (e) => {
-      const elements = e.data.map((obj) => getElementForObj(obj));
-      res(elements);
-    };
-    highlightWorker.addEventListener("message", listener, { once: true });
-    highlightWorker.postMessage(input);
-  });
-};
 
 /** @param {CliInput} cliInput */
 async function getLogEl({ input, date, id }) {
