@@ -1,15 +1,9 @@
-import { highlightText } from "./highlight.js";
-import { $, cloneTemplate, isInView, loadHtmlComponent } from "./lib.js";
-import { applyFilter } from "./filter.js";
-import { maybeAddTag } from "./tags.js";
+// import { highlightText } from "./worker/highlight.js";
+import { $, loadHtmlComponent } from "./lib.js";
+import { addLogs } from "./log-adder.js";
 
-loadHtmlComponent('command-palette');
-loadHtmlComponent('context-menu');
-
-/** @typedef {{ input: string, date: number, id: string }} CliInput */
-
-/** @type {CliInput[]} */
-const logs = [];
+loadHtmlComponent("command-palette");
+loadHtmlComponent("context-menu");
 
 const logContainer = $(".container");
 
@@ -36,54 +30,13 @@ logContainer.addEventListener("scroll", (e) => {
   }
 });
 
-/** @param {CliInput} cliInput */
-function getLogEl({ input, date, id }) {
-  const logEl = cloneTemplate(".log");
-  logEl.append(...highlightText(input));
-  maybeAddTag(logEl);
-
-  logEl.setAttribute("data-id", id);
-  logEl.setAttribute(
-    "data-date",
-    new Date(date).toLocaleDateString("en-US", {
-      hour: "numeric",
-      minute: "numeric",
-      second: "numeric",
-    })
-  );
-
-  applyFilter(logEl);
-
-  return logEl;
-}
-/** @param {Element[]} logEls */
-async function appendLog(...logEls) {
-  const lastElement = /** @type {Element} */ (logContainer.lastChild);
-  const shouldScrollDown = lastElement
-    ? await isInView(lastElement, logContainer)
-    : false;
-
-  logContainer.append(...logEls);
-  if (shouldScrollDown) {
-    lastElement.scrollIntoView();
-  } else if (!lastElement) {
-    logContainer.lastElementChild?.scrollIntoView();
-  }
-}
-
 const cliSource = new EventSource("/_/cli-input");
 /** @param {Event & { data: string }} event */
 cliSource.onmessage = async (event) => {
   const data = JSON.parse(event.data);
 
   if (Array.isArray(data)) {
-    /** @type {CliInput[]} */
-    const newLogs = data;
-
-    logs.push(...newLogs);
-    $(".log-count .total").textContent = `(${logs.length})`;
-
-    await appendLog(...newLogs.map((log) => getLogEl(log)));
+    await addLogs(data)
     return;
   }
 

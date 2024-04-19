@@ -1,5 +1,5 @@
-import { toggleAnsiParsing } from "../highlight.js";
-import { $, downloadResource } from "../lib.js";
+import { $, downloadResource, toggleParsingAnsi } from "../lib.js";
+import { reAddAllLogs } from "../log-adder.js";
 
 const commandPaletteEl =
   /** @type {HTMLElement & { [key: string]: () => Promise<void> }} */ (
@@ -103,7 +103,7 @@ document.body.addEventListener("keydown", (e) => {
 
 inputEl.addEventListener("input", () => {
   const filterText = inputEl.value;
-  
+
   /** @type {HTMLElement} */
   let firstVisible;
 
@@ -118,7 +118,7 @@ inputEl.addEventListener("input", () => {
   }
 
   if (firstVisible) {
-    changeSelection(firstVisible)
+    changeSelection(firstVisible);
   }
 });
 inputEl.addEventListener("keydown", (e) => {
@@ -142,9 +142,9 @@ palletFormEl.addEventListener("submit", (e) => {
   e.preventDefault();
 
   const menuItemEl = menuEl.querySelector('[aria-selected="true"]');
-  if (menuItemEl.getAttribute('aria-hidden') === 'true') return;
+  if (menuItemEl.getAttribute("aria-hidden") === "true") return;
 
-  /** @typedef {'set-title' | 'expand' | 'theme' | 'ansi' | 'save' | 'about' | 'help'} ActionType */
+  /** @typedef {import('../../types.d.ts').CommandPaletteAction} ActionType */
   const action = /** @type {ActionType} */ (menuItemEl.getAttribute("value"));
 
   if (action === "set-title") {
@@ -156,7 +156,9 @@ palletFormEl.addEventListener("submit", (e) => {
     $("html").classList.toggle("sl-theme-light");
     commandPaletteEl.hide();
   } else if (action === "ansi") {
-    toggleAnsiParsing();
+    toggleParsingAnsi();
+    // TODO: only re-highlight if it contains ANSI
+    reAddAllLogs();
     commandPaletteEl.hide();
   } else if (action === "save") {
     downloadResource("/_/logs", "logs");
