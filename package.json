@@ -5,14 +5,12 @@
     "type": "git",
     "url": "https://github.com/EmNudge/logpipe.git"
   },
-  "scripts": {
-    "dev": "nodemon --exec 'node out.js | node index.mjs -p 7280' -e ts,html,js,mjs,css"
-  },
   "bin": {
     "logpipe": "./index.mjs"
   },
   "type": "module",
   "scripts": {
+    "dev": "nodemon --exec 'node out.js | node index.mjs -p 7280' -e ts,html,js,mjs,css",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs"
