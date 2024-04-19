@@ -1,6 +1,7 @@
 import { $, $$ } from "./lib.js";
 
-/** @typedef {{ input: string, date: number, id: string }} CliInput */
+/** @typedef {import('../types.d.ts').CliInput} CliInput */
+/** @typedef {import('../types.d.ts').TagGroup} TagGroup */
 
 const filterInputEl = /** @type {HTMLInputElement} */ ($("sl-input.filter"));
 
@@ -24,8 +25,6 @@ const getSelector = () =>
       .join(""),
     "g"
   );
-
-/** @typedef {{ tag: string; textValue?: string; }[]} TagGroup */
 
 /**
  * @param {string} filterText

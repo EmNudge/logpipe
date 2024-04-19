@@ -1,9 +1,9 @@
-/** @typedef {{ name: string, [key: string]: any }} Element */
+/** @typedef {import('../../types.d.ts').ElementObject} ElementObject */
 
 /**
  * @param {string} name
  * @param {Record<string, string>} properties
- * @returns {Element}
+ * @returns {ElementObject}
  */
 const getEl = (name, properties) => ({ name, ...properties });
 
@@ -20,7 +20,7 @@ const VARIATION_SELECTOR_100 = String.fromCodePoint(917843);
 
 /**
  * @param {string} text text to transform
- * @param {(...el: Element[]) => string} getReplacement function for inserting replacements.
+ * @param {(...el: ElementObject[]) => string} getReplacement function for inserting replacements.
  * @param {boolean} stripAnsiEscape
  * @returns {string} html
  */
@@ -97,7 +97,7 @@ function replaceAnsi(text, getReplacement, stripAnsiEscape) {
 
 /**
  * @param {string} text text to transform
- * @param {(...el: Element[]) => string} getReplacement function for inserting replacements.
+ * @param {(...el: ElementObject[]) => string} getReplacement function for inserting replacements.
  * @returns {string} html
  */
 function replaceURLs(text, getReplacement) {
@@ -127,7 +127,7 @@ function replaceURLs(text, getReplacement) {
  * Returns html as a string
  *
  * @param {string} text text to transform
- * @param {(...els: Element[]) => string} getReplacement function for inserting replacements.
+ * @param {(...els: ElementObject[]) => string} getReplacement function for inserting replacements.
  * @returns {string} html
  */
 function replaceDate(text, getReplacement) {
@@ -153,7 +153,7 @@ function replaceDate(text, getReplacement) {
 
 /**
  * @param {string} text text to transform
- * @param {(...els: Element[]) => string} getReplacement function for inserting replacements.
+ * @param {(...els: ElementObject[]) => string} getReplacement function for inserting replacements.
  * @returns {string} html
  */
 function replacePath(text, getReplacement) {
@@ -168,7 +168,7 @@ function replacePath(text, getReplacement) {
 
 /**
  * @param {string} text text to transform
- * @param {(...els: Element[]) => string} getReplacement function for inserting replacements.
+ * @param {(...els: ElementObject[]) => string} getReplacement function for inserting replacements.
  * @returns {string} html
  */
 function replaceTags(text, getReplacement) {
@@ -189,15 +189,15 @@ function replaceTags(text, getReplacement) {
  *
  * @param {string} text
  * @param {boolean} stripAnsiEscape
- * @returns {(string | Element)[]} html
+ * @returns {(string | ElementObject)[]} html
  */
 export function getHighlightObjects(text, stripAnsiEscape = true) {
-  /** @type {Map<string, (Element | string)[]>} */
+  /** @type {Map<string, (ElementObject | string)[]>} */
   const map = new Map();
   let ident = 0;
   const getIdent = () =>
     `${VARIATION_SELECTOR_100}${ident++}${VARIATION_SELECTOR_100}`;
-  /** @param {(Element | string)[]} el */
+  /** @param {(ElementObject | string)[]} el */
   const getReplacement = (...el) => {
     const placeholder = getIdent();
     map.set(placeholder, el);
@@ -268,7 +268,7 @@ export function getHighlightObjects(text, stripAnsiEscape = true) {
       )
     )
     .flatMap(
-      /** @returns {(Element | string)[]} */ (str) => {
+      /** @returns {(ElementObject | string)[]} */ (str) => {
         if (!str.startsWith(VARIATION_SELECTOR_100)) return [str];
         return map.get(str);
       }

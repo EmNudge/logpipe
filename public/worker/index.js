@@ -1,7 +1,7 @@
 import { getHighlightObjects } from "./highlight.js";
 
-/** @typedef {{ input: string, stripAnsiEscape: boolean, id: string }} Payload */
-/** @typedef {{ nodes: any[], id: string }} */
+/** @typedef {import('../../types.d.ts').HighlightWorkerRequest} Payload */
+
 self.addEventListener("message", (/** @type {MessageEvent<Payload>} */ e) => {
   const { input, stripAnsiEscape, id } = e.data;
   const highlighted = getHighlightObjects(input, stripAnsiEscape);

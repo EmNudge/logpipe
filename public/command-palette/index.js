@@ -144,7 +144,7 @@ palletFormEl.addEventListener("submit", (e) => {
   const menuItemEl = menuEl.querySelector('[aria-selected="true"]');
   if (menuItemEl.getAttribute("aria-hidden") === "true") return;
 
-  /** @typedef {'set-title' | 'expand' | 'theme' | 'ansi' | 'save' | 'about' | 'help'} ActionType */
+  /** @typedef {import('../../types.d.ts').CommandPaletteAction} ActionType */
   const action = /** @type {ActionType} */ (menuItemEl.getAttribute("value"));
 
   if (action === "set-title") {
