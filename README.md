@@ -2,9 +2,9 @@
 
 *Get clarity on development logs*
 
-<video src="https://github.com/EmNudge/logpipe/assets/24513691/906c3e92-85dc-439b-8575-0d033150d3d6"></video>
+<video src="https://github.com/EmNudge/logpipe/assets/24513691/59a1772a-2e5d-4129-aaa2-470dea297aee"></video>
 
-Checkout [the docs](https://logpipe.emnudge.dev/) or see it in action in [this online demo](https://logpipe.pages.dev)!
+Checkout [the docs](https://logpipe.dev/) or see it in action in [this online demo](https://logpipe.pages.dev)!
 
 ## Installation
 
