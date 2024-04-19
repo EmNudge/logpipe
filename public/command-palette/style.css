@@ -25,6 +25,8 @@ sl-dialog form:not(.palette-form, .hide) {
 
 form.help-menu {
   dl {
+    height: 400px;
+    overflow: auto;
     padding: 0 var(--sl-spacing-x-large);
   }
   dt {
