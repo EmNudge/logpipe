@@ -43,6 +43,8 @@ menuEl.addEventListener("click", (e) => {
   if (e.target.getAttribute("role") !== "menuitem") return;
 
   changeSelection(e.target);
+  const submitEvent = new FormDataEvent("submit", { formData: new FormData() });
+  palletFormEl.dispatchEvent(submitEvent);
 });
 
 /** @param {Element} formEl @param {string} title */
