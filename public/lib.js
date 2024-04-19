@@ -41,31 +41,6 @@ export const cloneTemplate = (selector, properties = {}) => {
 };
 
 /**
- * Uses IntersectionObserver to check if an element
- * is in view of a scroll container.
- *
- * @param {Element} logEl
- * @param {Element} root
- * @returns {Promise<boolean>}
- */
-export function isInView(logEl, root) {
-  return new Promise((res) => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          res(true);
-        }
-      },
-      { root }
-    );
-    observer.observe(logEl);
-    setTimeout(() => {
-      res(false);
-    }, 5);
-  });
-}
-
-/**
  * Download resource via an <a> tag
  * @param {string} url raw URL or data URL
  * @param {string} name name for file ("file" by default)

@@ -1,5 +1,5 @@
 import { applyFilter } from "./filter.js";
-import { $, cloneTemplate, highlightText, isInView } from "./lib.js";
+import { $, cloneTemplate, highlightText } from "./lib.js";
 import { maybeAddTag } from "./tags.js";
 
 /** @typedef {import('../types.d.ts').CliInput} CliInput */
@@ -33,16 +33,19 @@ async function getLogEl({ input, date, id }) {
 
 /** @param {Element[]} logEls */
 async function appendLog(...logEls) {
-  const lastElement = /** @type {Element} */ (logContainer.lastChild);
-  const shouldScrollDown = lastElement
-    ? await isInView(lastElement, logContainer)
-    : false;
+  const lastElement = logContainer.lastElementChild;
+
+  const shouldScrollDown = (() => {
+    if (!lastElement) return false;
+    const logBottom = lastElement?.getBoundingClientRect().bottom;
+    const parentBottom = logContainer.getBoundingClientRect().bottom;
+
+    return Math.abs(parentBottom - logBottom) < 10;
+  })();
 
   logContainer.append(...logEls);
   if (shouldScrollDown) {
     lastElement.scrollIntoView();
-  } else if (!lastElement) {
-    logContainer.lastElementChild?.scrollIntoView();
   }
 }
 
