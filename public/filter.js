@@ -56,7 +56,6 @@ const matchTags = (tagGroups, logEl) => {
     const matches = (() => {
       for (const { tag, textValue } of tagGroup) {
         const elements = logEl.querySelectorAll(`span.${tag}`);
-        console.log(elements)
         if (!elements.length) continue;
 
         if (!textValue) return true;

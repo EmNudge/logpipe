@@ -21,11 +21,11 @@ const VARIATION_SELECTOR_100 = String.fromCodePoint(917843);
 /**
  * @param {string} text text to transform
  * @param {(...el: Element[]) => string} getReplacement function for inserting replacements.
- * @param {boolean} parseAnsi
+ * @param {boolean} stripAnsiEscape
  * @returns {string} html
  */
-function replaceAnsi(text, getReplacement, parseAnsi = true) {
-  if (!parseAnsi) {
+function replaceAnsi(text, getReplacement, stripAnsiEscape) {
+  if (stripAnsiEscape) {
     return text.replace(/\x1B(?:]8;;|\\|\[(?:\d+|;)+?m)/g, '');
   }
 
@@ -188,10 +188,10 @@ function replaceTags(text, getReplacement) {
  * Returns html as a string
  *
  * @param {string} text
- * @param {boolean} parseAnsi
+ * @param {boolean} stripAnsiEscape
  * @returns {(string | Element)[]} html
  */
-export function highlightText(text, parseAnsi = true) {
+export function getHighlightObjects(text, stripAnsiEscape = true) {
   /** @type {Map<string, (Element | string)[]>} */
   const map = new Map();
   let ident = 0;
@@ -206,10 +206,7 @@ export function highlightText(text, parseAnsi = true) {
 
   // Remove specific invisible character we will be using for regex replacing
   let modified = text.replace(new RegExp(VARIATION_SELECTOR_100, "g"), "");
-  modified = replaceAnsi(text, getReplacement, parseAnsi);
-  // mark div as having ANSI later
-  const hasAnsi = map.size > 0;
-
+  modified = replaceAnsi(text, getReplacement, stripAnsiEscape);
   modified = replaceURLs(modified, getReplacement);
   modified = replaceDate(modified, getReplacement);
   modified = replacePath(modified, getReplacement);

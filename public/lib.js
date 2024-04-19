@@ -89,7 +89,10 @@ export async function loadHtmlComponent(folder) {
   // temp element used to deserialize HTML
   const span = document.createElement("span");
   // replace relative imports with absolute imports
-  span.innerHTML = html.replace(/"\.\/(.+?)"/g, (_, path) => `/${folder}/${path}`);
+  span.innerHTML = html.replace(
+    /"\.\/(.+?)"/g,
+    (_, path) => `/${folder}/${path}`
+  );
 
   // Extract script tag sources because external scripts are blocked by the browser when appending
   const modules = [...span.querySelectorAll("script")].map((el) => el.src);
@@ -101,15 +104,19 @@ export async function loadHtmlComponent(folder) {
 }
 
 /** @param {number} ms */
-export const sleep = (ms) => new Promise(res => setTimeout(res, ms));
-
+export const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
 
 const highlightWorker = new Worker("./worker/index.js", { type: "module" });
 
-/** 
+let stripAnsiEscape = false;
+export const toggleParsingAnsi = () => {
+  stripAnsiEscape = !stripAnsiEscape;
+}
+
+/**
  * Highlights text!
  * Calls the worker and deserializes the response into DOM nodes.
- * @param {string} input 
+ * @param {string} input
  * @returns {Promise<Node[]>}
  * */
 export const highlightText = (input) => {
@@ -126,12 +133,18 @@ export const highlightText = (input) => {
   };
 
   return new Promise((res) => {
-    /** @param {MessageEvent<any>} e */
-    const listener = (e) => {
-      const elements = e.data.map((obj) => getElementForObj(obj));
+    const id = crypto.randomUUID();
+
+    /** @param {MessageEvent<{ nodes: any[], id: string }>} e */
+    const listener = ({ data }) => {
+      if (data.id !== id) return;
+      highlightWorker.removeEventListener('message', listener);
+
+      const elements = data.nodes.map((obj) => getElementForObj(obj));
       res(elements);
     };
-    highlightWorker.addEventListener("message", listener, { once: true });
-    highlightWorker.postMessage(input);
+
+    highlightWorker.addEventListener("message", listener);
+    highlightWorker.postMessage({ input, stripAnsiEscape, id });
   });
 };
