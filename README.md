@@ -1,10 +1,10 @@
-# Logpipe ![logpipe logo](https://github.com/EmNudge/logpipe/assets/24513691/8526ba7d-e8a1-460a-8fad-60c488b5b15e) 
+# Logpipe ![logpipe logo][logo]
 
 *Get clarity on development logs*
 
 <video src="https://github.com/EmNudge/logpipe/assets/24513691/59a1772a-2e5d-4129-aaa2-470dea297aee"></video>
 
-Checkout [the docs](https://logpipe.dev/) or see it in action in [this online demo](https://logpipe.pages.dev)!
+Checkout [the docs][docs] or see it in action in [this online demo][demo]!
 
 ## Installation
 
@@ -35,13 +35,15 @@ Then go to the URL and inspect away!
 
 ### Redirecting Stderr
 
-Many programs will output their logs to stderr instead of stdout. If `logpipe` is not capturing anything and you still see output in your terminal, this is probably what's happening.
+Many programs will output their logs to `stderr` instead of `stdout`. If `logpipe` is not capturing anything and you still see output in your terminal, this is probably what's happening.
 
 You can use bash redirection to fix this.
 
 ```sh
 my-program 2>&1 | logpipe # note the "2>&1"
 ```
+
+Check out [the docs](https://logpipe.dev/guide/shell-redirection.html#shell-redirection) for more info on shell redirection.
 
 ## Motivation
 
@@ -61,31 +63,17 @@ This allows us the following interesting features:
 
 It also allows us to live-filter logs while retaining the log state - something already present in most log inspection tools.
 
-## Development
+## Advanced Usage, Alternative Tools, Contribution Guide, etc
 
-It has been helpful to use something like `nodemon` during development to automatically restart the server when the code changes.
+A lot of info has been moved to [the docs][docs]. Here are some quick links:
 
-There is a file called `out.js` which is purely used to simulate logs like in a regular application.
+- [Alternatives](https://logpipe.emnudge.dev/guide/alternatives.html)
+- [Shell Redirection](https://logpipe.emnudge.dev/guide/shell-redirection.html)
+- [Filtering](https://logpipe.emnudge.dev/guide/filtering.html)
+- [Contribution Guide](https://logpipe.emnudge.dev/guide/contribution-guide.html)
 
-`out.js` parameters:
-- `--delay <number>`
-  - delay in milliseconds between each log
-- `--iterations <number>`
-  - number of iterations to run (default Infinity)
-
-```sh
-nodemon --exec 'node out.js | node index.mjs -p 7280' -e ts,html,js,mjs,css
-```
-
-## Similar Tools (Alternatives)
-
-The primary goal of logpipe is to simplify viewing and searching real-time development logs. If this is not your exact use-case, you may be better served by other tools.
-
-For a direct CLI-specific alternative, I quite like [tailspin](https://github.com/bensadeh/tailspin).
-
-For viewing structured logs in the CLI, check out [klp](https://github.com/dloss/klp) or [lnav](https://github.com/tstack/lnav).
-
-Web UIs are going to be the easiest for viewing logs individually and filtering on them. [logscreen](https://github.com/soorajshankar/logScreen) and [logdy](https://logdy.dev/) both exist in this category, but neither applies syntax highlighting or function well with unstructured logs.
-
-Logpipe seems to exist solely in this niche of "live webui view on unstructured logs with automatic syntax highlighting". If you find another tool that fits into this category, file an issue and I'll add it to this section.
+<!----->
+[logo]: https://github.com/EmNudge/logpipe/assets/24513691/8526ba7d-e8a1-460a-8fad-60c488b5b15e
+[demo]: https://logpipe.pages.dev
+[docs]: https://logpipe.dev
 
