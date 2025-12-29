@@ -1,0 +1,16 @@
+kbd {
+  font-family: monospace;
+  text-shadow: rgb(0, 0, 0) 0px 1px;
+  box-shadow: rgb(95, 95, 95) 0px 1px 0px 0px inset;
+  background: rgb(44, 44, 44);
+  border-radius: 4px;
+  border: 1px solid rgb(88, 88, 88);
+  padding: 0.1em 0.6em;
+  margin: 0.2em;
+}
+html:not(.dark) kbd {
+  text-shadow: rgb(255 255 255) 0px 1px;
+  box-shadow: rgb(255 255 255) 0px 1px 0px 0px inset;
+  background: rgb(227 227 227);
+  border-color: rgb(189 189 189);
+}

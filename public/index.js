@@ -1,4 +1,5 @@
 // import { highlightText } from "./worker/highlight.js";
+import { startEmitter } from "./emitter.js";
 import { $, loadHtmlComponent } from "./lib.js";
 import { addLogs } from "./log-adder.js";
 
@@ -30,15 +31,4 @@ logContainer.addEventListener("scroll", (e) => {
   }
 });
 
-const cliSource = new EventSource("/_/cli-input");
-/** @param {Event & { data: string }} event */
-cliSource.onmessage = async (event) => {
-  const data = JSON.parse(event.data);
-
-  if (Array.isArray(data)) {
-    await addLogs(data)
-    return;
-  }
-
-  console.log("unknown data received", data);
-};
+startEmitter(addLogs)

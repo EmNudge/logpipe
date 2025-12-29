@@ -1,0 +1,35 @@
+import { defineConfig } from "vitepress";
+
+export default defineConfig({
+  lang: "en-US",
+  title: "Logpipe",
+  description: "Analyze your live development logs using a sleek web UI",
+  themeConfig: {
+    nav: [
+      { text: "Guide", link: "/guide/quickstart" },
+      { text: "Github", link: "https://github.com/EmNudge/logpipe" },
+      { text: "Demo", link: "https://logpipe.pages.dev" },
+    ],
+    sidebar: {
+      '/guide/': { base: '/guide/', items: [
+        {
+          text: 'Overview',
+          items: [
+            { text: 'Quickstart', link: 'quickstart' },
+            { text: 'Motivation', link: 'motivation' },
+            { text: 'Alternatives', link: 'alternatives' },
+          ]
+        },
+        {
+          text: 'Guides',
+          items: [
+            { text: 'Shell Redirection', link: 'shell-redirection' },
+            { text: 'Filtering', link: 'filtering' },
+            { text: 'Command Palette', link: 'command-palette' },
+            { text: 'Contribution Guide', link: 'contribution-guide' },
+          ]
+        }
+      ] },
+    }
+  },
+});
