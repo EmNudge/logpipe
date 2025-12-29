@@ -26,11 +26,13 @@ const VARIATION_SELECTOR_100 = String.fromCodePoint(917843);
  */
 function replaceAnsi(text, getReplacement, stripAnsiEscape) {
   if (stripAnsiEscape) {
+    // eslint-disable-next-line no-control-regex
     return text.replace(/\x1B(?:]8;;|\\|\[(?:\d+|;)+?m)/g, '');
   }
 
   const withReplacedLinks = text
     // replace links (yes, these exist)
+    // eslint-disable-next-line no-control-regex
     .replace(/\x1B]8;;(.+?)\x1B\\(.+?)\x1B]8;;\x1B\\/g, (_, link, text) => {
       return getReplacement(
         getEl("a", { className: "url", href: link, textContent: text })
@@ -41,6 +43,7 @@ function replaceAnsi(text, getReplacement, stripAnsiEscape) {
   const ansiClassNames = [];
   return withReplacedLinks
     .replace(
+      // eslint-disable-next-line no-control-regex
       /\x1B\[((?:\d+|;)+?)m([^\x1B]+)/g,
       (_, /** @type {string} */ numbers, /** @type {string} */ text) => {
         if (numbers === "0") {
@@ -92,8 +95,10 @@ function replaceAnsi(text, getReplacement, stripAnsiEscape) {
         return getReplacement(getSpan(ansiClassNames.join(" "), text));
       }
     )
+    // eslint-disable-next-line no-control-regex
     .replace(/\x1B\[0m/g, "")
     // Clean up any remaining ANSI codes that weren't matched (e.g., consecutive codes without text)
+    // eslint-disable-next-line no-control-regex
     .replace(/\x1B\[(?:\d+|;)+?m/g, "");
 }
 
@@ -105,7 +110,7 @@ function replaceAnsi(text, getReplacement, stripAnsiEscape) {
 function replaceURLs(text, getReplacement) {
   return text.replace(
     // Lord forgive me, for I have sinned
-    /\b(https?:)\/\/(\w+(?:\.\w+)*)(:\d+)?((?:\/[\w\.]+)*\/?)((?:\?(?:&?\w+=\w+)*))?/gi,
+    /\b(https?:)\/\/(\w+(?:\.\w+)*)(:\d+)?((?:\/[\w.]+)*\/?)((?:\?(?:&?\w+=\w+)*))?/gi,
     (_, protocol, host, port, path, params) => {
       const urlContainer = getSpan("url");
       urlContainer.children = [];
@@ -135,7 +140,7 @@ function replaceURLs(text, getReplacement) {
 function replaceDate(text, getReplacement) {
   return (
     text
-      .replace(/\b\d+[-\/]\d+[-\/]\d+ \d+:\d+:\d+(?:[.,]\d+)?/g, (m) => {
+      .replace(/\b\d+[-/]\d+[-/]\d+ \d+:\d+:\d+(?:[.,]\d+)?/g, (m) => {
         return getReplacement(getSpan("date", m));
       })
       // parse ISO date
@@ -180,7 +185,7 @@ function replaceTags(text, getReplacement) {
     })
     .replace(/\[\w+(?:\(\w+\))?\]/g, (m) => {
       // don't parse numbers and IPs as tags
-      if (/\[[\d\.:]+\]/.test(m)) return m;
+      if (/\[[\d.:]+\]/.test(m)) return m;
       return getReplacement(getSpan("tag", m));
     });
 }

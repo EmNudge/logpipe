@@ -1,5 +1,5 @@
-import { setFilter } from "../filter.js";
-import { $ } from "../lib.js";
+import { setFilter } from "../utils/filter.js";
+import { $ } from "../utils/lib.js";
 
 const logContainer = $(".container");
 const contextMenu = $(".contextmenu");
@@ -64,7 +64,7 @@ contextMenu.addEventListener(
     } else if (action === "copy-id") {
       copyText(selectedLog.dataset.id, "log ID");
     } else {
-      setFilter('', true);
+      setFilter('', { updateInput: true, dispatchEvent: true });
       selectedLog.scrollIntoView();
     }
 

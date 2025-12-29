@@ -1,5 +1,5 @@
-import { setFilter } from "./filter.js";
-import { $, $$, cloneTemplate } from "./lib.js";
+import { setFilter } from "./utils/filter.js";
+import { $, $$, cloneTemplate } from "./utils/lib.js";
 
 const tagsContainer = $(".tags");
 const tagsOverflowContainer = $(".tags-overflow");
@@ -21,7 +21,7 @@ const setFilterForTags = () => {
     .map((el) => `tag="${el.textContent}"`);
 
   const tagGroup = tagStrings.length ? `@@${tagStrings.join(",")}` : "";
-  setFilter(tagGroup, true, false);
+  setFilter(tagGroup, { updateInput: true });
 };
 
 tagsContainer.addEventListener("click", (e) => {
