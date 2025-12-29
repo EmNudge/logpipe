@@ -6,7 +6,7 @@ If this is not your exact use-case, you may be better served by other tools.
 
 ## CLI Programs
 
-For a CLI-specific alternative, I quite like [tailspin](https://github.com/bensadeh/tailspin). Its goals are aligned with this project and it's a great install if you want to keep your input in the terminal.
+For a CLI-specific alternative, I quite like [tailspin](https://github.com/bensadeh/tailspin). Its goals are aligned with this project and it's a great install if you want to keep your input in the terminal. It evolves from programs like [ccze](https://github.com/cornet/ccze)
 
 It doesn't have advanced searching, chunking, or any of the advantages web UIs bring, but it's still really helpful if you're SSHing or just don't want to bother with the web.
 
