@@ -92,7 +92,9 @@ function replaceAnsi(text, getReplacement, stripAnsiEscape) {
         return getReplacement(getSpan(ansiClassNames.join(" "), text));
       }
     )
-    .replace(/\x1B\[0m/g, "");
+    .replace(/\x1B\[0m/g, "")
+    // Clean up any remaining ANSI codes that weren't matched (e.g., consecutive codes without text)
+    .replace(/\x1B\[(?:\d+|;)+?m/g, "");
 }
 
 /**
@@ -221,6 +223,10 @@ export function getHighlightObjects(text, stripAnsiEscape = true) {
         getSpan("value", value)
       );
     })
+    // parse version numbers (e.g., v1.2.3 or 1.2.3)
+    .replace(/\bv?\d+\.\d+\.\d+\b/g, (m) => {
+      return getReplacement(getSpan("version", m));
+    })
     // parse IP addrs
     .replace(/\b\d+\.\d+\.\d+\.\d+\b/g, (m) => {
       return getReplacement(getSpan("ip", m));
@@ -230,7 +236,7 @@ export function getHighlightObjects(text, stripAnsiEscape = true) {
       return getReplacement(getSpan("string", m));
     })
     // parse time
-    .replace(/(?:\d+(\.\d+)?(?:h|ms?|s))+/g, (m) => {
+    .replace(/\b(?:\d+(?:\.\d+)?(?:h|ms?|s))+\b/g, (m) => {
       return getReplacement(getSpan("time", m));
     })
     // parse numbers
