@@ -113,7 +113,8 @@ header {
   }
   .number,
   .ip,
-  .url {
+  .url,
+  .version {
     color: yellow;
   }
   .time {
