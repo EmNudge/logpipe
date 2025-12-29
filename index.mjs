@@ -189,7 +189,8 @@ if (!server.address() && port) {
   process.exit(1);
 }
 
-const address = `http://localhost:${server.address().port}`;
+const serverAddress = server.address();
+const address = `http://localhost:${typeof serverAddress === 'string' ? serverAddress : serverAddress.port}`;
 let log = `Logs are displayed on \x1b[32;1;4m${address}\x1b[0m`
 if (title !== DEFAULT_TITLE) {
   log += ` with title \x1b[34;3m"${title}"\x1b[0m`;

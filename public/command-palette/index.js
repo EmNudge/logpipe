@@ -1,4 +1,4 @@
-import { $, downloadResource, toggleParsingAnsi } from "../lib.js";
+import { $, downloadResource, toggleParsingAnsi } from "../utils/lib.js";
 import { reAddAllLogs } from "../log-adder.js";
 
 const commandPaletteEl =

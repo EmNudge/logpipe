@@ -78,12 +78,9 @@ export async function loadHtmlComponent(folder) {
   await Promise.all(modules.map((src) => import(src)));
 }
 
-/** @param {number} ms */
-export const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
-
 const highlightWorker = new Worker("./worker/index.js", { type: "module" });
 
-let stripAnsiEscape = false;
+export let stripAnsiEscape = false;
 export const toggleParsingAnsi = () => {
   stripAnsiEscape = !stripAnsiEscape;
 }
@@ -92,14 +89,15 @@ export const toggleParsingAnsi = () => {
  * Highlights text!
  * Calls the worker and deserializes the response into DOM nodes.
  * @param {string} input
+ * @param {boolean} stripAnsi
  * @returns {Promise<Node[]>}
  * */
-export const highlightText = (input) => {
+export const highlightText = (input, stripAnsi) => {
   /** @param {any} obj */
   const getElementForObj = (obj) => {
     if (typeof obj == "string") return obj;
 
-    const { name, children, ...rest } = obj;
+    const { name, ...rest } = obj;
     const element = Object.assign(document.createElement(name), rest);
     for (const child of obj?.children ?? []) {
       element.append(getElementForObj(child));
@@ -120,6 +118,6 @@ export const highlightText = (input) => {
     };
 
     highlightWorker.addEventListener("message", listener);
-    highlightWorker.postMessage({ input, stripAnsiEscape, id });
+    highlightWorker.postMessage({ input, stripAnsiEscape: stripAnsi, id });
   });
 };

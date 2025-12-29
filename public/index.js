@@ -1,7 +1,8 @@
 // import { highlightText } from "./worker/highlight.js";
 import { startEmitter } from "./emitter.js";
-import { $, loadHtmlComponent } from "./lib.js";
-import { addLogs } from "./log-adder.js";
+import { $, loadHtmlComponent } from "./utils/lib.js";
+import { addLogs, scroller } from "./log-adder.js";
+import { scrollToBottom } from "./utils/virtual-scroller.js";
 
 loadHtmlComponent("command-palette");
 loadHtmlComponent("context-menu");
@@ -10,12 +11,12 @@ const logContainer = $(".container");
 
 // scroll to bottom of container
 const downButton = $(".down-button");
-downButton.addEventListener("click", () => {
-  logContainer.children[logContainer.children.length - 1].scrollIntoView();
+downButton.addEventListener("click", async () => {
+  await scrollToBottom(scroller);
 });
 let showButton = downButton.classList.contains("show");
 const GOAL_DIST = 150;
-logContainer.addEventListener("scroll", (e) => {
+logContainer.addEventListener("scroll", () => {
   const dist = Math.abs(
     logContainer.scrollHeight -
       logContainer.scrollTop -
